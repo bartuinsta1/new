@@ -1,0 +1,257 @@
+<!doctype html>
+<!--
+  Masalcık tasarım sistemi — web önizlemesi.
+  SwiftUI Preview'larının (DesignSystem/Gallery/ComponentGalleryView.swift) birebir geometriyle web kopyası.
+  Amaç: Xcode olmayan ortamda (CI, bulut) ekran görüntüsü üretmek. Doğruluk kaynağı Swift kodudur.
+  Ekran görüntüsü: node docs/design-preview/screenshot.mjs
+-->
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masalcık Tasarım Sistemi</title>
+<style>
+  @font-face { font-family: "Baloo 2"; font-weight: 800; src: url("../../Masalcik/Resources/Fonts/Baloo2-ExtraBold.ttf"); }
+  @font-face { font-family: "Nunito"; font-weight: 600; src: url("../../Masalcik/Resources/Fonts/Nunito-SemiBold.ttf"); }
+  @font-face { font-family: "Nunito"; font-weight: 700; src: url("../../Masalcik/Resources/Fonts/Nunito-Bold.ttf"); }
+  :root {
+    --sky:#5BC8F5; --grass:#7ED957; --sun:#FFC93C; --berry:#FF6B8B; --grape:#8B6CEF; --orange:#FF9F43;
+    --ink:#2B2D42; --cream:#FFF8EC; --nightSky:#1E1B4B; --dusk:#3B2F6B; --moon:#FFE8A3; --firefly:#FFD166; --nightInk:#E8E6FF;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #d9d4e8; font-family: "Nunito", sans-serif; font-weight: 600; padding: 24px; }
+  .row { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
+  .phone { width: 390px; height: 844px; border-radius: 48px; overflow: hidden; position: relative;
+           border: 10px solid #111; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .phone .scroll { position: absolute; inset: 0; overflow: hidden; padding: 54px 16px 16px; }
+  .phone canvas.sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .day { background: var(--cream); color: var(--ink); }
+  .night { color: var(--nightInk); }
+  .h-display { font-family: "Baloo 2"; font-weight: 800; font-size: 40px; line-height: 1.05; }
+  .h-title { font-family: "Baloo 2"; font-weight: 800; font-size: 28px; line-height: 1.1; }
+  .h-headline { font-family: "Baloo 2"; font-weight: 800; font-size: 22px; line-height: 1.15; }
+  .body { font-size: 17px; }
+  .bodyBold { font-size: 17px; font-weight: 700; }
+  .caption { font-size: 14px; font-weight: 700; }
+  section { margin-top: 18px; }
+  section > .h-headline { margin-bottom: 8px; }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .sw { text-align: center; }
+  .sw .chip { height: 52px; border-radius: 14px; border: 3px solid var(--outline); overflow: hidden; display: flex; flex-direction: column; }
+  .sw .chip div:first-child { flex: 1; } .sw .chip div:last-child { height: 10px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 3px solid var(--outline); color: var(--ink);
+         border-radius: 24px; font-family: "Baloo 2"; font-weight: 800; position: relative; }
+  .btn.large { min-height: 96px; padding: 0 24px; font-size: 26px; }
+  .btn.circle { border-radius: 50%; width: 64px; height: 64px; justify-content: center; font-size: 26px; }
+  .chars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; text-align: center; }
+  .cards { display: flex; gap: 14px; overflow: hidden; }
+  .card { width: 150px; flex: none; border-radius: 28px; border: 3px solid var(--outline); overflow: hidden; position: relative; }
+  .card .cover { height: 117px; position: relative; overflow: hidden; }
+  .card .t { min-height: 48px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 8px; font-weight: 700; font-size: 15px; line-height: 1.15; }
+  .badge { position: absolute; top: 8px; right: 8px; padding: 3px 9px; border-radius: 99px; border: 2px solid var(--outline); color: var(--ink); font-size: 13px; font-weight: 700; z-index: 3; }
+  .heart { position: absolute; top: 6px; left: 9px; font-size: 22px; color: var(--berry); z-index: 3; }
+  .stars { display: flex; gap: 5px; }
+  .stickers { display: flex; gap: 12px; margin-top: 10px; }
+  .prompt { display: flex; align-items: center; gap: 8px; }
+  .tr { margin-top: 2px; }
+  .label { display:inline-block; padding: 2px 12px; border-radius: 99px; border: 2px solid var(--outline); color: var(--ink); font-weight: 700; font-size: 15px; }
+  .caption-under { text-align: center; font: 700 15px Nunito; color: #3b3554; margin-top: 10px; }
+  .gate { padding: 54px 24px 24px; text-align: center; }
+  .keypad { display: grid; grid-template-columns: repeat(3, 76px); gap: 14px 10px; justify-content: center; margin-top: 20px; }
+  .key { height: 58px; border-radius: 24px; border: 3px solid var(--outline); display: flex; align-items: center; justify-content: center; font: 800 28px "Baloo 2"; color: var(--ink); }
+  .digits { display: flex; gap: 8px; justify-content: center; margin-top: 18px; }
+  .digit { width: 56px; height: 64px; border-radius: 16px; border: 3px solid var(--outline); background: #fff; font: 800 28px "Baloo 2"; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+<div class="row" id="root"></div>
+<script>
+// ---------- Renk yardımcıları (Colors.swift ile aynı) ----------
+function hexToRgb(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255);}
+function rgbToHsb([r,g,b]){const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0;
+  if(d){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h/=6;if(h<0)h+=1;}
+  return [h,max?d/max:0,max];}
+function hsbToHex([h,s,v]){const i=Math.floor(h*6),f=h*6-i,p=v*(1-s),q=v*(1-f*s),t=v*(1-(1-f)*s);
+  const [r,g,b]=[[v,t,p],[q,v,p],[p,v,t],[p,q,v],[t,p,v],[v,p,q]][i%6];
+  return '#'+[r,g,b].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');}
+const darkened=(hex,a=0.2)=>{const [h,s,b]=rgbToHsb(hexToRgb(hex));return hsbToHex([h,s,b*(1-a)]);};
+const desat=(hex,a)=>{const [h,s,b]=rgbToHsb(hexToRgb(hex));return hsbToHex([h,s*(1-a),b*(1-a*0.35)]);};
+const P={sky:'#5BC8F5',grass:'#7ED957',sun:'#FFC93C',berry:'#FF6B8B',grape:'#8B6CEF',orange:'#FF9F43',ink:'#2B2D42',cream:'#FFF8EC',
+  nightSky:'#1E1B4B',dusk:'#3B2F6B',moon:'#FFE8A3',firefly:'#FFD166',nightInk:'#E8E6FF'};
+const accent=(name,mode)=>mode==='day'?P[name]:desat(P[name],0.4);
+const outline=mode=>mode==='day'?P.ink:'#14112F';
+
+// ---------- Karakter çizimleri (CharacterArt.swift ile aynı 200×200 geometri) ----------
+function lerp(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];}
+function roundedPoly(v,r){let d=`M${lerp(v[0],v[1],r)}`;const n=v.length;
+  for(let i=0;i<n;i++){const cur=v[(i+1)%n],prev=v[i],next=v[(i+2)%n];
+    d+=` L${lerp(cur,prev,r)} Q${cur} ${lerp(cur,next,r)}`;}return d+'Z';}
+function starPath(cx,cy,outer){const v=[];for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,rad=i%2?outer*0.52:outer;
+  v.push([cx+Math.cos(a)*rad,cy+Math.sin(a)*rad]);}return roundedPoly(v,0.32);}
+function kitePath(x,y,w,h){return roundedPoly([[x+w/2,y],[x+w,y+h*0.42],[x+w/2,y+h],[x,y+h*0.42]],0.2);}
+
+function Art(mode){
+  const O=outline(mode);
+  const c=hex=>mode==='day'?hex:desat(hex,0.4);
+  const st=`stroke="${O}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+  const E=(x,y,w,h,fill,rot=0)=>`<ellipse cx="${x}" cy="${y}" rx="${w/2}" ry="${h/2}" fill="${fill}" ${st} transform="rotate(${rot} ${x} ${y})"/>`;
+  const C=(x,y,w,h,fill)=>{const d=Math.min(w,h);return `<circle cx="${x}" cy="${y}" r="${d/2}" fill="${fill}" ${st}/>`;};
+  const closedEye=(x,y,w,h,lw=4)=>`<path d="M${x-w/2} ${y-h/2} Q${x} ${y-h/2+h*1.6} ${x+w/2} ${y-h/2}" fill="none" stroke="${O}" stroke-width="${lw}" stroke-linecap="round"/>`;
+  function face(mood,eyeSize,spacing,dx=0,dy=0){let s='';
+    for(const side of [-1,1]){const x=100+side*spacing/2+dx,y=92+dy;
+      if(mood==='sleepy') s+=closedEye(x,y,eyeSize,eyeSize*0.3);
+      else{const e=mood==='surprised'?eyeSize*1.15:eyeSize;
+        s+=`<circle cx="${x}" cy="${y}" r="${e/2}" fill="${P.ink}"/><circle cx="${x+e*0.16}" cy="${y-e*0.16}" r="${e*0.18}" fill="#fff"/>`;}}
+    for(const side of [-1,1]) s+=`<ellipse cx="${100+side*(spacing/2+18)+dx}" cy="${114+dy}" rx="10" ry="6" fill="${P.berry}" fill-opacity=".45"/>`;
+    const mx=100+dx,my=120+dy;
+    if(mood==='happy'){const x0=mx-13,y0=my-7;s+=`<path d="M${x0} ${y0} L${x0+26} ${y0} Q${mx} ${y0+25.2} ${x0} ${y0}Z" fill="#C2344F" ${st}/>`;}
+    else if(mood==='surprised') s+=`<ellipse cx="${mx}" cy="${my}" rx="7" ry="9" fill="#C2344F" ${st}/>`;
+    else s+=`<ellipse cx="${mx}" cy="${my}" rx="8" ry="5.5" fill="#C2344F" ${st}/>`;
+    return s;}
+  return {
+    pamuk(m){let s='';for(const [x,y] of [[60,70],[100,50],[140,70],[155,115],[135,155],[100,165],[65,155],[45,115]]) s+=C(x,y,62,62,c('#FFFFFF'));
+      s+=C(100,110,120,120,c('#FFFFFF'))+E(44,92,42,22,c('#F3D9C4'),-25)+E(156,92,42,22,c('#F3D9C4'),25)+E(100,108,96,86,c('#F3D9C4'))
+       +C(88,62,34,34,c('#FFFFFF'))+C(112,60,36,36,c('#FFFFFF'))+face(m,22,40,0,6);return s;},
+    findik(m){return E(158,92,92,120,c('#E2553B'),15)+C(166,70,40,40,c('#F08A5D'))+E(66,46,30,44,c('#E2553B'),-15)+E(130,46,30,44,c('#E2553B'),15)
+      +E(98,108,132,128,c('#E2553B'))+E(98,122,90,70,c('#FFE3C2'))+face(m,26,50,-2,0)+E(98,108,12,9,P.ink);},
+    lodos(m){return `<path d="M100 180 C110 200 130 180 150 196" fill="none" stroke="${P.ink}" stroke-width="3" stroke-linecap="round"/>`
+      +C(124,190,14,14,c('#FFC93C'))+C(150,196,14,14,c('#5BC8F5'))
+      +`<path d="${kitePath(25,11,150,170)}" fill="${c('#FF9F43')}" ${st}/>`
+      +`<path d="M100 22 L100 172 M34 82 L166 82" stroke="${P.ink}" stroke-opacity=".25" stroke-width="3" stroke-linecap="round"/>`+face(m,22,48,0,4);},
+    nur(m){return E(58,42,28,46,c('#8C6A52'),-25)+E(142,42,28,46,c('#8C6A52'),25)+E(100,108,150,160,c('#A47E62'))+E(100,138,92,84,c('#F3DFC4'))
+      +E(32,126,34,76,c('#8C6A52'),12)+E(168,126,34,76,c('#8C6A52'),-12)+face(m,22,52,0,-8)
+      +`<circle cx="74" cy="84" r="21" fill="none" stroke="${P.ink}" stroke-width="4"/><circle cx="126" cy="84" r="21" fill="none" stroke="${P.ink}" stroke-width="4"/>`
+      +`<rect x="94" y="80" width="12" height="4" rx="2" fill="${P.ink}"/>`+E(100,106,16,14,c('#FFC93C'));},
+    yildiz(m){return `<circle cx="100" cy="100" r="95" fill="${P.moon}" fill-opacity=".45" filter="url(#blur)"/>`
+      +`<path d="${starPath(100,104,92)}" fill="${c('#FFD23F')}" ${st}/>`+face(m,22,40,0,12);},
+    kaptan_midye(m){let s=C(24,108,42,42,c('#F25C54'))+C(176,108,42,42,c('#F25C54'))
+      +`<rect x="70" y="42" width="12" height="40" rx="6" fill="${c('#F25C54')}" ${st}/><rect x="118" y="42" width="12" height="40" rx="6" fill="${c('#F25C54')}" ${st}/>`
+      +E(100,124,152,110,c('#F25C54'));
+      for(const x of [56,78,122,144]) s+=`<rect x="${x-6}" y="168" width="12" height="24" rx="6" fill="${c('#D94740')}" ${st}/>`;
+      s+=`<rect x="65" y="21" width="70" height="30" rx="10" fill="${c('#2B4C7E')}" ${st}/><rect x="57" y="44" width="86" height="12" rx="6" fill="#fff" ${st}/>`+C(100,34,12,12,c('#FFC93C'));
+      if(m==='sleepy') s+=closedEye(76,44,18,6)+closedEye(124,44,18,6);
+      else{const r=m==='surprised'?8:6;s+=C(76,44,26,26,'#fff')+C(124,44,26,26,'#fff')+`<circle cx="78" cy="45" r="${r}" fill="${P.ink}"/><circle cx="126" cy="45" r="${r}" fill="${P.ink}"/>`;}
+      // Bıyık (MustacheShape, 96×30 çerçeve, merkez 100,118)
+      const x=52,y=103,w=96,h=30,mx=x+w/2;
+      s+=`<path d="M${mx} ${y+h*.2} C${x+w*.3} ${y+h} ${x+w*.05} ${y+h} ${x} ${y+h*.25} C${x+w*.1} ${y+h*.6} ${x+w*.35} ${y} ${mx} ${y+h*.2} C${x+w-w*.35} ${y} ${x+w-w*.1} ${y+h*.6} ${x+w} ${y+h*.25} C${x+w-w*.05} ${y+h} ${x+w-w*.3} ${y+h} ${mx} ${y+h*.2}Z" fill="${c('#F7F2E8')}" ${st}/>`;
+      if(m==='happy') s+=`<path d="M90 135 L110 135 Q100 153 90 135Z" fill="#7A1F2B"/>`;
+      else s+=`<ellipse cx="100" cy="142" rx="${m==='surprised'?6:7}" ry="${m==='surprised'?7:4.5}" fill="#7A1F2B"/>`;
+      return s;}
+  };
+}
+function charSVG(id,mood,size,mode){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" overflow="visible"><defs><filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="18"/></filter></defs>${Art(mode)[id](mood)}</svg>`;}
+
+const CHARS=[['pamuk','Pamuk'],['findik','Fındık'],['lodos','Lodos'],['nur','Bilge Baykuş Nur'],['yildiz','Yıldız'],['kaptan_midye','Kaptan Midye']];
+const REGION={whisper_forest:'grass',storyteller_plane:'orange',star_hill:'grape',lighthouse_cove:'sky'};
+
+// ---------- Bileşenler ----------
+function bubble(label,icon,color,mode,{large=false,circle=false}={}){
+  const f=accent(color,mode),sh=darkened(f,0.2);
+  const cls=circle?'btn circle':'btn'+(large?' large':'');
+  return `<span class="${cls}" style="background:${f};box-shadow:0 6px 0 ${sh},0 6px 0 3px ${outline(mode)}">${icon}${label?`<span>${label}</span>`:''}</span>`;}
+function cloud(size,mode){const w=size,h=size*0.68,O=outline(mode),fill=mode==='day'?'#fff':'#C9C3E8';
+  const X=f=>w*f,Y=f=>h*f;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" overflow="visible">
+   <path d="M${X(.18)} ${h} C${X(-.04)} ${h} ${X(-.02)} ${Y(.5)} ${X(.12)} ${Y(.45)} C${X(.12)} ${Y(.12)} ${X(.3)} ${Y(.05)} ${X(.42)} ${Y(.12)} C${X(.55)} ${Y(-.08)} ${X(.78)} ${Y(.05)} ${X(.78)} ${Y(.3)} C${X(1.06)} ${Y(.32)} ${X(1.08)} ${h} ${X(.84)} ${h}Z" fill="${fill}" stroke="${O}" stroke-width="3" stroke-linejoin="round"/>
+   <path d="M${w/2-size*.29} ${h/2+size*.025} q${size*.065} ${size*.11} ${size*.13} 0 M${w/2+size*.16} ${h/2+size*.025} q${size*.065} ${size*.11} ${size*.13} 0" fill="none" stroke="${O}" stroke-width="3" stroke-linecap="round"/>
+   <circle cx="${w/2-size*.215}" cy="${h/2+size*.13}" r="${size*.045}" fill="${P.berry}" fill-opacity=".35"/><circle cx="${w/2+size*.215}" cy="${h/2+size*.13}" r="${size*.045}" fill="${P.berry}" fill-opacity=".35"/>
+   <text x="${w/2+size*.42}" y="${h/2-size*.33}" font-family="Baloo 2" font-weight="800" font-size="22" fill="${mode==='day'?P.ink:P.nightInk}" fill-opacity=".7">z</text></svg>`;}
+function backdrop(region,mode){const base=accent(REGION[region],mode);
+  const bg=mode==='day'?`linear-gradient(${P.sky}8c, ${base}d9)`:`linear-gradient(${P.nightSky}, ${P.dusk}e6, ${base}99)`;
+  const orb=mode==='night'?`<div style="position:absolute;width:22px;height:22px;border-radius:50%;background:${P.moon};left:calc(50% + 39px);top:calc(50% - 51px)"></div>`
+    :`<div style="position:absolute;width:28px;height:28px;border-radius:50%;background:${P.sun};left:calc(50% - 69px);top:calc(50% - 54px)"></div>`;
+  return `<div style="position:absolute;inset:0;background:${bg}"></div><div style="position:absolute;width:320px;height:140px;border-radius:50%;background:${darkened(base,.15)};left:calc(50% - 160px);top:calc(50% + 0px)"></div>${orb}`;}
+function storyCard(title,region,mins,char,mode,{fav=false,sleeping=false}={}){
+  const surface=mode==='day'?'#fff':P.dusk,ink=mode==='day'?P.ink:P.nightInk;
+  return `<div class="card" style="box-shadow:0 6px 0 ${darkened(accent(REGION[region],mode),.2)}"><div class="cover">${backdrop(region,mode)}
+   <div style="position:absolute;left:30px;top:22px">${charSVG(char,mode==='night'?'sleepy':'happy',90,mode)}</div>
+   ${sleeping?`<div style="position:absolute;inset:0;backdrop-filter:blur(8px);background:rgba(255,255,255,.25)"></div><div style="position:absolute;left:28px;top:30px">${cloud(93,mode)}</div>`:''}
+   <span class="badge" style="background:${mode==='day'?P.sun:P.moon}">☾ ${mins} dk</span>${fav?'<span class="heart">♥</span>':''}</div>
+   <div class="t" style="background:${surface};color:${ink}">${title}</div></div>`;}
+function island(region,mode,{locked=false,size=130,guide}={}){
+  const base=accent(REGION[region],mode),O=outline(mode),icons={lighthouse_cove:'⛯',star_hill:'☾',whisper_forest:'♣',storyteller_plane:'📖'};
+  return `<div style="position:relative;width:${size*1.1}px;height:${size*.95}px">
+    <div style="position:absolute;width:${size}px;height:${size*.62}px;border-radius:50%;background:${darkened(base,.25)};left:${size*.05}px;top:${size*.165+size*.1}px"></div>
+    <div style="position:absolute;width:${size}px;height:${size*.62}px;border-radius:50%;background:${base};border:3px solid ${O};left:${size*.05}px;top:${size*.165}px"></div>
+    <div style="position:absolute;width:${size*.36}px;height:${size*.36}px;border-radius:50%;background:${mode==='day'?'#fff':P.moon};border:3px solid ${O};left:${size*.37}px;top:${size*.075}px;display:flex;align-items:center;justify-content:center;font-size:${size*.2}px;color:${P.ink}">${icons[region]}</div>
+    ${locked?`<div style="position:absolute;left:${size*.075}px;top:${size*.1}px">${cloud(size*.95,mode)}</div>`
+      :`<div style="position:absolute;left:${size*.68}px;top:${size*.265}px">${charSVG(guide,mode==='night'?'sleepy':'happy',size*.42,mode)}</div>`}</div>`;}
+function star(on,mode){const O=outline(mode),f=on?(mode==='day'?P.sun:P.firefly):(mode==='day'?'#ffffff99':P.dusk+'99');
+  return `<svg width="32" height="32" viewBox="0 0 32 32" style="${on?'':'transform:scale(.85)'};${on&&mode==='night'?`filter:drop-shadow(0 0 6px ${P.firefly}99)`:''}"><path d="${starPath(16,16,15)}" fill="${f}" stroke="${O}" stroke-width="2.5" stroke-linejoin="round"/></svg>`;}
+function sticker(emoji,color,earned,mode,rot){
+  return `<div style="width:64px;height:64px;border-radius:50%;background:#fff;border:3px solid ${outline(mode)};display:flex;align-items:center;justify-content:center;transform:rotate(${rot}deg);opacity:${earned?1:.55};box-shadow:0 4px 0 rgba(0,0,0,.12)">
+   <div style="width:52px;height:52px;border-radius:50%;background:${accent(color,mode)};display:flex;align-items:center;justify-content:center;font-size:29px;${earned?'':'filter:grayscale(1);opacity:.35'}">${emoji}</div></div>`;}
+
+// ---------- Gece gökyüzü (NightSkyBackground.swift ile aynı deterministik dağılım) ----------
+function splitmix(seed){let s=BigInt(seed);const M=(1n<<64n)-1n;return ()=>{s=(s+0x9E3779B97F4A7C15n)&M;let z=s;
+  z=((z^(z>>30n))*0xBF58476D1CE4E5B9n)&M;z=((z^(z>>27n))*0x94D049BB133111EBn)&M;z=z^(z>>31n);return Number(z>>11n)/2**53;};}
+function genStars(n,seed){const r=splitmix(seed);return Array.from({length:n},()=>({x:r(),y:r(),rad:.8+r()*1.8,speed:.6+r()*1.6,phase:r()*Math.PI*2}));}
+function drawSky(cv,{dimming=0,t=3.2}={}){const dpr=2,W=cv.clientWidth,H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;
+  const g=cv.getContext('2d');g.scale(dpr,dpr);
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,P.nightSky);gr.addColorStop(.5,P.dusk);gr.addColorStop(1,'#5A3F7A');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  for(const s of genStars(70,7)){const tw=.55+.45*Math.sin(t*s.speed+s.phase);g.fillStyle=`rgba(255,232,163,${tw})`;g.beginPath();g.arc(s.x*W,s.y*H*.75,s.rad,0,7);g.fill();}
+  const cx=W*.78,cy=H*.16;g.fillStyle='rgba(255,232,163,.12)';g.beginPath();g.arc(cx,cy,70,0,7);g.fill();g.fillStyle=P.moon;g.beginPath();g.arc(cx,cy,34,0,7);g.fill();
+  g.fillStyle='#2A2260';g.beginPath();g.moveTo(-40,H);g.bezierCurveTo(W*.3,H*.66,W*.6,H*.92,W+40,H*.8);g.lineTo(W+40,H);g.closePath();g.fill();
+  for(const f of genStars(14,42)){const dx=Math.sin(t*f.speed*.3+f.phase)*18,dy=Math.cos(t*f.speed*.25+f.phase)*12,glow=.4+.6*Math.max(0,Math.sin(t*f.speed*.6+f.phase));
+    const x=f.x*W+dx,y=(.55+f.y*.42)*H+dy;g.fillStyle=`rgba(255,209,102,${.18*glow})`;g.beginPath();g.arc(x,y,9,0,7);g.fill();
+    g.fillStyle=`rgba(255,209,102,${glow})`;g.beginPath();g.arc(x,y,2.5,0,7);g.fill();}
+  if(dimming>0){g.fillStyle=`rgba(0,0,0,${Math.min(.92,dimming)})`;g.fillRect(0,0,W,H);}}
+
+// ---------- Ekranlar ----------
+function gallery(mode){
+  const O=outline(mode);
+  const swatches=mode==='day'?['sky','grass','sun','berry','grape','orange','ink','cream']:['nightSky','dusk','moon','firefly','nightInk'];
+  return `<div class="phone ${mode}" style="--outline:${O}">${mode==='night'?'<canvas class="sky"></canvas>':''}<div class="scroll">
+   <div class="h-title">Masalcık Tasarım Sistemi</div>
+   <section><div class="h-headline">Renkler</div><div class="swatches">${swatches.map(n=>`<div class="sw"><div class="chip"><div style="background:${P[n]}"></div><div style="background:${darkened(P[n])}"></div></div><div class="caption">${n}</div></div>`).join('')}</div></section>
+   <section><div class="h-headline">Tipografi</div><div class="h-display" style="font-size:34px">Bir varmış bir yokmuş</div><div class="h-title" style="font-size:24px">Masal Adası'na hoş geldin!</div><div class="body">Pamuk uzun uzun esnemiş ve gözlerini yavaşça kapamış.</div></section>
+   <section><div class="h-headline">BubbleButton</div><div style="display:flex;gap:14px;align-items:center">${bubble('Masalı Başlat','▶',mode==='day'?'sun':'grape',mode,{large:true})}${bubble('','★','grape',mode,{circle:true})}</div></section>
+   <section><div class="h-headline">Karakterler</div><div class="chars">${CHARS.map(([id,n])=>`<div>${charSVG(id,mode==='night'?'sleepy':'happy',86,mode)}<div class="caption">${n}</div></div>`).join('')}</div></section>
+  </div></div>`;}
+function gallery2(mode){
+  const O=outline(mode);
+  return `<div class="phone ${mode}" style="--outline:${O}">${mode==='night'?'<canvas class="sky"></canvas>':''}<div class="scroll">
+   <section style="margin-top:0"><div class="h-headline">Duygular — Pamuk</div><div style="display:flex;gap:6px">${['happy','surprised','sleepy'].map(m=>charSVG('pamuk',m,96,mode)).join('')}</div>
+     <div style="display:flex;justify-content:space-around" class="caption"><span>mutlu</span><span>şaşkın</span><span>uykulu</span></div></section>
+   <section><div class="h-headline">StoryCard</div><div class="cards">${storyCard('Ayşe ve Kayıp Fener','whisper_forest',10,'findik',mode,{fav:true})}${storyCard('Yıldız\'ın İlk Gecesi','star_hill',15,'yildiz',mode,{sleeping:true})}</div></section>
+   <section><div class="h-headline">IslandRegionView + CloudLock</div><div style="display:flex">
+     <div style="text-align:center">${island('lighthouse_cove',mode,{guide:'kaptan_midye'})}<span class="label" style="background:${mode==='day'?'#fff':P.moon}">Deniz Feneri Koyu</span></div>
+     <div style="text-align:center">${island('star_hill',mode,{locked:true})}<span class="label" style="background:${mode==='day'?'#fff':P.moon}">Yıldız Tepesi</span></div></div></section>
+   <section><div class="h-headline">ProgressStars + StickerView</div><div class="stars">${[0,1,2,3,4,5,6].map(i=>star(i<4,mode)).join('')}</div>
+     <div class="stickers">${[['🌙','grape'],['⭐️','sun'],['🌰','orange'],['🐚','sky']].map(([e,c],i)=>sticker(e,c,i<3,mode,[-3,4,-5,2][i])).join('')}</div></section>
+   <section><div class="h-headline">VoicePromptPlayer</div><div class="prompt">${charSVG('pamuk',mode==='night'?'sleepy':'happy',72,mode)}${bubble('Masal seçmek için yıldıza dokun!','🔊','sky',mode).replace('class="btn"','class="btn" style="font:700 16px Nunito;padding:10px 14px;min-height:64px;') }</div></section>
+   <section><div class="h-headline">Türkçe karakterler</div><div class="h-headline" style="font-size:19px">Çiğdem, Işıl, İpek, Ömür, Şule, Ülkü — ç ğ ı İ ö ş ü</div><div class="bodyBold tr">${'ıslak iğne, şirin ördek'.toLocaleUpperCase('tr-TR')}</div></section>
+  </div></div>`;}
+function gate(){
+  const O=P.ink,key=(t,c='sun')=>`<div class="key" style="background:${P[c]};box-shadow:0 6px 0 ${darkened(P[c])}">${t}</div>`;
+  return `<div class="phone day" style="--outline:${O}"><div class="gate">
+   <div style="display:flex;justify-content:flex-end">${bubble('','✕','sky','day',{circle:true}).replace('width: 64px','')}</div>
+   <div class="h-title" style="margin-top:6px">Ebeveyn Köşesi</div>
+   <div class="body" style="opacity:.65;margin-top:8px">Devam etmek için bir yetişkinin yanıtlaması gerekiyor.</div>
+   <div class="h-headline" style="margin-top:18px">Altmış üç rakamla yazılırsa hangisi?</div>
+   <div class="digits"><div class="digit">6</div><div class="digit"></div></div>
+   <div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>key(n)).join('')}<div></div>${key(0)}${key('⌫','berry')}</div>
+  </div></div>`;}
+function player(dim){
+  return `<div class="phone night" style="--outline:#14112F"><canvas class="sky" data-dim="${dim}"></canvas>
+   <div style="position:absolute;left:0;right:0;top:330px;display:flex;justify-content:center;gap:10px;opacity:${1-dim*0.8}">${charSVG('pamuk','sleepy',150,'night')}${charSVG('findik','sleepy',120,'night')}</div>
+   <div style="position:absolute;left:0;right:0;bottom:70px;display:flex;justify-content:center;gap:22px;align-items:center;opacity:${1-dim*0.6}">
+     ${bubble('','⏾','grape','night',{circle:true})}${bubble('','❚❚','sky','night',{circle:true}).replace('width:64px;height:64px','')}${bubble('','♫','grape','night',{circle:true})}</div>
+  </div>`;}
+
+const mode=new URLSearchParams(location.search).get('screen')||'all';
+const root=document.getElementById('root');
+const screens={
+  day:()=>gallery('day')+gallery2('day'),
+  night:()=>gallery('night')+gallery2('night'),
+  extras:()=>gate()+player(0)+player(0.9),
+};
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)']};
+const keys=mode==='all'?['day','night','extras']:[mode];
+root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
+  return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');
+document.fonts.ready.then(()=>{document.querySelectorAll('canvas.sky').forEach(cv=>drawSky(cv,{dimming:+(cv.dataset.dim||0)}));document.body.dataset.ready='1';});
+</script>
+</body>
+</html>

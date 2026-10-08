@@ -1,0 +1,23 @@
+# Supabase yerel geliştirme yapılandırması (supabase start / supabase functions serve).
+project_id = "masalcik"
+
+[api]
+port = 54321
+
+[auth]
+# İlk açılışta cihaza bağlı anonim kullanıcı (§5.2). Apple ile Giriş isteğe bağlı.
+enable_anonymous_sign_ins = true
+
+[auth.external.apple]
+enabled = false
+
+[functions.stories]
+verify_jwt = true
+[functions.library]
+verify_jwt = true
+[functions.voice-clone]
+verify_jwt = true
+[functions.entitlements]
+verify_jwt = true
+[functions.account]
+verify_jwt = true
