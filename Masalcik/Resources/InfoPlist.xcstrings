@@ -1,0 +1,18 @@
+{
+  "sourceLanguage" : "tr",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Masalcık" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Masalcık" } }
+      }
+    },
+    "NSMicrophoneUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "To create your own storytelling voice, you need to record a short sample. Recording only happens with your permission, and you can delete it at any time." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ses klonlama için kendi sesinizi kaydetmeniz gerekir. Kayıt yalnızca sizin onayınızla alınır ve istediğiniz an silinebilir." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

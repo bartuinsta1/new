@@ -40,7 +40,7 @@ targets:
       path: Masalcik/Resources/Info.plist
       properties:
         CFBundleDevelopmentRegion: tr
-        CFBundleLocalizations: [tr]
+        CFBundleLocalizations: [tr, en]
         UIBackgroundModes: [audio]
         UIAppFonts:
           - Baloo2-ExtraBold.ttf
@@ -63,7 +63,23 @@ schemes:
       targets:
         Masalcik: all
         MasalcikTests: [test]
+    run:
+      language: tr
+      region: TR
     test:
       targets: [MasalcikTests]
       language: tr
       region: TR
+  # İngilizce arayüzü hızlı denemek için: aynı uygulama, çalıştırma ve test dili İngilizce.
+  Masalcik (English):
+    build:
+      targets:
+        Masalcik: all
+        MasalcikTests: [test]
+    run:
+      language: en
+      region: GB
+    test:
+      targets: [MasalcikTests]
+      language: en
+      region: GB

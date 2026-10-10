@@ -1,6 +1,6 @@
 // İstek doğrulama. Ebeveynin serbest metinleri (ad, telaffuz, ilgi alanı) burada şekil olarak doğrulanır;
 // içerik/istem enjeksiyonu filtresi Adım 5'te safety.ts'e eklenecek.
-import { CHARACTERS, MOODS, REGIONS, VOICES, type StoryRequest } from "./contract.ts";
+import { CHARACTERS, LANGUAGES, MOODS, REGIONS, VOICES, type StoryRequest } from "./contract.ts";
 
 export class ValidationError extends Error {}
 
@@ -55,5 +55,6 @@ export function parseStoryRequest(body: unknown): StoryRequest {
       allow_loss_and_separation: filters["allow_loss_and_separation"] === true,
     },
     voice: oneOf("voice", VOICES),
+    language: b["language"] === undefined ? "tr" : oneOf("language", LANGUAGES),
   };
 }

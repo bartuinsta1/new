@@ -58,9 +58,10 @@ enum TurkishText {
 
     // MARK: Hal ekleri (özel adlar kesme işaretiyle)
 
-    /// Yönelme: Ayşe'ye, Mert'e, Fındık'a, Kaptan Midye'ye.
-    static func dative(_ name: String) -> String {
+    /// Yönelme: Ayşe'ye, Mert'e, Fındık'a, Kaptan Midye'ye. `afterPossessive` → "Fısıltı Ormanı'na".
+    static func dative(_ name: String, afterPossessive: Bool = false) -> String {
         let a = twoWay(name)
+        if afterPossessive && endsWithVowel(name) { return "\(name)'n\(a)" }
         return endsWithVowel(name) ? "\(name)'y\(a)" : "\(name)'\(a)"
     }
 
@@ -106,6 +107,17 @@ enum TurkishText {
 }
 
 extension Region {
-    /// "Fısıltı Ormanı'nda" — bölge adları birer tamlama olduğu için kaynaştırma "n" alır.
-    var locativeTitle: String { TurkishText.locative(title, afterPossessive: true) }
+    /// "Fısıltı Ormanı'nda" / "in Whisper Forest". Türkçe bölge adları birer tamlama olduğu için kaynaştırma "n" alır.
+    func locativeTitle(in lang: AppLanguage = .current) -> String {
+        switch lang {
+        case .tr: TurkishText.locative(title(in: .tr), afterPossessive: true)
+        case .en:
+            switch self {
+            case .whisperForest, .lighthouseCove: "in \(title(in: .en))"
+            case .starHill: "on \(title(in: .en))"
+            case .storytellerPlane: "under the \(title(in: .en))"
+            default: "in the \(title(in: .en))"
+            }
+        }
+    }
 }

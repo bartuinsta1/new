@@ -19,6 +19,8 @@ struct StoryRequest: Codable, Hashable, Sendable {
     var recentStoryTitles: [String]
     var contentFilters: ContentFilters
     var voice: VoiceTone
+    /// Masalın ve seslendirmenin dili (arayüz diliyle aynı).
+    var language: AppLanguage
 }
 
 struct RecurringCharacterDTO: Codable, Hashable, Sendable {

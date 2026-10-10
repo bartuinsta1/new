@@ -16,15 +16,17 @@ enum Region: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(in: .current) }
+
+    func title(in lang: AppLanguage) -> String {
         switch self {
-        case .sleepHouse: String(localized: "Uyku Evi")
-        case .whisperForest: String(localized: "Fısıltı Ormanı")
-        case .starHill: String(localized: "Yıldız Tepesi")
-        case .lighthouseCove: String(localized: "Deniz Feneri Koyu")
-        case .storytellerPlane: String(localized: "Masalcı Çınarı")
-        case .feelingsGarden: String(localized: "Duygu Bahçesi")
-        case .treasureChest: String(localized: "Hazine Sandığı")
+        case .sleepHouse: String(localized: "Uyku Evi", bundle: lang.bundle)
+        case .whisperForest: String(localized: "Fısıltı Ormanı", bundle: lang.bundle)
+        case .starHill: String(localized: "Yıldız Tepesi", bundle: lang.bundle)
+        case .lighthouseCove: String(localized: "Deniz Feneri Koyu", bundle: lang.bundle)
+        case .storytellerPlane: String(localized: "Masalcı Çınarı", bundle: lang.bundle)
+        case .feelingsGarden: String(localized: "Duygu Bahçesi", bundle: lang.bundle)
+        case .treasureChest: String(localized: "Hazine Sandığı", bundle: lang.bundle)
         }
     }
 
@@ -51,14 +53,16 @@ enum CharacterID: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    var displayName: String {
+    var displayName: String { displayName(in: .current) }
+
+    func displayName(in lang: AppLanguage) -> String {
         switch self {
-        case .pamuk: String(localized: "Pamuk")
-        case .findik: String(localized: "Fındık")
-        case .lodos: String(localized: "Lodos")
-        case .nur: String(localized: "Bilge Baykuş Nur")
-        case .yildiz: String(localized: "Yıldız")
-        case .kaptanMidye: String(localized: "Kaptan Midye")
+        case .pamuk: String(localized: "Pamuk", bundle: lang.bundle)
+        case .findik: String(localized: "Fındık", bundle: lang.bundle)
+        case .lodos: String(localized: "Lodos", bundle: lang.bundle)
+        case .nur: String(localized: "Bilge Baykuş Nur", bundle: lang.bundle)
+        case .yildiz: String(localized: "Yıldız", bundle: lang.bundle)
+        case .kaptanMidye: String(localized: "Kaptan Midye", bundle: lang.bundle)
         }
     }
 
@@ -75,11 +79,13 @@ enum CharacterMood: String, Codable, CaseIterable, Sendable {
 enum StoryMood: String, Codable, CaseIterable, Identifiable, Sendable {
     case adventure, funny, calm
     var id: String { rawValue }
-    var title: String {
+    var title: String { title(in: .current) }
+
+    func title(in lang: AppLanguage) -> String {
         switch self {
-        case .adventure: String(localized: "Macera")
-        case .funny: String(localized: "Komik")
-        case .calm: String(localized: "Sakin")
+        case .adventure: String(localized: "Macera", bundle: lang.bundle)
+        case .funny: String(localized: "Komik", bundle: lang.bundle)
+        case .calm: String(localized: "Sakin", bundle: lang.bundle)
         }
     }
 }
@@ -93,18 +99,20 @@ enum ParagraphEmotion: String, Codable, CaseIterable, Sendable {
 enum Interest: String, Codable, CaseIterable, Identifiable, Sendable {
     case animals, space, sea, princesses, superheroes, dinosaurs, football, vehicles, music, nature
     var id: String { rawValue }
-    var title: String {
+    var title: String { title(in: .current) }
+
+    func title(in lang: AppLanguage) -> String {
         switch self {
-        case .animals: String(localized: "Hayvanlar")
-        case .space: String(localized: "Uzay")
-        case .sea: String(localized: "Deniz")
-        case .princesses: String(localized: "Prensesler")
-        case .superheroes: String(localized: "Süper kahramanlar")
-        case .dinosaurs: String(localized: "Dinozorlar")
-        case .football: String(localized: "Futbol")
-        case .vehicles: String(localized: "Araçlar")
-        case .music: String(localized: "Müzik")
-        case .nature: String(localized: "Doğa")
+        case .animals: String(localized: "Hayvanlar", bundle: lang.bundle)
+        case .space: String(localized: "Uzay", bundle: lang.bundle)
+        case .sea: String(localized: "Deniz", bundle: lang.bundle)
+        case .princesses: String(localized: "Prensesler", bundle: lang.bundle)
+        case .superheroes: String(localized: "Süper kahramanlar", bundle: lang.bundle)
+        case .dinosaurs: String(localized: "Dinozorlar", bundle: lang.bundle)
+        case .football: String(localized: "Futbol", bundle: lang.bundle)
+        case .vehicles: String(localized: "Araçlar", bundle: lang.bundle)
+        case .music: String(localized: "Müzik", bundle: lang.bundle)
+        case .nature: String(localized: "Doğa", bundle: lang.bundle)
         }
     }
     var emoji: String {
@@ -125,14 +133,16 @@ enum ValueTopic: String, Codable, CaseIterable, Identifiable, Sendable {
     case brushingTeeth = "brushing_teeth"
     case courage
     var id: String { rawValue }
-    var title: String {
+    var title: String { title(in: .current) }
+
+    func title(in lang: AppLanguage) -> String {
         switch self {
-        case .newSibling: String(localized: "Yeni kardeş")
-        case .startingSchool: String(localized: "Kreşe / okula başlamak")
-        case .fearOfDark: String(localized: "Karanlıktan korkmak")
-        case .sharing: String(localized: "Paylaşmak")
-        case .brushingTeeth: String(localized: "Diş fırçalamak")
-        case .courage: String(localized: "Cesaret")
+        case .newSibling: String(localized: "Yeni kardeş", bundle: lang.bundle)
+        case .startingSchool: String(localized: "Kreşe / okula başlamak", bundle: lang.bundle)
+        case .fearOfDark: String(localized: "Karanlıktan korkmak", bundle: lang.bundle)
+        case .sharing: String(localized: "Paylaşmak", bundle: lang.bundle)
+        case .brushingTeeth: String(localized: "Diş fırçalamak", bundle: lang.bundle)
+        case .courage: String(localized: "Cesaret", bundle: lang.bundle)
         }
     }
 }
@@ -141,13 +151,15 @@ enum ValueTopic: String, Codable, CaseIterable, Identifiable, Sendable {
 enum VoiceTone: String, Codable, CaseIterable, Identifiable, Sendable {
     case mother, father, grandmother, grandfather, parentClone = "parent_clone"
     var id: String { rawValue }
-    var title: String {
+    var title: String { title(in: .current) }
+
+    func title(in lang: AppLanguage) -> String {
         switch self {
-        case .mother: String(localized: "Anne")
-        case .father: String(localized: "Baba")
-        case .grandmother: String(localized: "Nine")
-        case .grandfather: String(localized: "Dede")
-        case .parentClone: String(localized: "Kendi sesim")
+        case .mother: String(localized: "Anne", bundle: lang.bundle)
+        case .father: String(localized: "Baba", bundle: lang.bundle)
+        case .grandmother: String(localized: "Nine", bundle: lang.bundle)
+        case .grandfather: String(localized: "Dede", bundle: lang.bundle)
+        case .parentClone: String(localized: "Kendi sesim", bundle: lang.bundle)
         }
     }
 }

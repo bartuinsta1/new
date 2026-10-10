@@ -5,7 +5,7 @@ import Foundation
 @Suite("Ağ sözleşmesi ve sahte backend")
 struct NetworkingTests {
     @Test func istekSnakeCaseKodlanir() throws {
-        let data = try APICoding.encoder.encode(MockStoryAPI.previewRequest)
+        let data = try APICoding.encoder.encode(MockStoryAPI.previewRequest(language: .tr))
         let json = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
         #expect(json["child_name"] as? String == "Ayşe")
         #expect(json["companion_character"] as? String == "findik")
@@ -13,6 +13,7 @@ struct NetworkingTests {
         #expect(json["duration_minutes"] as? Int == 5)
         let filters = try #require(json["content_filters"] as? [String: Any])
         #expect(filters["allow_loss_and_separation"] as? Bool == false)
+        #expect(json["language"] as? String == "tr")
     }
 
     @Test func akisSatirlariCozulur() throws {
@@ -32,7 +33,7 @@ struct NetworkingTests {
     @Test func sahteAkisSirasi() async throws {
         let api = MockStoryAPI(paragraphDelay: .zero)
         var events: [StoryStreamEvent] = []
-        for try await e in api.generateStory(MockStoryAPI.previewRequest) { events.append(e) }
+        for try await e in api.generateStory(MockStoryAPI.previewRequest(language: .tr)) { events.append(e) }
         guard case .started = events.first else { Issue.record("ilk olay started olmalı"); return }
         guard case .completed(let story) = events.last else { Issue.record("son olay completed olmalı"); return }
         #expect(events.count == story.paragraphs.count + 2)
@@ -45,5 +46,24 @@ struct NetworkingTests {
         #expect(last.contains("Ayşe'ye") && last.contains("Fındık'a"))
         let nameCount = story.paragraphs.map(\.text).joined(separator: " ").components(separatedBy: "Ayşe").count - 1
         #expect((3...5).contains(nameCount))   // §4.3: ad 3–5 kez geçer
+    }
+
+    @Test func ingilizceSahteMasal() async throws {
+        let story = MockStoryAPI.sampleStory(for: MockStoryAPI.previewRequest(language: .en))
+        let first = try #require(story.paragraphs.first?.text)
+        let last = try #require(story.paragraphs.last?.text)
+        #expect(story.title == "Emma and the Lost Lantern")
+        #expect(first.hasPrefix("Once upon a time, in Whisper Forest"))
+        #expect(last.hasPrefix("Three apples fell from the sky: one for Emma"))
+        // Türkçe ek kalıntısı olmamalı
+        #expect(!story.paragraphs.map(\.text).joined().contains("'ye"))
+    }
+
+    @Test func kutuphaneHerIkiDilde() {
+        let tr = MockStoryAPI.sampleLibrary(.tr), en = MockStoryAPI.sampleLibrary(.en)
+        #expect(tr.map(\.id) == en.map(\.id))
+        #expect(tr.first?.title != en.first?.title)
+        // Her bölgede en fazla 6 masal (haritada balon kart sınırı)
+        for region in Region.allCases { #expect(tr.filter { $0.region == region }.count <= 6) }
     }
 }

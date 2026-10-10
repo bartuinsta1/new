@@ -28,7 +28,7 @@ struct CloudLock: View {
             .frame(width: size * 0.56, height: size * 0.09)
             .offset(y: size * 0.13)
             // Zzz
-            Text("z").masalFont(.headline, scales: false)
+            Text(verbatim: "z").masalFont(.headline, scales: false)
                 .foregroundStyle(theme.ink.opacity(0.7))
                 .offset(x: size * 0.42, y: breathe ? -size * 0.42 : -size * 0.3)
                 .opacity(breathe ? 0.2 : 0.9)

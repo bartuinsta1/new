@@ -93,3 +93,8 @@ export class MemoryStores implements UsageStore, EntitlementStore {
 
 /** Günlük limit için gün anahtarı (Türkiye saati, UTC+3). */
 export const istanbulDay = (d: Date) => new Date(d.getTime() + 3 * 3600_000).toISOString().slice(0, 10);
+
+/** Accept-Language başlığından desteklenen dil (varsayılan Türkçe). */
+export function requestLanguage(req: Request): "tr" | "en" {
+  return (req.headers.get("accept-language") ?? "").toLowerCase().startsWith("en") ? "en" : "tr";
+}

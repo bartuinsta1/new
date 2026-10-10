@@ -5,8 +5,9 @@ import Testing
 @MainActor
 struct ParentGateTests {
     @Test func soruMetni() {
-        let c = ParentGateChallenge(answer: 63)
+        let c = ParentGateChallenge(answer: 63, language: .tr)
         #expect(c.prompt == "Altmış üç rakamla yazılırsa hangisi?")
+        #expect(ParentGateChallenge(answer: 63, language: .en).prompt == "What is sixty-three written in digits?")
         #expect(c.isCorrect("63"))
         #expect(!c.isCorrect("36"))
     }

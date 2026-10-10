@@ -12,6 +12,10 @@ declare module "node:assert/strict" {
     deepEqual(a: unknown, b: unknown, message?: string): void;
     ok(value: unknown, message?: string): asserts value;
     match(value: string, re: RegExp, message?: string): void;
+    doesNotMatch(value: string, re: RegExp, message?: string): void;
   };
   export default assert;
+}
+declare module "node:fs" {
+  export function readFileSync(path: URL | string, encoding: "utf-8"): string;
 }

@@ -4,7 +4,7 @@
 import { FREE_TIER, type StreamLine } from "../_shared/contract.ts";
 import {
   type AuthProvider, type EntitlementStore, type UsageStore,
-  errorResponse, istanbulDay, json, pathAfter, RateLimiter,
+  errorResponse, istanbulDay, json, pathAfter, RateLimiter, requestLanguage,
 } from "../_shared/http.ts";
 import { mockStory } from "../_shared/mock.ts";
 import { parseStoryRequest, ValidationError } from "../_shared/validate.ts";
@@ -36,6 +36,7 @@ export function createStoriesHandler(deps: StoriesDeps) {
         child_name: "Ayşe", child_age: 5, interests: [], companion_character: "findik", region: "whisper_forest",
         mood: "calm", duration_minutes: 5, recurring_characters: [], recent_story_titles: [], voice: "mother",
         content_filters: { allow_mild_scary: false, allow_conflict: false, allow_loss_and_separation: false },
+        language: requestLanguage(req),
       }, rest[0]);
       return json(story);
     }

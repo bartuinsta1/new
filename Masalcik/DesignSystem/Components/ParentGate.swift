@@ -4,26 +4,32 @@ import SwiftUI
 /// Okuma yazma bilen bir yetişkin kolayca çözer; okuma bilmeyen küçük çocuk çözemez.
 struct ParentGateChallenge: Equatable, Sendable {
     let answer: Int
-    var words: String { TurkishText.numberWords(answer) }
-    /// "Altmış üç rakamla yazılırsa hangisi?"
+    var language: AppLanguage = .current
+
+    var words: String { language.numberWords(answer) }
+
+    /// tr: "Altmış üç rakamla yazılırsa hangisi?" · en: "What is sixty-three written in digits?"
     var prompt: String {
-        String(localized: "\(capitalizedWords) rakamla yazılırsa hangisi?")
+        // Türkçede soru sayıyla başladığı için ilk harf büyütülür; İngilizcede sayı cümle ortasındadır.
+        let shown = language == .tr ? capitalizedTurkish(words) : words
+        return String(localized: "\(shown) rakamla yazılırsa hangisi?", bundle: language.bundle)
     }
-    private var capitalizedWords: String {
-        guard let first = words.first else { return words }
-        return TurkishText.uppercased(String(first)) + words.dropFirst()
+
+    private func capitalizedTurkish(_ s: String) -> String {
+        guard let first = s.first else { return s }
+        return TurkishText.uppercased(String(first)) + s.dropFirst()
     }
 
     /// 21…99 arası, sonu 0 olmayan iki basamaklı sayılar (tek kelimelik "elli" gibi kolay sayılardan kaçınılır).
-    static func random<G: RandomNumberGenerator>(using rng: inout G) -> ParentGateChallenge {
+    static func random<G: RandomNumberGenerator>(using rng: inout G, language: AppLanguage = .current) -> ParentGateChallenge {
         var n: Int
         repeat { n = Int.random(in: 21...99, using: &rng) } while n % 10 == 0
-        return ParentGateChallenge(answer: n)
+        return ParentGateChallenge(answer: n, language: language)
     }
 
-    static func random() -> ParentGateChallenge {
+    static func random(language: AppLanguage = .current) -> ParentGateChallenge {
         var g = SystemRandomNumberGenerator()
-        return random(using: &g)
+        return random(using: &g, language: language)
     }
 
     func isCorrect(_ input: String) -> Bool { Int(input) == answer }

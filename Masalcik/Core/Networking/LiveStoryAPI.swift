@@ -6,6 +6,7 @@ struct LiveStoryAPI: StoryAPI {
     var baseURL: URL = AppConfig.apiBaseURL
     var session: URLSession = .shared
     var accessToken: @Sendable () async -> String? = { nil }
+    var language: AppLanguage = .current
 
     func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         AsyncThrowingStream { continuation in
@@ -77,6 +78,8 @@ struct LiveStoryAPI: StoryAPI {
         var req = URLRequest(url: baseURL.appending(path: path))
         req.httpMethod = method
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Kütüphane başlıkları ve hata metinleri bu dilde döner.
+        req.setValue(language.rawValue, forHTTPHeaderField: "Accept-Language")
         if let token = await accessToken() {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }

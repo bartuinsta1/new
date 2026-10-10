@@ -1,93 +1,1670 @@
 {
   "sourceLanguage": "tr",
   "strings": {
-    "%@ Tasarım Sistemi": {},
-    "%@ rakamla yazılırsa hangisi?": {},
-    "%@, %lld dakika": {},
-    "%lld / %lld yıldız": {},
-    "%lld dk": {},
-    "Ahoy, miço! Fenerin ışığı yanıyor.": {},
-    "Anne": {},
-    "Araçlar": {},
-    "Baba": {},
-    "Başlayalım": {},
-    "Bilge Baykuş Nur": {},
-    "Bir varmış bir yokmuş": {},
-    "Bu gece hangi rüyaya uçalım?": {},
-    "BubbleButton": {},
-    "Bıyıklarım deniz kokuyor, ha ha!": {},
-    "Cesaret": {},
-    "Dede": {},
-    "Deniz": {},
-    "Deniz Feneri Koyu": {},
-    "Devam etmek için bir yetişkinin yanıtlaması gerekiyor.": {},
-    "Dinozorlar": {},
-    "Diş fırçalamak": {},
-    "Doğa": {},
-    "Duraklat": {},
-    "Duygu Bahçesi": {},
-    "Duygular — Pamuk": {},
-    "Ebeveyn Köşesi": {},
-    "Favori": {},
-    "Futbol": {},
-    "Fındık": {},
-    "Fındık buldum! Seninle paylaşayım mı?": {},
-    "Fısıltı Ormanı": {},
-    "Gece": {},
-    "Girilen: %@": {},
-    "Gözlüklerim nerede? Ha, burnumun üstündeymiş!": {},
-    "Gündüz": {},
-    "Gıdıklanıyorum! Yünlerim çok yumuşak, değil mi?": {},
-    "Hayvanlar": {},
-    "Hazine Sandığı": {},
-    "Henüz uyuyor": {},
-    "Hu hu… Gel bakalım küçük dostum, sana bir masal anlatayım.": {},
-    "Hıh… ah, merhaba! Biraz uykum var da…": {},
-    "IslandRegionView + CloudLock": {},
-    "Kapat": {},
-    "Kaptan Midye": {},
-    "Karakterler": {},
-    "Karanlıktan korkmak": {},
-    "Kendi sesim": {},
-    "Komik": {},
-    "Kreşe / okula başlamak": {},
-    "Lodos": {},
-    "Macera": {},
-    "Masal Adası'na hoş geldin!": {},
-    "Masalcı Çınarı": {},
-    "Masalı Başlat": {},
-    "Merhaba! Ben Pamuk. Her gece sana özel bir masal anlatacağım.": {},
-    "Mod": {},
-    "Müzik": {},
-    "Nine": {},
-    "Ooo, bu ne? Hadi gidip bakalım!": {},
-    "Orman": {},
-    "Pamuk": {},
-    "Pamuk uzun uzun esnemiş ve gözlerini yavaşça kapamış.": {},
-    "Paylaşmak": {},
-    "Prensesler": {},
-    "ProgressStars + StickerView": {},
-    "Pırıl pırıl! Gökyüzünden sana el sallıyorum.": {},
-    "Renkler": {},
-    "Sakin": {},
-    "Sil": {},
-    "StoryCard": {},
-    "Süper kahramanlar": {},
-    "Tekrar dinlemek için dokun": {},
-    "Tipografi": {},
-    "Tut beni, yoksa bulutlara uçacağım!": {},
-    "Türkçe karakterler": {},
-    "Uyku Evi": {},
-    "Uyku Zamanı": {},
-    "Uyuyan bulut. Bu bölge henüz uyuyor.": {},
-    "Uzay": {},
-    "VoicePromptPlayer": {},
-    "Vuuuu! Rüzgâr beni gıdıklıyor!": {},
-    "Yeni kardeş": {},
-    "Yıldız": {},
-    "Yıldız Tepesi": {},
-    "z": {},
-    "…": {}
+    "%@ Tasarım Sistemi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ Tasarım Sistemi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ Design System"
+          }
+        }
+      }
+    },
+    "%@ rakamla yazılırsa hangisi?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ rakamla yazılırsa hangisi?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What is %@ written in digits?"
+          }
+        }
+      }
+    },
+    "%@, %lld dakika": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %lld dakika"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, %2$lld minutes"
+          }
+        }
+      }
+    },
+    "%lld / %lld yıldız": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld / %lld yıldız"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld stars"
+          }
+        }
+      }
+    },
+    "%lld dk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld dk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
+    "Ahoy! Deniz Feneri Koyu'nda masallar dalgalarla gelir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahoy! Deniz Feneri Koyu'nda masallar dalgalarla gelir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahoy! In Lighthouse Cove, stories roll in with the waves."
+          }
+        }
+      }
+    },
+    "Ahoy, miço! Fenerin ışığı yanıyor.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahoy, miço! Fenerin ışığı yanıyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahoy, little sailor! The lighthouse is shining."
+          }
+        }
+      }
+    },
+    "Anne": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anne"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mum"
+          }
+        }
+      }
+    },
+    "Araçlar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Araçlar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehicles"
+          }
+        }
+      }
+    },
+    "Baba": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baba"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dad"
+          }
+        }
+      }
+    },
+    "Başlayalım": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlayalım"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's begin"
+          }
+        }
+      }
+    },
+    "Bilge Baykuş Nur": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilge Baykuş Nur"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wise Owl Nur"
+          }
+        }
+      }
+    },
+    "Bir varmış bir yokmuş": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir varmış bir yokmuş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Once upon a time"
+          }
+        }
+      }
+    },
+    "Bu bölge henüz uyuyor. Masal dinledikçe uyanacak!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bölge henüz uyuyor. Masal dinledikçe uyanacak!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This place is still asleep. It will wake up as you listen to more stories!"
+          }
+        }
+      }
+    },
+    "Bu gece hangi rüyaya uçalım?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gece hangi rüyaya uçalım?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which dream shall we fly to tonight?"
+          }
+        }
+      }
+    },
+    "Bu gecenin masalını başlatır": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gecenin masalını başlatır"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starts tonight's story"
+          }
+        }
+      }
+    },
+    "Bu masal şimdilik uyuyor": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu masal şimdilik uyuyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This story is sleeping for now"
+          }
+        }
+      }
+    },
+    "Bu masal şimdilik uyuyor. Başka bir masal seçelim mi?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu masal şimdilik uyuyor. Başka bir masal seçelim mi?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This story is sleeping for now. Shall we pick another one?"
+          }
+        }
+      }
+    },
+    "BubbleButton": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BubbleButton"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BubbleButton"
+          }
+        }
+      }
+    },
+    "Bıyıklarım deniz kokuyor, ha ha!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bıyıklarım deniz kokuyor, ha ha!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My moustache smells like the sea, ha ha!"
+          }
+        }
+      }
+    },
+    "Cesaret": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cesaret"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Courage"
+          }
+        }
+      }
+    },
+    "Dede": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dede"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grandpa"
+          }
+        }
+      }
+    },
+    "Deniz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deniz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The sea"
+          }
+        }
+      }
+    },
+    "Deniz Feneri Koyu": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deniz Feneri Koyu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lighthouse Cove"
+          }
+        }
+      }
+    },
+    "Devam etmek için bir yetişkinin yanıtlaması gerekiyor.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam etmek için bir yetişkinin yanıtlaması gerekiyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A grown-up needs to answer to continue."
+          }
+        }
+      }
+    },
+    "Dinozorlar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinozorlar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinosaurs"
+          }
+        }
+      }
+    },
+    "Diş fırçalamak": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diş fırçalamak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brushing teeth"
+          }
+        }
+      }
+    },
+    "Doğa": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğa"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nature"
+          }
+        }
+      }
+    },
+    "Duraklat": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duraklat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "Duygu Bahçesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duygu Bahçesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feelings Garden"
+          }
+        }
+      }
+    },
+    "Duygu Bahçesi'nde her çiçek bir duygu! Hangisini dinleyelim?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duygu Bahçesi'nde her çiçek bir duygu! Hangisini dinleyelim?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the Feelings Garden, every flower is a feeling! Which one shall we listen to?"
+          }
+        }
+      }
+    },
+    "Duygular — Pamuk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duygular — Pamuk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moods — Pamuk"
+          }
+        }
+      }
+    },
+    "Ebeveyn Köşesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ebeveyn Köşesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parent Corner"
+          }
+        }
+      }
+    },
+    "Favori": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favori"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favourite"
+          }
+        }
+      }
+    },
+    "Futbol": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Futbol"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Football"
+          }
+        }
+      }
+    },
+    "Fındık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık"
+          }
+        }
+      }
+    },
+    "Fındık buldum! Seninle paylaşayım mı?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık buldum! Seninle paylaşayım mı?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I found a hazelnut! Shall I share it with you?"
+          }
+        }
+      }
+    },
+    "Fısıltı Ormanı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fısıltı Ormanı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Whisper Forest"
+          }
+        }
+      }
+    },
+    "Fısıltı Ormanı'nda hayvan dostlarımız seni bekliyor! Bir masal seç.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fısıltı Ormanı'nda hayvan dostlarımız seni bekliyor! Bir masal seç."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Our animal friends are waiting for you in Whisper Forest! Pick a story."
+          }
+        }
+      }
+    },
+    "Gece": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gece"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Night"
+          }
+        }
+      }
+    },
+    "Girilen: %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Girilen: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entered: %@"
+          }
+        }
+      }
+    },
+    "Gözlüklerim nerede? Ha, burnumun üstündeymiş!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gözlüklerim nerede? Ha, burnumun üstündeymiş!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where are my glasses? Oh, they're on my beak!"
+          }
+        }
+      }
+    },
+    "Gündüz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gündüz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day"
+          }
+        }
+      }
+    },
+    "Gıdıklanıyorum! Yünlerim çok yumuşak, değil mi?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gıdıklanıyorum! Yünlerim çok yumuşak, değil mi?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That tickles! My wool is so soft, isn't it?"
+          }
+        }
+      }
+    },
+    "Hayvanlar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hayvanlar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Animals"
+          }
+        }
+      }
+    },
+    "Hazine Sandığı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazine Sandığı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Treasure Chest"
+          }
+        }
+      }
+    },
+    "Hazine Sandığı'nda kazandığın çıkartmalar duruyor!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazine Sandığı'nda kazandığın çıkartmalar duruyor!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The stickers you've earned are waiting in the Treasure Chest!"
+          }
+        }
+      }
+    },
+    "Henüz kazanılmadı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz kazanılmadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not earned yet"
+          }
+        }
+      }
+    },
+    "Henüz uyuyor": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz uyuyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still asleep"
+          }
+        }
+      }
+    },
+    "Hu hu… Gel bakalım küçük dostum, sana bir masal anlatayım.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hu hu… Gel bakalım küçük dostum, sana bir masal anlatayım."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoo hoo… Come here, little friend, let me tell you a story."
+          }
+        }
+      }
+    },
+    "Hu hu… Masalcı Çınarı'nın gölgesine otur, sana eski bir masal anlatayım.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hu hu… Masalcı Çınarı'nın gölgesine otur, sana eski bir masal anlatayım."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoo hoo… Sit in the shade of the Storyteller Tree and I'll tell you an old, old tale."
+          }
+        }
+      }
+    },
+    "Hıh… ah, merhaba! Biraz uykum var da…": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hıh… ah, merhaba! Biraz uykum var da…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm… oh, hello! I'm a little bit sleepy…"
+          }
+        }
+      }
+    },
+    "IslandRegionView + CloudLock": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IslandRegionView + CloudLock"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IslandRegionView + CloudLock"
+          }
+        }
+      }
+    },
+    "Kapat": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Kaptan Midye": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptan Midye"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captain Mussel"
+          }
+        }
+      }
+    },
+    "Karakterler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Karakterler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Characters"
+          }
+        }
+      }
+    },
+    "Karanlıktan korkmak": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Karanlıktan korkmak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Being afraid of the dark"
+          }
+        }
+      }
+    },
+    "Kendi sesim": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendi sesim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My own voice"
+          }
+        }
+      }
+    },
+    "Komik": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Komik"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Funny"
+          }
+        }
+      }
+    },
+    "Kreşe / okula başlamak": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kreşe / okula başlamak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting nursery / school"
+          }
+        }
+      }
+    },
+    "Lodos": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos"
+          }
+        }
+      }
+    },
+    "Macera": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macera"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adventure"
+          }
+        }
+      }
+    },
+    "Masal Adası": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal Adası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story Island"
+          }
+        }
+      }
+    },
+    "Masal Adası'na hoş geldin!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal Adası'na hoş geldin!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Story Island!"
+          }
+        }
+      }
+    },
+    "Masal seçmek için adada bir yere dokun!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal seçmek için adada bir yere dokun!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a place on the island to pick a story!"
+          }
+        }
+      }
+    },
+    "Masal seçmek için yıldıza dokun!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal seçmek için yıldıza dokun!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap the star to pick a story!"
+          }
+        }
+      }
+    },
+    "Masalcı Çınarı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalcı Çınarı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storyteller Tree"
+          }
+        }
+      }
+    },
+    "Masalı Başlat": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalı Başlat"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the Story"
+          }
+        }
+      }
+    },
+    "Masalı dinlemek için dokun": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalı dinlemek için dokun"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to listen to the story"
+          }
+        }
+      }
+    },
+    "Merhaba! Ben Pamuk. Her gece sana özel bir masal anlatacağım.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merhaba! Ben Pamuk. Her gece sana özel bir masal anlatacağım."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hello! I'm Pamuk. Every night I'll tell you a story made just for you."
+          }
+        }
+      }
+    },
+    "Mod": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mod"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        }
+      }
+    },
+    "Müzik": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Müzik"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music"
+          }
+        }
+      }
+    },
+    "Nine": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nine"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grandma"
+          }
+        }
+      }
+    },
+    "Ooo, bu ne? Hadi gidip bakalım!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ooo, bu ne? Hadi gidip bakalım!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ooh, what's that? Let's go and see!"
+          }
+        }
+      }
+    },
+    "Orman": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orman"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forest"
+          }
+        }
+      }
+    },
+    "Pamuk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk"
+          }
+        }
+      }
+    },
+    "Pamuk uzun uzun esnemiş ve gözlerini yavaşça kapamış.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk uzun uzun esnemiş ve gözlerini yavaşça kapamış."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk gave a long, slow yawn and gently closed both eyes."
+          }
+        }
+      }
+    },
+    "Paylaşmak": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paylaşmak"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sharing"
+          }
+        }
+      }
+    },
+    "Prensesler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prensesler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Princesses"
+          }
+        }
+      }
+    },
+    "ProgressStars + StickerView": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ProgressStars + StickerView"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ProgressStars + StickerView"
+          }
+        }
+      }
+    },
+    "Pırıl pırıl! Gökyüzünden sana el sallıyorum.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pırıl pırıl! Gökyüzünden sana el sallıyorum."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Twinkle twinkle! I'm waving at you from the sky."
+          }
+        }
+      }
+    },
+    "Renkler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renkler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colours"
+          }
+        }
+      }
+    },
+    "Sakin": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sakin"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calm"
+          }
+        }
+      }
+    },
+    "Senin avatarın": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senin avatarın"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your avatar"
+          }
+        }
+      }
+    },
+    "Sil": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sil"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "StoryCard": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "StoryCard"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "StoryCard"
+          }
+        }
+      }
+    },
+    "Süper kahramanlar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süper kahramanlar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Superheroes"
+          }
+        }
+      }
+    },
+    "Tekrar dinlemek için dokun": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tekrar dinlemek için dokun"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to hear it again"
+          }
+        }
+      }
+    },
+    "Tipografi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipografi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Typography"
+          }
+        }
+      }
+    },
+    "Tut beni, yoksa bulutlara uçacağım!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tut beni, yoksa bulutlara uçacağım!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold on to me, or I'll fly up to the clouds!"
+          }
+        }
+      }
+    },
+    "Türkçe karakterler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Türkçe karakterler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turkish characters"
+          }
+        }
+      }
+    },
+    "Uyku Evi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku Evi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep House"
+          }
+        }
+      }
+    },
+    "Uyku Evi'ne hoş geldin! Bu gecenin masalı için kapıya dokun.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku Evi'ne hoş geldin! Bu gecenin masalı için kapıya dokun."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to the Sleep House! Tap the door for tonight's story."
+          }
+        }
+      }
+    },
+    "Uyku Zamanı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku Zamanı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedtime"
+          }
+        }
+      }
+    },
+    "Uyku zamanı geldi! Uyku Evi'ne gidelim mi?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku zamanı geldi! Uyku Evi'ne gidelim mi?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's bedtime! Shall we go to the Sleep House?"
+          }
+        }
+      }
+    },
+    "Uyuyan bulut. Bu bölge henüz uyuyor.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyuyan bulut. Bu bölge henüz uyuyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeping cloud. This place is still asleep."
+          }
+        }
+      }
+    },
+    "Uzay": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uzay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Space"
+          }
+        }
+      }
+    },
+    "VoicePromptPlayer": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VoicePromptPlayer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VoicePromptPlayer"
+          }
+        }
+      }
+    },
+    "Vuuuu! Rüzgâr beni gıdıklıyor!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuuuu! Rüzgâr beni gıdıklıyor!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Whoooosh! The wind is tickling me!"
+          }
+        }
+      }
+    },
+    "Yeni kardeş": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni kardeş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new baby sibling"
+          }
+        }
+      }
+    },
+    "Yıldız": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız"
+          }
+        }
+      }
+    },
+    "Yıldız Tepesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız Tepesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Star Hill"
+          }
+        }
+      }
+    },
+    "Yıldız Tepesi'ne hoş geldin! Hangi yıldıza uçalım?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız Tepesi'ne hoş geldin! Hangi yıldıza uçalım?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Star Hill! Which star shall we fly to?"
+          }
+        }
+      }
+    },
+    "Çıkartma": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çıkartma"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sticker"
+          }
+        }
+      }
+    }
   },
   "version": "1.0"
 }

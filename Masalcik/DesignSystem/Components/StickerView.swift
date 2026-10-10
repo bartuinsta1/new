@@ -38,7 +38,7 @@ struct StickerView: View {
         .rotationEffect(.degrees(Double((key.unicodeScalars.first?.value ?? 0) % 13) - 6))
         .opacity(isEarned ? 1 : 0.55)
         .shadow(color: .black.opacity(0.12), radius: 0, x: 0, y: 4)
-        .accessibilityLabel(Text(isEarned ? "Çıkartma" : "Henüz kazanılmadı"))
+        .accessibilityLabel(isEarned ? Text("Çıkartma") : Text("Henüz kazanılmadı"))
     }
 }
 

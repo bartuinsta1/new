@@ -19,6 +19,20 @@ supabase functions serve      # Deno ile yerel çalıştırma
 
 Tasarım önizlemesi (Xcode olmadan ekran görüntüsü): `node docs/design-preview/screenshot.mjs`
 
+## Diller (Türkçe + İngilizce)
+
+Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve masal içeriği.
+
+- Kaynak dil Türkçe. Tüm arayüz metinleri `Masalcik/Resources/Localizable.xcstrings` içinde, İngilizce çeviriler
+  `scripts/translations/en.json` dosyasında.
+- Yeni metin ekledikten sonra: `python3 scripts/extract_strings.py --check` (eksik çeviri varsa hata verir;
+  aynı kontrol `backend` testlerinde de çalışır).
+- Dil, iOS'un uygulama başına dil ayarından gelir (Ayarlar › Masalcık › Dil). Xcode'da **Masalcik (English)**
+  şeması uygulamayı ve testleri İngilizce çalıştırır.
+- Masal dili `StoryRequest.language` ile backend'e gider; kütüphane başlıkları `Accept-Language` ile gelir.
+- Türkçe çekim ekleri (`Ayşe'ye`, `Fısıltı Ormanı'nda`) `TurkishText`, İngilizce karşılıkları `Region.locativeTitle(in:)`
+  ve `EnglishText` ile üretilir.
+
 ## Yapı
 
 | Klasör | İçerik |
@@ -35,4 +49,6 @@ Tasarım önizlemesi (Xcode olmadan ekran görüntüsü): `node docs/design-prev
 
 - [x] Adım 1 — İskelet, modüller, SwiftData modelleri, backend uç noktaları (sahte)
 - [x] Adım 2 — DesignSystem: tokenlar, gündüz/gece teması, 10 bileşen + Preview'lar
-- [ ] Adım 3 — Masal Adası haritası
+- [x] Adım 3 — Masal Adası haritası: kaydırma/yakınlaştırma, kamera uçuşu, bölgeler, uyuyan bulutlar,
+      balon masal kartları, Uyku Evi + avatar, uyku saati parıltısı (+ uygulama genelinde TR/EN)
+- [ ] Adım 4 — Onboarding + avatar oluşturma + ebeveyn kapısı akışı

@@ -55,7 +55,7 @@ struct ComponentGalleryView: View {
                         }
                     }
                     section("VoicePromptPlayer") {
-                        VoicePromptPlayer(text: "Masal seçmek için yıldıza dokun!", autoplay: false, showsText: true)
+                        VoicePromptPlayer(text: String(localized: "Masal seçmek için yıldıza dokun!"), autoplay: false, showsText: true)
                     }
                     section("Türkçe karakterler") {
                         Text(verbatim: "Çiğdem, Işıl, İpek, Ömür, Şule, Ülkü — ç ğ ı İ ö ş ü").masalFont(.headline)

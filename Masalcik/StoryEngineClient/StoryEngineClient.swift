@@ -8,7 +8,8 @@ struct StoryEngineClient {
 
     /// Profil + seçimlerden istek oluşturur. Son 5 masal başlığı tekrarı önlemek için gönderilir.
     static func makeRequest(child: ChildProfile, settings: AppSettings, region: Region, mood: StoryMood,
-                            companion: CharacterID? = nil, value: ValueTopic? = nil) -> StoryRequest {
+                            companion: CharacterID? = nil, value: ValueTopic? = nil,
+                            language: AppLanguage = .current) -> StoryRequest {
         let recent = child.stories
             .sorted { $0.createdAt > $1.createdAt }
             .prefix(5)
@@ -29,7 +30,8 @@ struct StoryEngineClient {
                 .map { RecurringCharacterDTO(name: $0.name, card: $0.card) },
             recentStoryTitles: Array(recent),
             contentFilters: settings.contentFilters,
-            voice: settings.voice)
+            voice: settings.voice,
+            language: language)
     }
 
     /// DTO'yu kalıcı modele çevirir.

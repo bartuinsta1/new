@@ -16,6 +16,8 @@ export const REGIONS: Region[] = [
 export const CHARACTERS: CharacterID[] = ["pamuk", "findik", "lodos", "nur", "yildiz", "kaptan_midye"];
 export const MOODS: StoryMood[] = ["adventure", "funny", "calm"];
 export const VOICES: VoiceTone[] = ["mother", "father", "grandmother", "grandfather", "parent_clone"];
+export type Language = "tr" | "en";
+export const LANGUAGES: Language[] = ["tr", "en"];
 
 export interface ContentFilters {
   allow_mild_scary: boolean;
@@ -39,6 +41,8 @@ export interface StoryRequest {
   recent_story_titles: string[];
   content_filters: ContentFilters;
   voice: VoiceTone;
+  /** Masal + seslendirme dili. Eski istemciler göndermezse "tr". */
+  language: Language;
 }
 
 export interface Paragraph {

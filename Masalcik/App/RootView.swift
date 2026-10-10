@@ -15,6 +15,9 @@ struct RootView: View {
                 OnboardingFlowView()
             }
         }
+        .task(id: families.first?.bedtime) {
+            appState.bedtime = families.first?.bedtime ?? .default
+        }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
             appState.refreshDisplayMode()
         }

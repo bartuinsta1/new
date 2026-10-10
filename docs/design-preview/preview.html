@@ -162,19 +162,19 @@ function backdrop(region,mode){const base=accent(REGION[region],mode);
   const orb=mode==='night'?`<div style="position:absolute;width:22px;height:22px;border-radius:50%;background:${P.moon};left:calc(50% + 39px);top:calc(50% - 51px)"></div>`
     :`<div style="position:absolute;width:28px;height:28px;border-radius:50%;background:${P.sun};left:calc(50% - 69px);top:calc(50% - 54px)"></div>`;
   return `<div style="position:absolute;inset:0;background:${bg}"></div><div style="position:absolute;width:320px;height:140px;border-radius:50%;background:${darkened(base,.15)};left:calc(50% - 160px);top:calc(50% + 0px)"></div>${orb}`;}
-function storyCard(title,region,mins,char,mode,{fav=false,sleeping=false}={}){
+function storyCard(title,region,mins,char,mode,{fav=false,sleeping=false,lang='tr'}={}){
   const surface=mode==='day'?'#fff':P.dusk,ink=mode==='day'?P.ink:P.nightInk;
   return `<div class="card" style="box-shadow:0 6px 0 ${darkened(accent(REGION[region],mode),.2)}"><div class="cover">${backdrop(region,mode)}
    <div style="position:absolute;left:30px;top:22px">${charSVG(char,mode==='night'?'sleepy':'happy',90,mode)}</div>
    ${sleeping?`<div style="position:absolute;inset:0;backdrop-filter:blur(8px);background:rgba(255,255,255,.25)"></div><div style="position:absolute;left:28px;top:30px">${cloud(93,mode)}</div>`:''}
-   <span class="badge" style="background:${mode==='day'?P.sun:P.moon}">☾ ${mins} dk</span>${fav?'<span class="heart">♥</span>':''}</div>
+   <span class="badge" style="background:${mode==='day'?P.sun:P.moon}">☾ ${mins} ${lang==='en'?'min':'dk'}</span>${fav?'<span class="heart">♥</span>':''}</div>
    <div class="t" style="background:${surface};color:${ink}">${title}</div></div>`;}
 function island(region,mode,{locked=false,size=130,guide}={}){
   const base=accent(REGION[region],mode),O=outline(mode),icons={lighthouse_cove:'⛯',star_hill:'☾',whisper_forest:'♣',storyteller_plane:'📖'};
   return `<div style="position:relative;width:${size*1.1}px;height:${size*.95}px">
     <div style="position:absolute;width:${size}px;height:${size*.62}px;border-radius:50%;background:${darkened(base,.25)};left:${size*.05}px;top:${size*.165+size*.1}px"></div>
     <div style="position:absolute;width:${size}px;height:${size*.62}px;border-radius:50%;background:${base};border:3px solid ${O};left:${size*.05}px;top:${size*.165}px"></div>
-    <div style="position:absolute;width:${size*.36}px;height:${size*.36}px;border-radius:50%;background:${mode==='day'?'#fff':P.moon};border:3px solid ${O};left:${size*.37}px;top:${size*.075}px;display:flex;align-items:center;justify-content:center;font-size:${size*.2}px;color:${P.ink}">${icons[region]}</div>
+    <div style="position:absolute;width:${size*.36}px;height:${size*.36}px;border-radius:50%;background:${mode==='day'?'#fff':P.moon};border:3px solid ${O};left:${size*.37}px;top:${size*.075}px;display:flex;align-items:center;justify-content:center;font-size:${size*.2}px;color:${P.ink}">${icons[region]||ICON[region]}</div>
     ${locked?`<div style="position:absolute;left:${size*.075}px;top:${size*.1}px">${cloud(size*.95,mode)}</div>`
       :`<div style="position:absolute;left:${size*.68}px;top:${size*.265}px">${charSVG(guide,mode==='night'?'sleepy':'happy',size*.42,mode)}</div>`}</div>`;}
 function star(on,mode){const O=outline(mode),f=on?(mode==='day'?P.sun:P.firefly):(mode==='day'?'#ffffff99':P.dusk+'99');
@@ -240,15 +240,114 @@ function player(dim){
      ${bubble('','⏾','grape','night',{circle:true})}${bubble('','❚❚','sky','night',{circle:true}).replace('width:64px;height:64px','')}${bubble('','♫','grape','night',{circle:true})}</div>
   </div>`;}
 
+
+// ---------- Masal Adası haritası (World/*.swift ile aynı geometri) ----------
+const L={
+  tr:{titles:{sleep_house:'Uyku Evi',whisper_forest:'Fısıltı Ormanı',star_hill:'Yıldız Tepesi',lighthouse_cove:'Deniz Feneri Koyu',storyteller_plane:'Masalcı Çınarı',feelings_garden:'Duygu Bahçesi',treasure_chest:'Hazine Sandığı'},
+      intro:{storyteller_plane:"Hu hu… Masalcı Çınarı'nın gölgesine otur, sana eski bir masal anlatayım.",whisper_forest:"Fısıltı Ormanı'nda hayvan dostlarımız seni bekliyor! Bir masal seç."},
+      lib:{storyteller_plane:[['Keloğlan ile Sihirli Kaşık',10,true],['Nasreddin Hoca ve Göldeki Ay',5,true],["Dede Korkut'un Kopuzu",15,false]],
+           whisper_forest:[["Fındık'ın Kış Hazırlığı",10,true],['Fısıldayan Yapraklar',5,false]]}},
+  en:{titles:{sleep_house:'Sleep House',whisper_forest:'Whisper Forest',star_hill:'Star Hill',lighthouse_cove:'Lighthouse Cove',storyteller_plane:'Storyteller Tree',feelings_garden:'Feelings Garden',treasure_chest:'Treasure Chest'},
+      intro:{storyteller_plane:"Hoo hoo… Sit in the shade of the Storyteller Tree and I'll tell you an old, old tale.",whisper_forest:"Our animal friends are waiting for you in Whisper Forest! Pick a story."},
+      lib:{storyteller_plane:[['Keloğlan and the Magic Spoon',10,true],['Nasreddin Hodja and the Moon in the Lake',5,true],["Dede Korkut's Lute",15,false]],
+           whisper_forest:[['Fındık Gets Ready for Winter',10,true],['The Whispering Leaves',5,false]]}},
+};
+Object.assign(REGION,{sleep_house:'sun',feelings_garden:'berry',treasure_chest:'sun'});
+const GUIDE={whisper_forest:'findik',star_hill:'yildiz',lighthouse_cove:'kaptan_midye',storyteller_plane:'nur',feelings_garden:'lodos',treasure_chest:'pamuk'};
+const ICON={whisper_forest:'♣',star_hill:'☾',lighthouse_cove:'⛯',storyteller_plane:'📖',feelings_garden:'♥',treasure_chest:'✦'};
+const IC=[600,760],IR=470,WORLD=1200,WORLD_H=1500;
+const POS={sleep_house:[600,760],whisper_forest:[345,600],star_hill:[860,565],lighthouse_cove:[895,910],storyteller_plane:[320,930],feelings_garden:[605,1075],treasure_chest:[605,470]};
+function islandPts(){const r=splitmix(11);return Array.from({length:18},(_,i)=>{const a=i/18*2*Math.PI,w=.96+r()*.1;return [IC[0]+Math.cos(a)*IR*w,IC[1]+Math.sin(a)*IR*w];});}
+function decoPts(){const r=splitmix(23);return Array.from({length:26},()=>{const a=r()*2*Math.PI,d=(.35+r()*.5)*IR;return [IC[0]+Math.cos(a)*d,IC[1]+Math.sin(a)*d];});}
+function smooth(pts,inset=0,dy=0){pts=pts.map(([x,y])=>{const dx=x-IC[0],dyy=y-IC[1],d=Math.max(Math.hypot(dx,dyy),1),k=(d-inset)/d;return [IC[0]+dx*k,IC[1]+dyy*k+dy];});
+  const n=pts.length;let d=`M${pts[0]}`;for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+  d+=` C${p1[0]+(p2[0]-p0[0])/6},${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6},${p2[1]-(p3[1]-p1[1])/6} ${p2}`;}return d+'Z';}
+function terrain(mode){const c=h=>mode==='day'?h:desat(h,.4),O=outline(mode);let s='';
+  s+=`<rect width="${WORLD}" height="${WORLD_H}" fill="${mode==='day'?'#8EDCF9':'#211D55'}"/>`;
+  for(const w of genStars(46,5)){const x=w.x*WORLD,y=w.y*WORLD_H;if(Math.hypot(x-IC[0],y-IC[1])<=IR+40)continue;
+    s+=`<path d="M${x-14} ${y} Q${x} ${y-9} ${x+14} ${y}" fill="none" stroke="${mode==='day'?'rgba(255,255,255,.7)':`rgba(255,232,163,${.25+.3*w.rad/2.6})`}" stroke-width="4" stroke-linecap="round"/>`;}
+  const pts=islandPts();
+  s+=`<path d="${smooth(pts,0,34)}" fill="${c('#C98F4E')}" stroke="${O}" stroke-width="3"/>`;
+  s+=`<path d="${smooth(pts)}" fill="${c('#FFE2A6')}" stroke="${O}" stroke-width="3"/>`;
+  s+=`<path d="${smooth(pts,30)}" fill="${c('#8FE065')}"/>`;
+  const deco=decoPts();
+  for(const [x,y] of deco.slice(0,12)) s+=`<path d="M${x-6} ${y+40} Q${x} ${y+30} ${x+6} ${y+40}" fill="none" stroke="${c('#6CC448')}" stroke-width="3" stroke-linecap="round"/>`;
+  const home=POS.sleep_house;
+  for(const r of Object.keys(POS)){if(r==='sleep_house')continue;const to=POS[r];
+    const cx=(home[0]+to[0])/2+(to[1]-home[1])*.15,cy=(home[1]+to[1])/2-(to[0]-home[0])*.15,d=`M${home} Q${cx},${cy} ${to}`;
+    s+=`<path d="${d}" fill="none" stroke="${c('#F6D58E')}" stroke-width="22" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c('#FFF1C9')}" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 18"/>`;}
+  for(const [x,y] of deco){if(!Object.values(POS).every(p=>Math.hypot(x-p[0],y-p[1])>120))continue;
+    s+=`<ellipse cx="${x}" cy="${y+15}" rx="4" ry="11" fill="${c('#8C6A52')}"/><circle cx="${x}" cy="${y-8}" r="22" fill="${c('#4FB35A')}" stroke="${O}" stroke-width="3"/><ellipse cx="${x-6}" cy="${y-17}" rx="6" ry="5" fill="rgba(255,255,255,.25)"/>`;}
+  return `<svg width="${WORLD}" height="${WORLD_H}" style="position:absolute;left:0;top:0">${s}</svg>`;}
+function hairCap(x,y,w,h){const X=x-w/2,Y=y-h/2,mx=X+w,my=Y+h;
+  return `M${X} ${my} C${X-.02*w} ${Y-.35*h} ${mx+.02*w} ${Y-.35*h} ${mx} ${my} Q${mx-.15*w} ${my-.45*h} ${X+w/2+.12*w} ${my-.18*h} Q${X+.2*w} ${my-.6*h} ${X} ${my}Z`;}
+function avatarSVG(size,mode,mood='happy'){const c=h=>mode==='day'?h:desat(h,.4),O=outline(mode),st=`stroke="${O}" stroke-width="3" stroke-linejoin="round"`;
+  const skin=c('#E0A77F'),hair=c('#6B4226'),paj=accent('sky',mode);
+  let s=`<rect x="42" y="130" width="116" height="76" rx="38" fill="${paj}" ${st}/><circle cx="100" cy="150" r="4" fill="rgba(255,255,255,.85)"/><circle cx="100" cy="170" r="4" fill="rgba(255,255,255,.85)"/>`;
+  s+=`<rect x="70" y="124" width="60" height="16" rx="8" fill="${darkened(paj,.12)}" ${st}/>`;
+  s+=`<circle cx="48" cy="92" r="12" fill="${skin}" ${st}/><circle cx="152" cy="92" r="12" fill="${skin}" ${st}/><circle cx="100" cy="88" r="54" fill="${skin}" ${st}/>`;
+  s+=`<path d="${hairCap(100,56,114,54)}" fill="${hair}" ${st}/>`;
+  for(const side of [-1,1]){const x=100+side*22;
+    if(mood==='sleepy') s+=`<path d="M${x-9} 89 Q${x} 98.6 ${x+9} 89" fill="none" stroke="${P.ink}" stroke-width="4" stroke-linecap="round"/>`;
+    else s+=`<circle cx="${x}" cy="92" r="7.5" fill="${P.ink}"/><circle cx="${x+2.4}" cy="89.6" r="2.7" fill="#fff"/>`;
+    s+=`<ellipse cx="${100+side*34}" cy="108" rx="8" ry="5" fill="${P.berry}" fill-opacity=".4"/>`;}
+  s+=mood==='sleepy'?`<ellipse cx="100" cy="114" rx="5" ry="3.5" fill="#C2344F"/>`:`<path d="M91 107 Q100 116.6 109 107" fill="none" stroke="${P.ink}" stroke-width="3.5" stroke-linecap="round"/>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" overflow="visible">${s}</svg>`;}
+function sleepHouse(mode,{bedtime=false}={}){const size=230,O=outline(mode),st=`stroke="${O}" stroke-width="3" stroke-linejoin="round"`,c=h=>mode==='day'?h:desat(h,.4);
+  const wall=c('#FFF1DA'),roof=accent('berry',mode),lit=bedtime||mode==='night',glow=mode==='day'?P.sun:P.firefly;
+  const roofPath=roundedPoly([[100,30],[184,102],[16,102]],0.12);
+  let h='';
+  if(lit) h+=`<defs><radialGradient id="g${mode}"><stop offset="0" stop-color="${glow}" stop-opacity=".75"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></radialGradient></defs><circle cx="128" cy="112" r="75" fill="url(#g${mode})"/>`;
+  h+=`<rect x="135" y="30" width="22" height="40" rx="6" fill="#C7745A" ${st}/>`;
+  h+=`<rect x="34" y="84" width="132" height="96" rx="22" fill="${darkened(wall,.18)}" ${st}/><rect x="34" y="76" width="132" height="96" rx="22" fill="${wall}" ${st}/>`;
+  h+=`<path d="${roofPath}" fill="${roof}" ${st}/>`;
+  h+=`<path d="M60 172 L60 142 Q60 120 78 120 Q96 120 96 142 L96 172Z" fill="#8C6A52" ${st}/><circle cx="88" cy="148" r="3" fill="${P.sun}"/>`;
+  h+=`<rect x="109" y="95" width="38" height="34" rx="10" fill="${lit?glow:'#BFE8FA'}" ${st}/><path d="M128 96 L128 128 M110 112 L146 112" stroke="${O}" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>`;
+  return `<div style="position:absolute;left:${POS.sleep_house[0]-size/2}px;top:${POS.sleep_house[1]-size*0.65}px;width:${size}px;height:${size*1.3}px">
+    <svg width="${size}" height="${size}" viewBox="0 0 200 200" style="position:absolute;left:0;top:${size*.15}px" overflow="visible">${h}</svg>
+    <div style="position:absolute;left:${size*.08}px;top:${size*.72}px;display:flex;align-items:flex-end">${avatarSVG(size*.42,mode,mode==='night'?'sleepy':'happy')}<div style="margin-left:${-size*.06}px">${charSVG('findik',mode==='night'?'sleepy':'happy',size*.36,mode)}</div></div></div>`;}
+function regionMarker(r,mode,lang,{locked=false,highlight=false}={}){const size=170,[x,y]=POS[r];
+  let isl=island(r,mode,{locked,size,guide:GUIDE[r]});
+  if(highlight) isl=`<div style="position:absolute;left:-10px;top:10px;width:${size*1.2}px;height:${size*.8}px;border-radius:50%;background:${mode==='day'?P.sun:P.firefly};opacity:.4;filter:blur(14px)"></div>`+isl;
+  return `<div style="position:absolute;left:${x-size*.55}px;top:${y-size*.6}px;text-align:center;width:${size*1.1}px">${isl}
+    <span class="label" style="background:${mode==='day'?'#fff':P.moon}">${L[lang].titles[r]}</span></div>`;}
+function iconBtn(svg,color,mode){const f=accent(color,mode);return `<span class="btn circle" style="background:${f};box-shadow:0 6px 0 ${darkened(f)},0 6px 0 3px ${outline(mode)}">${svg}</span>`;}
+const chestIcon=`<svg width="28" height="26" viewBox="0 0 28 26"><rect x="2" y="9" width="24" height="15" rx="3" fill="${P.ink}"/><path d="M2 11 Q2 2 14 2 Q26 2 26 11Z" fill="${P.ink}"/><rect x="11" y="11" width="6" height="6" rx="1.5" fill="#FFC93C"/></svg>`;
+const lockIcon=`<svg width="24" height="28" viewBox="0 0 24 28"><path d="M6 13 V8 a6 6 0 0 1 12 0 V13" fill="none" stroke="${P.ink}" stroke-width="4"/><rect x="2" y="12" width="20" height="15" rx="4" fill="${P.ink}"/></svg>`;
+function mapScreen(mode,lang,{focus=null}={}){
+  const vw=370,vh=824;
+  const cover=Math.max(vw/WORLD,vh/WORLD_H);const target=focus?POS[focus]:POS.sleep_house,z=Math.max(focus?1.15:Math.min(Math.max(vw/700,0.45),1),cover);
+  let cx=target[0],cy=target[1]+(focus?vh*.18/z:0);
+  const clampA=(v,view,len)=>{const half=view/(2*z);return len<=2*half?len/2:Math.min(Math.max(v,half),len-half);};
+  cx=clampA(cx,vw,WORLD);cy=clampA(cy,vh,WORLD_H);
+  const ox=vw/2-cx*z,oy=vh/2-cy*z;
+  const locked=r=>r==='star_hill'||r==='lighthouse_cove';
+  let world=terrain(mode);
+  for(const r of Object.keys(POS)) if(r!=='sleep_house') world+=regionMarker(r,mode,lang,{locked:locked(r),highlight:r===focus});
+  world+=sleepHouse(mode,{bedtime:mode==='night'});
+  let overlay='';
+  if(focus){const items=L[lang].lib[focus];
+    overlay=`<div style="position:absolute;left:0;right:0;bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:0 16px">
+        <div class="prompt">${charSVG(GUIDE[focus],mode==='night'?'sleepy':'happy',72,mode)}${bubble('','🔊','sky',mode,{circle:true})}</div>${bubble('','✕','sky',mode,{circle:true})}</div>
+      <div style="display:flex;gap:16px;padding:28px 16px 0;overflow:hidden">${items.map(([t,m,free],i)=>`<div style="flex:none;transform:rotate(${i%2?-2:2}deg);transform-origin:top center;text-align:center">
+        <svg width="20" height="26" viewBox="0 0 20 26"><path d="M10 0 C0 9 20 17 10 26" fill="none" stroke="${mode==='day'?P.ink:P.nightInk}" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/></svg>
+        ${storyCard(t,focus,m,GUIDE[focus],mode,{sleeping:!free,lang})}</div>`).join('')}</div></div>`;}
+  return `<div class="phone ${mode}" style="--outline:${outline(mode)};background:${mode==='day'?'#8EDCF9':'#211D55'}">
+    <div style="position:absolute;left:0;top:0;width:${WORLD}px;height:${WORLD_H}px;transform:translate(${ox}px,${oy}px) scale(${z});transform-origin:0 0">${world}</div>
+    <div style="position:absolute;left:16px;right:16px;top:54px;display:flex;justify-content:space-between">${iconBtn(chestIcon,'sun',mode)}${iconBtn(lockIcon,'grape',mode)}</div>
+    ${overlay}</div>`;}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
   day:()=>gallery('day')+gallery2('day'),
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
+  map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)']};
-const keys=mode==='all'?['day','night','extras']:[mode];
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map']:[mode];
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');
 document.fonts.ready.then(()=>{document.querySelectorAll('canvas.sky').forEach(cv=>drawSky(cv,{dimming:+(cv.dataset.dim||0)}));document.body.dataset.ready='1';});

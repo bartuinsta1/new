@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 
 /// Sesli yönergeler ve karakter replikleri için oynatıcı (§2.1: çocuk tarafında her eylemin sesli yönergesi var).
-/// Önce paketteki profesyonel kaydı (`Resources/VoicePrompts/<key>.m4a`) arar; yoksa cihaz içi tr-TR sesle okur.
+/// Önce paketteki profesyonel kaydı (`<dil>.lproj/<key>.m4a`, dile göre) arar; yoksa cihaz içi sesle (tr-TR / en-US) okur.
 @MainActor
 final class VoicePrompter: NSObject {
     static let shared = VoicePrompter()
@@ -23,7 +23,7 @@ final class VoicePrompter: NSObject {
             return
         }
         let u = AVSpeechUtterance(string: text)
-        u.voice = AVSpeechSynthesisVoice(language: "tr-TR")
+        u.voice = AVSpeechSynthesisVoice(language: AppLanguage.current.speechCode)
         u.rate = AVSpeechUtteranceDefaultSpeechRate * 0.85   // §4.5: ~%85 hız
         u.pitchMultiplier = 1.1
         synth.speak(u)

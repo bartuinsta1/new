@@ -26,7 +26,7 @@ struct Inked<S: Shape>: View {
 }
 
 /// Konumlu parça yardımcı: 200'lük tuvalde merkez (x,y) ve boyut (w,h).
-private extension View {
+extension View {
     func at(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat, rotation: Double = 0) -> some View {
         frame(width: w, height: h)
             .rotationEffect(.degrees(rotation))

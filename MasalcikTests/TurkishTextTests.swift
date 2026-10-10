@@ -25,10 +25,30 @@ struct TurkishTextTests {
     }
 
     @Test func bolgeAdlariKaynastirmaAlir() {
-        #expect(Region.whisperForest.locativeTitle == "Fısıltı Ormanı'nda")
-        #expect(Region.starHill.locativeTitle == "Yıldız Tepesi'nde")
-        #expect(Region.lighthouseCove.locativeTitle == "Deniz Feneri Koyu'nda")
-        #expect(Region.feelingsGarden.locativeTitle == "Duygu Bahçesi'nde")
+        #expect(Region.whisperForest.locativeTitle(in: .tr) == "Fısıltı Ormanı'nda")
+        #expect(Region.starHill.locativeTitle(in: .tr) == "Yıldız Tepesi'nde")
+        #expect(Region.lighthouseCove.locativeTitle(in: .tr) == "Deniz Feneri Koyu'nda")
+        #expect(Region.feelingsGarden.locativeTitle(in: .tr) == "Duygu Bahçesi'nde")
+    }
+
+    @Test func bolgeAdlariIngilizce() {
+        #expect(Region.whisperForest.locativeTitle(in: .en) == "in Whisper Forest")
+        #expect(Region.starHill.locativeTitle(in: .en) == "on Star Hill")
+        #expect(Region.storytellerPlane.locativeTitle(in: .en) == "under the Storyteller Tree")
+        #expect(Region.feelingsGarden.locativeTitle(in: .en) == "in the Feelings Garden")
+    }
+
+    @Test func iyelikliYonelme() {
+        #expect(TurkishText.dative("Fısıltı Ormanı", afterPossessive: true) == "Fısıltı Ormanı'na")
+        #expect(TurkishText.dative("Duygu Bahçesi", afterPossessive: true) == "Duygu Bahçesi'ne")
+    }
+
+    @Test(arguments: [
+        (0, "zero"), (7, "seven"), (13, "thirteen"), (40, "forty"), (63, "sixty-three"),
+        (100, "one hundred"), (115, "one hundred fifteen"), (999, "nine hundred ninety-nine"),
+    ])
+    func ingilizceSayilar(n: Int, expected: String) {
+        #expect(EnglishText.numberWords(n) == expected)
     }
 
     @Test(arguments: [

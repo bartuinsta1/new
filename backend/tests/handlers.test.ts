@@ -13,7 +13,7 @@ const BASE = "https://x.supabase.co/functions/v1";
 const validBody = {
   child_name: "Ayşe", child_age: 5, interests: ["animals"], companion_character: "findik",
   region: "star_hill", mood: "calm", duration_minutes: 10, recurring_characters: [],
-  recent_story_titles: [], voice: "mother",
+  recent_story_titles: [], voice: "mother", language: "tr",
   content_filters: { allow_mild_scary: false, allow_conflict: false, allow_loss_and_separation: false },
 };
 const post = (path: string, body: unknown, user = "user-1", headers: Record<string, string> = {}) =>
@@ -81,6 +81,7 @@ test("Geçersiz girdiler reddedilir", async () => {
     [{ ...validBody, region: "mars" }, "invalid_region"],
     [{ ...validBody, duration_minutes: 60 }, "invalid_duration_minutes"],
     [{ ...validBody, interests: ["a", "b", "c", "d", "e", "f"] }, "invalid_interests"],
+    [{ ...validBody, language: "de" }, "invalid_language"],
   ];
   for (const [body, code] of cases) {
     const res = await stories(post("stories", body));
@@ -159,4 +160,32 @@ test("Türkçe ekler (iOS ile aynı kurallar)", () => {
   assert.equal(locative("Fısıltı Ormanı", true), "Fısıltı Ormanı'nda");
   assert.equal(locative("Yıldız Tepesi", true), "Yıldız Tepesi'nde");
   assert.equal(locative("Mert"), "Mert'te");
+});
+
+test("İngilizce masal: aynı yapı, Türkçe ek yok", async () => {
+  const { stories } = setup();
+  const res = await stories(post("stories", { ...validBody, child_name: "Emma", language: "en" }));
+  const story = (await readLines(res)).at(-1).story;
+  assert.equal(story.title, "Emma and the Lost Lantern");
+  assert.ok(story.paragraphs[0].text.startsWith("Once upon a time, on Star Hill, there lived a curious child named Emma"));
+  assert.ok(story.paragraphs.at(-1).text.startsWith("Three apples fell from the sky: one for Emma"));
+  const names = story.paragraphs.map((p: { text: string }) => p.text).join(" ").split("Emma").length - 1;
+  assert.ok(names >= 3 && names <= 5, `ad ${names} kez geçti`);
+});
+
+test("Dil gönderilmezse Türkçe (eski istemciler)", async () => {
+  const { stories } = setup();
+  const { language: _omit, ...legacy } = validBody;
+  const story = (await readLines(await stories(post("stories", legacy)))).at(-1).story;
+  assert.ok(story.paragraphs[0].text.startsWith("Bir varmış bir yokmuş"));
+});
+
+test("GET /library Accept-Language'e göre", async () => {
+  const h = createLibraryHandler({ auth: mockAuth });
+  const get = (lang: string) => h(new Request(`${BASE}/library`, { headers: { authorization: "Bearer user-1", "accept-language": lang } }));
+  const tr = await (await get("tr-TR")).json();
+  const en = await (await get("en-US,en;q=0.9")).json();
+  assert.equal(tr[0].title, "Keloğlan ile Sihirli Kaşık");
+  assert.equal(en[0].title, "Keloğlan and the Magic Spoon");
+  assert.deepEqual(tr.map((i: { id: string }) => i.id), en.map((i: { id: string }) => i.id));
 });
