@@ -24,6 +24,18 @@ struct NetworkingTests {
         #expect(p.audioUrl?.absoluteString == "https://cdn.example.com/a.mp3")
     }
 
+    @Test func ilerlemeSatiriCozulur() throws {
+        let line = #"{"type":"progress","stage":"writing"}"#
+        let parsed = try APICoding.decoder.decode(StreamLine.self, from: Data(line.utf8))
+        #expect(try parsed.toEvent() == .progress(stage: "writing"))
+    }
+
+    @Test func uygunsuzGirdiHatasi() throws {
+        let line = #"{"type":"error","code":"unsafe_input"}"#
+        let parsed = try APICoding.decoder.decode(StreamLine.self, from: Data(line.utf8))
+        #expect(throws: APIError.unsafeInput) { try parsed.toEvent() }
+    }
+
     @Test func limitHatasiAyirtEdilir() throws {
         let line = #"{"type":"error","code":"daily_limit_reached"}"#
         let parsed = try APICoding.decoder.decode(StreamLine.self, from: Data(line.utf8))
@@ -34,9 +46,10 @@ struct NetworkingTests {
         let api = MockStoryAPI(paragraphDelay: .zero)
         var events: [StoryStreamEvent] = []
         for try await e in api.generateStory(MockStoryAPI.previewRequest(language: .tr)) { events.append(e) }
-        guard case .started = events.first else { Issue.record("ilk olay started olmalı"); return }
+        guard case .progress = events.first else { Issue.record("ilk olay progress olmalı"); return }
+        guard case .started = events[1] else { Issue.record("ikinci olay started olmalı"); return }
         guard case .completed(let story) = events.last else { Issue.record("son olay completed olmalı"); return }
-        #expect(events.count == story.paragraphs.count + 2)
+        #expect(events.count == story.paragraphs.count + 3)
 
         let first = try #require(story.paragraphs.first?.text)
         let last = try #require(story.paragraphs.last?.text)

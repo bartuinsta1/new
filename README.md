@@ -52,4 +52,6 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
 - [x] Adım 3 — Masal Adası haritası: kaydırma/yakınlaştırma, kamera uçuşu, bölgeler, uyuyan bulutlar,
       balon masal kartları, Uyku Evi + avatar, uyku saati parıltısı (+ uygulama genelinde TR/EN)
 - [x] Adım 4 — Onboarding (6 adım), avatar + yoldaş, ebeveyn kapısı akışa bağlı, kutlama → doğrudan ilk masal
-- [ ] Adım 5 — StoryEngine: backend fonksiyonu, LLM sistem promptu, JSON şeması, güvenlik katmanı, önbellek
+- [x] Adım 5 — StoryEngine (Claude Haiku 5.5): sistem promptu TR/EN, JSON şeması, güvenlik katmanı
+      (girdi temizleme + kural denetimi + moderasyon + yedek), önbellek, idempotency, maliyet panosu — bkz. `backend/README.md`
+- [ ] Adım 6 — TTS + Masal Oynatıcı (Gece Modu, arka planda çalma, uyku zamanlayıcı, kademeli kararma)

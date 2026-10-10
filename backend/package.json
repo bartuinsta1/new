@@ -4,6 +4,15 @@
   "type": "module",
   "scripts": {
     "test": "node --experimental-strip-types --no-warnings --test tests/*.test.ts",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run typecheck && npm test && python3 ../scripts/extract_strings.py --check"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.129.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.4",
+    "typescript": "6.0.2"
   }
 }

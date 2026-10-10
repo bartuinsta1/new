@@ -8,7 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": []
+    "types": ["node"]
   },
   "include": ["supabase/functions/**/*.ts", "tests/**/*.ts", "deno-shim.d.ts"]
 }

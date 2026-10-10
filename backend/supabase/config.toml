@@ -21,3 +21,6 @@ verify_jwt = true
 verify_jwt = true
 [functions.account]
 verify_jwt = true
+[functions.admin-costs]
+# Kendi ADMIN_TOKEN denetimini yapar; kullanıcı oturumu gerektirmez.
+verify_jwt = false

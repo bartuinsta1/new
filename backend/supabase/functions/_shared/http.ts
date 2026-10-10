@@ -7,7 +7,8 @@ export const json = (data: unknown, status = 200, headers: Record<string, string
     headers: { "content-type": "application/json; charset=utf-8", ...headers },
   });
 
-export const errorResponse = (status: number, code: string) => json({ error: code }, status);
+/** Hata yanıtı. Kod hem gövdede hem `X-Error-Code` başlığında (akışlı istekte istemci gövdeyi okumadan ayırt eder). */
+export const errorResponse = (status: number, code: string) => json({ error: code }, status, { "x-error-code": code });
 
 /** Supabase fonksiyon yolunda fonksiyon adından sonraki parçalar: /functions/v1/stories/abc → ["abc"] */
 export function pathAfter(req: Request, fn: string): string[] {

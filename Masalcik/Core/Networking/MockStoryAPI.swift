@@ -8,11 +8,12 @@ struct MockStoryAPI: StoryAPI {
     /// Kütüphane başlıklarının dili (gerçek API'de Accept-Language başlığı).
     var language: AppLanguage = .current
 
-    func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
+    func generateStory(_ request: StoryRequest, idempotencyKey: String) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         let story = Self.sampleStory(for: request)
         let delay = paragraphDelay
         return AsyncThrowingStream { continuation in
             let task = Task {
+                continuation.yield(.progress(stage: "writing"))
                 continuation.yield(.started(id: story.id, title: story.title, coverScene: story.coverScene))
                 for paragraph in story.paragraphs {
                     if delay > .zero { try? await Task.sleep(for: delay) }

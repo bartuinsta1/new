@@ -58,6 +58,8 @@ struct StoryDTO: Codable, Hashable, Sendable, Identifiable {
 
 /// `POST /stories` akışlı yanıt olayları (NDJSON satırları).
 enum StoryStreamEvent: Sendable, Equatable {
+    /// Masal yazılırken ve güvenlik denetiminden geçerken birkaç saniyede bir gelir; bekleme animasyonu sürer.
+    case progress(stage: String)
     /// Başlık ve kapak bilinir bilinmez gelir — bekleme animasyonu bunu gösterebilir.
     case started(id: String, title: String, coverScene: CoverSceneDTO)
     /// Her paragraf metni + sesi hazır olunca gelir; ilk paragraf hemen çalmaya başlar.
@@ -92,6 +94,8 @@ struct VoiceCloneResponseDTO: Codable, Hashable, Sendable {
 
 enum APIError: Error, Equatable, Sendable {
     case dailyLimitReached
+    /// Ad ya da telaffuz güvenlik filtresine takıldı: ebeveyn düzeltmeli (çocuğa gösterilmez).
+    case unsafeInput
     case rateLimited
     case unauthorized
     case server(status: Int)

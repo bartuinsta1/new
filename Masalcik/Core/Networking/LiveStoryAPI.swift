@@ -8,13 +8,16 @@ struct LiveStoryAPI: StoryAPI {
     var accessToken: @Sendable () async -> String? = { nil }
     var language: AppLanguage = .current
 
-    func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
+    func generateStory(_ request: StoryRequest, idempotencyKey: String) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
                     var req = try await makeRequest("stories", method: "POST")
                     req.httpBody = try APICoding.encoder.encode(request)
                     req.setValue("application/x-ndjson", forHTTPHeaderField: "Accept")
+                    req.setValue(idempotencyKey, forHTTPHeaderField: "Idempotency-Key")
+                    // Üretim + güvenlik denetimi ~10–20 sn sürebilir; sunucu her 3 sn'de "progress" gönderir.
+                    req.timeoutInterval = 90
                     let (bytes, response) = try await session.bytes(for: req)
                     try Self.check(response)
                     for try await line in bytes.lines where !line.isEmpty {
@@ -90,6 +93,8 @@ struct LiveStoryAPI: StoryAPI {
         guard let http = response as? HTTPURLResponse else { throw APIError.offline }
         switch http.statusCode {
         case 200..<300: return
+        // Ayrıntılı kod (unsafe_input vb.) gövdededir; akışlı istekte gövde okunmadan önce kontrol edilir.
+        case 400 where http.value(forHTTPHeaderField: "X-Error-Code") == "unsafe_input": throw APIError.unsafeInput
         case 401: throw APIError.unauthorized
         case 402: throw APIError.dailyLimitReached
         case 429: throw APIError.rateLimited

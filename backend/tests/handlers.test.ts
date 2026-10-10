@@ -31,9 +31,10 @@ function setup() {
   return { stores, stories };
 }
 
+/** Akış satırları; bekleme sırasındaki "progress" satırları atlanır. */
 async function readLines(res: Response) {
   const text = await res.text();
-  return text.trim().split("\n").map((l) => JSON.parse(l));
+  return text.trim().split("\n").map((l) => JSON.parse(l)).filter((l) => l.type !== "progress");
 }
 
 test("POST /stories akışı: started → paragraflar → completed", async () => {
@@ -55,6 +56,7 @@ test("Ücretsiz kullanıcı: günde 1 kişisel masal (sunucu tarafında)", async
   assert.equal((await stories(post("stories", validBody))).status, 200);
   const second = await stories(post("stories", validBody));
   assert.equal(second.status, 402);
+  assert.equal(second.headers.get("x-error-code"), "daily_limit_reached");
   assert.deepEqual(await second.json(), { error: "daily_limit_reached" });
   // Başka kullanıcı etkilenmez
   assert.equal((await stories(post("stories", validBody, "user-2"))).status, 200);

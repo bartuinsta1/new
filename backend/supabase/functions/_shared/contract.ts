@@ -67,10 +67,12 @@ export interface Story {
 }
 
 export type StreamLine =
+  /** Masal yazılırken birkaç saniyede bir: bağlantıyı canlı tutar, bekleme animasyonu sürer. */
+  | { type: "progress"; stage: "writing" | "checking" | "voicing" }
   | { type: "started"; id: string; title: string; cover_scene: Story["cover_scene"] }
   | { type: "paragraph"; paragraph: Paragraph }
   | { type: "completed"; story: Story }
-  | { type: "error"; code: "daily_limit_reached" | "rate_limited" | "internal" };
+  | { type: "error"; code: "daily_limit_reached" | "rate_limited" | "unsafe_input" | "internal" };
 
 export interface LibraryItem {
   id: string;

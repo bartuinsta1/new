@@ -2,8 +2,9 @@ import Foundation
 
 /// Backend uç noktalarının soyutlaması (§5.2). Testlerde ve Preview'larda `MockStoryAPI` kullanılır.
 protocol StoryAPI: Sendable {
-    /// `POST /stories` — akışlı masal üretimi.
-    func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error>
+    /// `POST /stories` — akışlı masal üretimi. Aynı `idempotencyKey` ile tekrar (ör. ağ kopması sonrası)
+    /// sunucu masalı yeniden üretmez ve günlük kotayı ikinci kez düşmez.
+    func generateStory(_ request: StoryRequest, idempotencyKey: String) -> AsyncThrowingStream<StoryStreamEvent, Error>
     /// `GET /stories/:id`
     func story(id: String) async throws -> StoryDTO
     /// `GET /library`
@@ -16,6 +17,12 @@ protocol StoryAPI: Sendable {
     func verifyEntitlement(signedTransaction: String?) async throws -> EntitlementDTO
     /// `DELETE /account` — tüm verileri siler.
     func deleteAccount() async throws
+}
+
+extension StoryAPI {
+    func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
+        generateStory(request, idempotencyKey: UUID().uuidString)
+    }
 }
 
 enum APICoding {
@@ -44,9 +51,12 @@ struct StreamLine: Decodable {
     var paragraph: ParagraphDTO?
     var story: StoryDTO?
     var code: String?
+    var stage: String?
 
     func toEvent() throws -> StoryStreamEvent {
         switch type {
+        case .progress:
+            return .progress(stage: stage ?? "writing")
         case .started:
             guard let id, let title, let coverScene else { throw APIError.decoding }
             return .started(id: id, title: title, coverScene: coverScene)
@@ -59,6 +69,7 @@ struct StreamLine: Decodable {
         case .error:
             if code == "daily_limit_reached" { throw APIError.dailyLimitReached }
             if code == "rate_limited" { throw APIError.rateLimited }
+            if code == "unsafe_input" { throw APIError.unsafeInput }
             throw APIError.server(status: 500)
         }
     }

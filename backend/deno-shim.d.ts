@@ -1,21 +1,5 @@
-// Yalnızca Node/tsc ile tür denetimi için: Deno.serve bildirimi.
+// Yalnızca Node/tsc ile tür denetimi için: Deno çalışma zamanı bildirimleri.
 declare namespace Deno {
   function serve(handler: (req: Request) => Response | Promise<Response>): unknown;
-}
-declare module "node:test" {
-  export function test(name: string, fn: () => unknown): void;
-}
-declare module "node:assert/strict" {
-  const assert: {
-    (value: unknown, message?: string): asserts value;
-    equal(a: unknown, b: unknown, message?: string): void;
-    deepEqual(a: unknown, b: unknown, message?: string): void;
-    ok(value: unknown, message?: string): asserts value;
-    match(value: string, re: RegExp, message?: string): void;
-    doesNotMatch(value: string, re: RegExp, message?: string): void;
-  };
-  export default assert;
-}
-declare module "node:fs" {
-  export function readFileSync(path: URL | string, encoding: "utf-8"): string;
+  const env: { get(key: string): string | undefined };
 }
