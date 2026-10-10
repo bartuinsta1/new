@@ -81,6 +81,102 @@
         }
       }
     },
+    "Ad yalnızca harflerden oluşabilir (en fazla 30).": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad yalnızca harflerden oluşabilir (en fazla 30)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The name can only contain letters (up to 30)."
+          }
+        }
+      }
+    },
+    "Adaya git": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaya git"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go to the island"
+          }
+        }
+      }
+    },
+    "Adı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Adı dinle": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adı dinle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hear the name"
+          }
+        }
+      }
+    },
+    "Adı sesli okurken bu yazımı kullanırız; ekranda her zaman asıl ad görünür.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adı sesli okurken bu yazımı kullanırız; ekranda her zaman asıl ad görünür."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We use this spelling when reading the name aloud; the real name is always shown on screen."
+          }
+        }
+      }
+    },
+    "Adım %lld / %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adım %lld / %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld of %2$lld"
+          }
+        }
+      }
+    },
     "Ahoy! Deniz Feneri Koyu'nda masallar dalgalarla gelir.": {
       "localizations": {
         "tr": {
@@ -145,6 +241,22 @@
         }
       }
     },
+    "Aydınlatma metnini okuyun": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aydınlatma metnini okuyun"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read our privacy notice"
+          }
+        }
+      }
+    },
     "Baba": {
       "localizations": {
         "tr": {
@@ -205,6 +317,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Once upon a time"
+          }
+        }
+      }
+    },
+    "Biraz da sizi tanıyalım": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biraz da sizi tanıyalım"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's get to know you"
+          }
+        }
+      }
+    },
+    "Bu bilgilerle masal saatini çocuğunuzun rutinine uyduruyoruz.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bilgilerle masal saatini çocuğunuzun rutinine uyduruyoruz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We use this to fit story time into your child's routine."
           }
         }
       }
@@ -385,6 +529,22 @@
         }
       }
     },
+    "Devam": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devam"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
     "Devam etmek için bir yetişkinin yanıtlaması gerekiyor.": {
       "localizations": {
         "tr": {
@@ -445,6 +605,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nature"
+          }
+        }
+      }
+    },
+    "Doğru okunmuyor mu? (isteğe bağlı)": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğru okunmuyor mu? (isteğe bağlı)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not pronounced right? (optional)"
           }
         }
       }
@@ -525,6 +701,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Parent Corner"
+          }
+        }
+      }
+    },
+    "En fazla beş tane seçebilirsin!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En fazla beş tane seçebilirsin!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can pick up to five!"
+          }
+        }
+      }
+    },
+    "En sevdiğin şeyleri seç! En fazla beş tane.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En sevdiğin şeyleri seç! En fazla beş tane."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick your favourite things! Up to five."
           }
         }
       }
@@ -641,6 +849,22 @@
         }
       }
     },
+    "Geri": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geri"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
     "Girilen: %@": {
       "localizations": {
         "tr": {
@@ -749,6 +973,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "The stickers you've earned are waiting in the Treasure Chest!"
+          }
+        }
+      }
+    },
+    "Hazırım!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazırım!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm ready!"
           }
         }
       }
@@ -913,6 +1153,38 @@
         }
       }
     },
+    "Kaç yaşında?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaç yaşında?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How old?"
+          }
+        }
+      }
+    },
+    "Kaç çocuğunuz var?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaç çocuğunuz var?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How many children do you have?"
+          }
+        }
+      }
+    },
     "Kendi sesim": {
       "localizations": {
         "tr": {
@@ -925,6 +1197,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "My own voice"
+          }
+        }
+      }
+    },
+    "Kendine bir görünüş seç, sonra bir yol arkadaşı!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kendine bir görünüş seç, sonra bir yol arkadaşı!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose how you look, then pick a buddy!"
           }
         }
       }
@@ -1025,6 +1313,22 @@
         }
       }
     },
+    "Masal Adası'na hoş geldin, %@!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal Adası'na hoş geldin, %@!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Story Island, %@!"
+          }
+        }
+      }
+    },
     "Masal seçmek için adada bir yere dokun!": {
       "localizations": {
         "tr": {
@@ -1073,6 +1377,22 @@
         }
       }
     },
+    "Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories are created with AI and pass through safety filters."
+          }
+        }
+      }
+    },
     "Masalı Başlat": {
       "localizations": {
         "tr": {
@@ -1101,6 +1421,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tap to listen to the story"
+          }
+        }
+      }
+    },
+    "Masalın kahramanı kim?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalın kahramanı kim?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who is the hero of the story?"
           }
         }
       }
@@ -1149,6 +1485,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Music"
+          }
+        }
+      }
+    },
+    "Nasıl okunur? Örn. Ay-şe": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nasıl okunur? Örn. Ay-şe"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How is it said? e.g. Shiv-awn"
           }
         }
       }
@@ -1249,6 +1601,38 @@
         }
       }
     },
+    "Pijama": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pijama"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pyjamas"
+          }
+        }
+      }
+    },
+    "Pijama %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pijama %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pyjamas %lld"
+          }
+        }
+      }
+    },
     "Prensesler": {
       "localizations": {
         "tr": {
@@ -1329,6 +1713,70 @@
         }
       }
     },
+    "Saç": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hair"
+          }
+        }
+      }
+    },
+    "Saç %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saç %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hair %lld"
+          }
+        }
+      }
+    },
+    "Saç rengi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saç rengi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hair colour"
+          }
+        }
+      }
+    },
+    "Saç rengi %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saç rengi %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hair colour %lld"
+          }
+        }
+      }
+    },
     "Senin avatarın": {
       "localizations": {
         "tr": {
@@ -1341,6 +1789,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your avatar"
+          }
+        }
+      }
+    },
+    "Seçtiğiniz konular masallara nazikçe, korkutmadan işlenir. İstediğiniz zaman değiştirebilirsiniz.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğiniz konular masallara nazikçe, korkutmadan işlenir. İstediğiniz zaman değiştirebilirsiniz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The topics you choose are woven into stories gently, never scarily. You can change them at any time."
           }
         }
       }
@@ -1405,6 +1869,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tap to hear it again"
+          }
+        }
+      }
+    },
+    "Ten rengi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten rengi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skin tone"
+          }
+        }
+      }
+    },
+    "Ten rengi %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten rengi %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skin tone %lld"
           }
         }
       }
@@ -1505,6 +2001,38 @@
         }
       }
     },
+    "Uyku saati": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku saati"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedtime"
+          }
+        }
+      }
+    },
+    "Uyku saatinden bir saat önce uygulama sakin gece moduna geçer.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku saatinden bir saat önce uygulama sakin gece moduna geçer."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One hour before bedtime, the app switches to its calm night mode."
+          }
+        }
+      }
+    },
     "Uyku zamanı geldi! Uyku Evi'ne gidelim mi?": {
       "localizations": {
         "tr": {
@@ -1601,6 +2129,54 @@
         }
       }
     },
+    "Yol arkadaşı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yol arkadaşı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buddy"
+          }
+        }
+      }
+    },
+    "Yüz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face"
+          }
+        }
+      }
+    },
+    "Yüz %lld": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yüz %lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face %lld"
+          }
+        }
+      }
+    },
     "Yıldız": {
       "localizations": {
         "tr": {
@@ -1649,6 +2225,38 @@
         }
       }
     },
+    "Çocuğunuz için yalnızca adını, yaşını ve ilgi alanlarını saklarız. Reklam yok, üçüncü taraf takip yok.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çocuğunuz için yalnızca adını, yaşını ve ilgi alanlarını saklarız. Reklam yok, üçüncü taraf takip yok."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For your child we only keep their name, age and interests. No ads, no third-party tracking."
+          }
+        }
+      }
+    },
+    "Çocuğunuzun adı masalda 3–5 kez geçecek.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çocuğunuzun adı masalda 3–5 kez geçecek."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your child's name will appear 3–5 times in each story."
+          }
+        }
+      }
+    },
     "Çıkartma": {
       "localizations": {
         "tr": {
@@ -1661,6 +2269,102 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sticker"
+          }
+        }
+      }
+    },
+    "Önce bir çocukla başlayalım; diğerlerini Ebeveyn Köşesi'nden ekleyebilirsiniz.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce bir çocukla başlayalım; diğerlerini Ebeveyn Köşesi'nden ekleyebilirsiniz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's start with one child; you can add the others from the Parent Corner."
+          }
+        }
+      }
+    },
+    "Örn. Ayşe": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Örn. Ayşe"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g. Emma"
+          }
+        }
+      }
+    },
+    "İyi geceler, %@!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi geceler, %@!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good night, %@!"
+          }
+        }
+      }
+    },
+    "Şimdi biraz anne ya da babanın yardımı lazım!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şimdi biraz anne ya da babanın yardımı lazım!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now we need a little help from a grown-up!"
+          }
+        }
+      }
+    },
+    "Şimdilik geç": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şimdilik geç"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip for now"
+          }
+        }
+      }
+    },
+    "Şu sıralar ne üzerine konuşalım?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şu sıralar ne üzerine konuşalım?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would you like stories to talk about right now?"
           }
         }
       }

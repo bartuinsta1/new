@@ -145,6 +145,13 @@ enum ValueTopic: String, Codable, CaseIterable, Identifiable, Sendable {
         case .courage: String(localized: "Cesaret", bundle: lang.bundle)
         }
     }
+
+    var emoji: String {
+        switch self {
+        case .newSibling: "👶"; case .startingSchool: "🎒"; case .fearOfDark: "🌙"
+        case .sharing: "🤝"; case .brushingTeeth: "🪥"; case .courage: "🦁"
+        }
+    }
 }
 
 /// Seslendirme tonu (§4.5).

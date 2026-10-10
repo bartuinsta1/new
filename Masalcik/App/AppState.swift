@@ -17,6 +17,9 @@ final class AppState {
 
     let api: StoryAPI
 
+    /// Onboarding bittiğinde haritaya geçilir ve "Bu Gece" akışı doğrudan açılır (§3.1 adım 6: "ardından doğrudan ilk masal").
+    var opensTonightOnNextMapAppear = false
+
     init(api: StoryAPI = AppConfig.useMockBackend ? MockStoryAPI() : LiveStoryAPI()) {
         self.api = api
         self.displayMode = DisplayModeResolver.mode(for: .now, bedtime: .default)

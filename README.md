@@ -51,4 +51,5 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
 - [x] Adım 2 — DesignSystem: tokenlar, gündüz/gece teması, 10 bileşen + Preview'lar
 - [x] Adım 3 — Masal Adası haritası: kaydırma/yakınlaştırma, kamera uçuşu, bölgeler, uyuyan bulutlar,
       balon masal kartları, Uyku Evi + avatar, uyku saati parıltısı (+ uygulama genelinde TR/EN)
-- [ ] Adım 4 — Onboarding + avatar oluşturma + ebeveyn kapısı akışı
+- [x] Adım 4 — Onboarding (6 adım), avatar + yoldaş, ebeveyn kapısı akışa bağlı, kutlama → doğrudan ilk masal
+- [ ] Adım 5 — StoryEngine: backend fonksiyonu, LLM sistem promptu, JSON şeması, güvenlik katmanı, önbellek

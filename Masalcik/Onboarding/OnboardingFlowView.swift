@@ -1,28 +1,48 @@
 import SwiftUI
 import SwiftData
 
-/// Onboarding akışı — Adım 4'te 6 adımlı gerçek akış (karşılama, ebeveyn kapısı, çocuk bilgisi, ilgi alanları,
-/// değerler, avatar) yazılacak. Şimdilik karşılama + "geç" (geliştirme kolaylığı).
+/// Onboarding akışı (§3.1): en fazla 6 adım, ebeveynle birlikte. Sonunda paywall yok; doğrudan ilk masal.
 struct OnboardingFlowView: View {
     @Environment(\.modelContext) private var context
+    @Environment(AppState.self) private var appState
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.theme) private var theme
+    @State private var model = OnboardingModel()
+    @State private var hasEntered = false
 
     var body: some View {
-        VStack(spacing: Metrics.spacingL) {
-            Spacer()
-            CharacterView(character: .pamuk, mood: .sleepy, size: 200)
-            VoicePromptPlayer(text: String(localized: "Merhaba! Ben Pamuk. Her gece sana özel bir masal anlatacağım."),
-                              autoplay: true)
-            Spacer()
-            BubbleButton("Başlayalım", systemImage: "arrow.right", color: .grass, size: .large) {
-                let family = Family(hasCompletedOnboarding: true)
-                family.settings = AppSettings()
-                family.entitlement = Entitlement()
-                context.insert(family)
+        ZStack {
+            Group {
+                switch model.step {
+                case .welcome: WelcomeStepView(model: model)
+                case .parentGate: ParentGateStepView(model: model)
+                case .parentInfo: ParentInfoStepView(model: model)
+                case .childInfo: ChildInfoStepView(model: model)
+                case .interests: InterestsStepView(model: model)
+                case .values: ValuesStepView(model: model)
+                case .avatar: AvatarStepView(model: model)
+                case .finale: OnboardingFinaleView(model: model, onEnter: enterIsland)
+                }
             }
-            .padding(.bottom, Metrics.spacingXL)
+            .id(model.step)
+            .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)))
         }
-        .frame(maxWidth: .infinity)
-        .background(theme.background.ignoresSafeArea())
+        .animation(Motion.standard(theme.mode, reduceMotion: reduceMotion), value: model.step)
     }
+
+    private func enterIsland() {
+        guard !hasEntered else { return }
+        hasEntered = true
+        appState.opensTonightOnNextMapAppear = true
+        appState.bedtime = model.bedtime
+        model.enterIsland(in: context)
+    }
+}
+
+#Preview("Onboarding") {
+    OnboardingFlowView()
+        .environment(AppState())
+        .modelContainer(PersistenceController(inMemory: true).container)
+        .themed(.day)
 }

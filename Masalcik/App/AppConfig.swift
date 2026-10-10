@@ -19,6 +19,12 @@ enum AppConfig {
         static let libraryStoriesPerWeek = 3
     }
 
+    /// KVKK aydınlatma metni ve gizlilik politikası (dile göre). Yalnızca ebeveyn kapısının arkasından açılır.
+    /// VARSAYIM: Yer tutucu alan adı; lansmandan önce gerçek adresle değiştirilecek.
+    static func privacyPolicyURL(_ lang: AppLanguage = .current) -> URL {
+        URL(string: lang == .tr ? "https://masalcik.app/gizlilik" : "https://masalcik.app/en/privacy")!
+    }
+
     /// Ebeveyn başına en fazla çocuk profili.
     static let maxChildProfiles = 4
     /// Onboarding'de seçilebilecek en fazla ilgi alanı.

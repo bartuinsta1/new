@@ -281,12 +281,18 @@ function terrain(mode){const c=h=>mode==='day'?h:desat(h,.4),O=outline(mode);let
   return `<svg width="${WORLD}" height="${WORLD_H}" style="position:absolute;left:0;top:0">${s}</svg>`;}
 function hairCap(x,y,w,h){const X=x-w/2,Y=y-h/2,mx=X+w,my=Y+h;
   return `M${X} ${my} C${X-.02*w} ${Y-.35*h} ${mx+.02*w} ${Y-.35*h} ${mx} ${my} Q${mx-.15*w} ${my-.45*h} ${X+w/2+.12*w} ${my-.18*h} Q${X+.2*w} ${my-.6*h} ${X} ${my}Z`;}
-function avatarSVG(size,mode,mood='happy'){const c=h=>mode==='day'?h:desat(h,.4),O=outline(mode),st=`stroke="${O}" stroke-width="3" stroke-linejoin="round"`;
+function avatarSVG(size,mode,mood='happy',hairStyle=0){const c=h=>mode==='day'?h:desat(h,.4),O=outline(mode),st=`stroke="${O}" stroke-width="3" stroke-linejoin="round"`;
   const skin=c('#E0A77F'),hair=c('#6B4226'),paj=accent('sky',mode);
-  let s=`<rect x="42" y="130" width="116" height="76" rx="38" fill="${paj}" ${st}/><circle cx="100" cy="150" r="4" fill="rgba(255,255,255,.85)"/><circle cx="100" cy="170" r="4" fill="rgba(255,255,255,.85)"/>`;
+  let s='';
+  if(hairStyle===1) s+=`<ellipse cx="100" cy="98" rx="70" ry="64" fill="${hair}" ${st}/>`;
+  if(hairStyle===3) s+=`<ellipse cx="162" cy="104" rx="18" ry="32" fill="${hair}" ${st} transform="rotate(-15 162 104)"/>`;
+  if(hairStyle===5) s+=`<rect x="30" y="43" width="140" height="150" rx="60" fill="${hair}" ${st}/>`;
+  s+=`<rect x="42" y="130" width="116" height="76" rx="38" fill="${paj}" ${st}/><circle cx="100" cy="150" r="4" fill="rgba(255,255,255,.85)"/><circle cx="100" cy="170" r="4" fill="rgba(255,255,255,.85)"/>`;
   s+=`<rect x="70" y="124" width="60" height="16" rx="8" fill="${darkened(paj,.12)}" ${st}/>`;
   s+=`<circle cx="48" cy="92" r="12" fill="${skin}" ${st}/><circle cx="152" cy="92" r="12" fill="${skin}" ${st}/><circle cx="100" cy="88" r="54" fill="${skin}" ${st}/>`;
-  s+=`<path d="${hairCap(100,56,114,54)}" fill="${hair}" ${st}/>`;
+  if(hairStyle===2){for(const [x,y] of [[56,62],[70,44],[90,34],[110,34],[130,44],[144,62]]) s+=`<circle cx="${x}" cy="${y}" r="18" fill="${hair}" ${st}/>`;}
+  else if(hairStyle===4){s+=`<circle cx="56" cy="42" r="19" fill="${hair}" ${st}/><circle cx="144" cy="42" r="19" fill="${hair}" ${st}/><path d="${hairCap(100,56,112,52)}" fill="${hair}" ${st}/>`;}
+  else s+=`<path d="${hairCap(100,56,114,54)}" fill="${hair}" ${st}/>`;
   for(const side of [-1,1]){const x=100+side*22;
     if(mood==='sleepy') s+=`<path d="M${x-9} 89 Q${x} 98.6 ${x+9} 89" fill="none" stroke="${P.ink}" stroke-width="4" stroke-linecap="round"/>`;
     else s+=`<circle cx="${x}" cy="92" r="7.5" fill="${P.ink}"/><circle cx="${x+2.4}" cy="89.6" r="2.7" fill="#fff"/>`;
@@ -338,16 +344,86 @@ function mapScreen(mode,lang,{focus=null}={}){
     <div style="position:absolute;left:16px;right:16px;top:54px;display:flex;justify-content:space-between">${iconBtn(chestIcon,'sun',mode)}${iconBtn(lockIcon,'grape',mode)}</div>
     ${overlay}</div>`;}
 
+
+// ---------- Onboarding (Onboarding/*.swift) ----------
+const OB={
+ tr:{cont:'Devam',start:'Başlayalım',ready:'Hazırım!',skip:'Şimdilik geç',
+   hello:'Merhaba! Ben Pamuk. Her gece sana özel bir masal anlatacağım.',ai:'Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer.',
+   pTitle:'Biraz da sizi tanıyalım',pSub:'Bu bilgilerle masal saatini çocuğunuzun rutinine uyduruyoruz.',kids:'Kaç çocuğunuz var?',bed:'Uyku saati',bedNote:'Uyku saatinden bir saat önce uygulama sakin gece moduna geçer.',
+   privacy:'Çocuğunuz için yalnızca adını, yaşını ve ilgi alanlarını saklarız. Reklam yok, üçüncü taraf takip yok.',privacyLink:'Aydınlatma metnini okuyun',
+   cTitle:'Masalın kahramanı kim?',cSub:'Çocuğunuzun adı masalda 3–5 kez geçecek.',name:'Adı',pron:'Doğru okunmuyor mu? (isteğe bağlı)',pronPh:'Nasıl okunur? Örn. Ay-şe',pronNote:'Adı sesli okurken bu yazımı kullanırız; ekranda her zaman asıl ad görünür.',age:'Kaç yaşında?',child:'Ayşe',
+   iPrompt:'En sevdiğin şeyleri seç! En fazla beş tane.',
+   interests:[['🐻','Hayvanlar'],['🚀','Uzay'],['🐠','Deniz'],['👑','Prensesler'],['🦸','Süper kahramanlar'],['🦕','Dinozorlar'],['⚽️','Futbol'],['🚒','Araçlar'],['🎵','Müzik'],['🌳','Doğa']],
+   vTitle:'Şu sıralar ne üzerine konuşalım?',vSub:'Seçtiğiniz konular masallara nazikçe, korkutmadan işlenir. İstediğiniz zaman değiştirebilirsiniz.',
+   values:[['👶','Yeni kardeş'],['🎒','Kreşe / okula başlamak'],['🌙','Karanlıktan korkmak'],['🤝','Paylaşmak'],['🪥','Diş fırçalamak'],['🦁','Cesaret']],
+   aPrompt:'Kendine bir görünüş seç, sonra bir yol arkadaşı!',hairTab:'Saç',welcome:n=>`Masal Adası'na hoş geldin, ${n}!`,go:'Adaya git'},
+ en:{cont:'Continue',start:"Let's begin",ready:"I'm ready!",skip:'Skip for now',
+   hello:"Hello! I'm Pamuk. Every night I'll tell you a story made just for you.",ai:'Stories are created with AI and pass through safety filters.',
+   pTitle:"Let's get to know you",pSub:"We use this to fit story time into your child's routine.",kids:'How many children do you have?',bed:'Bedtime',bedNote:'One hour before bedtime, the app switches to its calm night mode.',
+   privacy:'For your child we only keep their name, age and interests. No ads, no third-party tracking.',privacyLink:'Read our privacy notice',
+   cTitle:'Who is the hero of the story?',cSub:"Your child's name will appear 3–5 times in each story.",name:'Name',pron:'Not pronounced right? (optional)',pronPh:'How is it said? e.g. Shiv-awn',pronNote:'We use this spelling when reading the name aloud; the real name is always shown on screen.',age:'How old?',child:'Emma',
+   iPrompt:'Pick your favourite things! Up to five.',
+   interests:[['🐻','Animals'],['🚀','Space'],['🐠','The sea'],['👑','Princesses'],['🦸','Superheroes'],['🦕','Dinosaurs'],['⚽️','Football'],['🚒','Vehicles'],['🎵','Music'],['🌳','Nature']],
+   vTitle:'What would you like stories to talk about right now?',vSub:'The topics you choose are woven into stories gently, never scarily. You can change them at any time.',
+   values:[['👶','A new baby sibling'],['🎒','Starting nursery / school'],['🌙','Being afraid of the dark'],['🤝','Sharing'],['🪥','Brushing teeth'],['🦁','Courage']],
+   aPrompt:'Choose how you look, then pick a buddy!',hairTab:'Hair',welcome:n=>`Welcome to Story Island, ${n}!`,go:'Go to the island'},
+};
+function dots(cur,mode){return `<div style="display:flex;gap:8px;align-items:center">${[1,2,3,4,5,6].map(i=>`<span style="width:${i===cur?28:14}px;height:14px;border-radius:99px;border:2px solid ${outline(mode)};background:${i<=cur?accent(mode==='day'?'sun':'grape',mode):(mode==='day'?'#fff':P.dusk)}"></span>`).join('')}</div>`;}
+function obTop(cur,mode,{back=true}={}){return `<div style="display:flex;align-items:center;justify-content:space-between;padding:54px 16px 0">${back?bubble('','‹','sky',mode,{circle:true}):'<span style="width:64px"></span>'}${dots(cur,mode)}<span style="width:64px"></span></div>`;}
+function obBottom(label,mode,{enabled=true,skip=null,icon='→',color='grass'}={}){return `<div style="position:absolute;left:0;right:0;bottom:24px;display:flex;flex-direction:column;align-items:center;gap:8px">
+  <div style="opacity:${enabled?1:.5}">${bubble(label,icon,enabled?color:'sky',mode,{large:true})}</div>${skip?`<div class="bodyBold" style="text-decoration:underline;opacity:.7">${skip}</div>`:''}</div>`;}
+function choice(emoji,title,sel,color,mode,size=100){const f=accent(sel?color:'sky',mode);
+  return `<div style="position:relative;width:${size}px;height:${size}px;border-radius:50%;background:${f};border:3px solid ${outline(mode)};box-shadow:0 6px 0 ${darkened(f)},0 6px 0 3px ${outline(mode)};display:flex;flex-direction:column;align-items:center;justify-content:center;filter:saturate(${sel?1:.35});color:${P.ink};text-align:center;padding:6px">
+   ${emoji?`<div style="font-size:${size*.36}px;line-height:1">${emoji}</div>`:''}<div class="caption" style="font-size:${emoji?13:26}px;${emoji?'':'font-family:Baloo 2;font-weight:800'};line-height:1.1">${title}</div>
+   ${sel?`<div style="position:absolute;top:-6px;right:-6px;width:28px;height:28px;border-radius:50%;background:${P.grass};border:3px solid ${P.ink};display:flex;align-items:center;justify-content:center;font:900 15px Nunito">✓</div>`:''}</div>`;}
+function obPhone(mode,inner){return `<div class="phone ${mode}" style="--outline:${outline(mode)};background:${mode==='day'?P.cream:P.nightSky}">${inner}</div>`;}
+function header(t,sub,mode){return `<div style="text-align:center;padding:0 8px"><div class="h-title">${t}</div>${sub?`<div class="body" style="opacity:.7;margin-top:6px">${sub}</div>`:''}</div>`;}
+function card(inner,mode){return `<div style="background:${mode==='day'?'#fff':P.dusk};border:3px solid ${outline(mode)};border-radius:28px;padding:14px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center">${inner}</div>`;}
+function speakerRow(char,text,mode,size=72){return `<div class="prompt">${charSVG(char,mode==='night'?'sleepy':'happy',size,mode)}<span class="btn" style="background:${accent('sky',mode)};box-shadow:0 6px 0 ${darkened(accent('sky',mode))},0 6px 0 3px ${outline(mode)};font:700 16px Nunito;padding:10px 14px;min-height:64px;max-width:240px">🔊 <span>${text}</span></span></div>`;}
+function obWelcome(lang,mode){const t=OB[lang];return obPhone(mode,obTop(1,mode,{back:false})+`
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:30px 16px">${charSVG('pamuk','happy',210,mode)}<div class="h-display">Masalcık</div>${speakerRow('pamuk',t.hello,mode)}
+  <div class="caption" style="opacity:.65;text-align:center">✦ ${t.ai}</div></div>`+obBottom(t.start,mode));}
+function obParent(lang,mode){const t=OB[lang];return obPhone(mode,obTop(2,mode)+`<div style="padding:16px;display:flex;flex-direction:column;gap:16px">${header(t.pTitle,t.pSub,mode)}
+  ${card(`<div class="h-headline">${t.kids}</div><div style="display:flex;gap:16px">${[1,2,3,4].map(n=>choice('',n,n===2,'grape',mode,60)).join('')}</div>`,mode)}
+  ${card(`<div class="h-headline">${t.bed}</div><div style="font:800 34px 'Baloo 2';letter-spacing:2px;padding:6px 18px;border-radius:14px;background:${mode==='day'?'#F4EEFF':'#2C2560'}">${lang==='tr'?'20:00':'8:00 PM'}</div><div class="caption" style="opacity:.7">${t.bedNote}</div>`,mode)}
+  <div class="caption" style="opacity:.7;text-align:center">🛡 ${t.privacy}<br><u>${t.privacyLink}</u></div></div>`+obBottom(t.cont,mode));}
+function field(text,mode,{ph=false,big=true}={}){return `<div style="flex:1;min-height:${big?56:52}px;border-radius:18px;border:3px solid ${outline(mode)};background:${mode==='day'?'#fff':P.dusk};display:flex;align-items:center;padding:0 16px;${big?"font:800 22px 'Baloo 2'":'font:600 16px Nunito'};${ph?'opacity:.45':''}">${text}</div>`;}
+function obChild(lang,mode){const t=OB[lang];return obPhone(mode,obTop(3,mode)+`<div style="padding:16px;display:flex;flex-direction:column;gap:14px">${header(t.cTitle,t.cSub,mode)}
+  <div class="bodyBold">${t.name}</div><div style="display:flex;gap:8px;align-items:center">${field(t.child,mode)}${bubble('','🔊','sky',mode,{circle:true})}</div>
+  <div class="bodyBold">${t.pron}</div>${field(t.pronPh,mode,{ph:true,big:false})}<div class="caption" style="opacity:.7">${t.pronNote}</div>
+  <div class="bodyBold" style="text-align:center">${t.age}</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;justify-items:center">${[3,4,5,6,7,8,9].map(a=>choice('',a,a===5,'orange',mode,62)).join('')}</div></div>`+obBottom(t.cont,mode));}
+function obInterests(lang,mode){const t=OB[lang],cols=['sun','grass','berry','grape','orange','sky'],sel=[0,1,5];
+  return obPhone(mode,obTop(4,mode)+`<div style="padding:16px;display:flex;flex-direction:column;gap:18px;align-items:center">${speakerRow('findik',t.iPrompt,mode)}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px">${t.interests.slice(0,9).map(([e,n],i)=>choice(e,n,sel.includes(i),cols[i%6],mode,100)).join('')}</div>
+  <div class="stars">${[0,1,2,3,4].map(i=>star(i<3,mode)).join('')}</div></div>`+obBottom(t.cont,mode));}
+function obValues(lang,mode){const t=OB[lang];return obPhone(mode,obTop(5,mode)+`<div style="padding:16px;display:flex;flex-direction:column;gap:20px">${header(t.vTitle,t.vSub,mode)}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px;justify-items:center">${t.values.map(([e,n],i)=>choice(e,n,i===0,'berry',mode,104)).join('')}</div></div>`+obBottom(t.cont,mode,{skip:t.skip}));}
+function obAvatar(lang,mode){const t=OB[lang],O=outline(mode),tabs=['☺','✋','✂','🎨','👕','🐾'];
+  const opt=(inner,sel)=>`<div style="width:84px;height:84px;border-radius:50%;background:${mode==='day'?'#fff':P.dusk};border:${sel?6:3}px solid ${sel?P.grass:O};display:flex;align-items:center;justify-content:center;overflow:hidden;${sel?'transform:scale(1.06)':''}">${inner}</div>`;
+  return obPhone(mode,obTop(6,mode)+`<div style="padding:12px 16px;display:flex;flex-direction:column;gap:12px;align-items:center">${speakerRow('pamuk',t.aPrompt,mode,64)}
+  <div style="position:relative;display:flex;align-items:flex-end"><div style="position:absolute;left:10px;right:10px;bottom:-6px;height:50px;border-radius:50%;background:${P.grass};opacity:${mode==='day'?.45:.25}"></div><div style="position:relative">${avatarSVG(160,mode,'happy',2)}</div><div style="position:relative;margin-left:-12px">${charSVG('lodos','happy',110,mode)}</div></div>
+  <div style="display:flex;gap:8px">${tabs.map((x,i)=>`<span class="btn circle" style="width:48px;height:48px;font-size:20px;background:${accent(i===2?'grape':'sky',mode)};filter:saturate(${i===2?1:.4});box-shadow:0 5px 0 ${darkened(accent(i===2?'grape':'sky',mode))},0 5px 0 3px ${O}">${x}</span>`).join('')}</div>
+  <div class="h-headline">${t.hairTab}</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">${[0,1,2,3,4,5].map(i=>opt(`<div style="margin-top:28px">${avatarSVG(118,mode,'happy',i)}</div>`,i===2)).join('')}</div></div>`+obBottom(t.ready,mode,{icon:'✦'}));}
+function obFinale(lang,mode){const t=OB[lang],cols=[P.sun,P.berry,P.grass,P.grape,P.orange];
+  let stars='';for(let i=0;i<14;i++){const a=i/14*2*Math.PI;stars+=`<div style="position:absolute;left:${185+Math.cos(a)*170-13}px;top:${360+Math.sin(a)*220-60-13}px;transform:rotate(${i*25}deg)"><svg width="26" height="26" viewBox="0 0 32 32"><path d="${starPath(16,16,15)}" fill="${cols[i%5]}" stroke="${outline(mode)}" stroke-width="2"/></svg></div>`;}
+  return `<div class="phone ${mode}" style="--outline:${outline(mode)};background:${mode==='day'?'#ADE4FA':P.nightSky}">${stars}
+  <div style="position:absolute;left:0;right:0;top:170px;text-align:center;padding:0 20px" class="h-display">${t.welcome(t.child)}</div>
+  <div style="position:absolute;left:0;right:0;top:400px;display:flex;justify-content:center;align-items:flex-end">${charSVG('pamuk','happy',120,mode)}<div style="margin:0 -16px">${avatarSVG(180,mode,'happy',2)}</div>${charSVG('lodos','happy',120,mode)}</div>
+  ${obBottom(t.go,mode,{icon:'⌖',color:'sun'})}</div>`;}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
   day:()=>gallery('day')+gallery2('day'),
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
+  onboarding:()=>obWelcome('tr','day')+obParent('en','day')+obChild('tr','day')+obInterests('tr','day')+obValues('en','day')+obAvatar('en','day')+obFinale('tr','day')+obInterests('en','night'),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map']:[mode];
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding']:[mode];
+if(mode==='onboarding') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');
 document.fonts.ready.then(()=>{document.querySelectorAll('canvas.sky').forEach(cv=>drawSky(cv,{dimming:+(cv.dataset.dim||0)}));document.body.dataset.ready='1';});

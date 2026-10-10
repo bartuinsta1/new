@@ -13,6 +13,8 @@ final class Family {
     var createdAt: Date
     var hasCompletedOnboarding: Bool
     var bedtime: Bedtime
+    /// Onboarding'de söylenen çocuk sayısı (1…4). Ebeveyn Köşesi eksik profilleri eklemeyi hatırlatır.
+    var expectedChildCount: Int = 1
 
     @Relationship(deleteRule: .cascade, inverse: \ChildProfile.family)
     var children: [ChildProfile] = []

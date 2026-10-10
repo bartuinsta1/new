@@ -81,13 +81,15 @@ final class ParentGateModel {
 struct ParentGate: View {
     var onUnlock: () -> Void
     var onCancel: () -> Void
+    /// Onboarding içinde gömülüyken kapatma düğmesi yerine akışın geri düğmesi kullanılır.
+    var showsClose = true
 
     @State private var model = ParentGateModel()
     @Environment(\.theme) private var theme
 
     var body: some View {
         VStack(spacing: Metrics.spacingL) {
-            HStack {
+            if showsClose { HStack {
                 Spacer()
                 Button(action: onCancel) {
                     Image(systemName: "xmark").font(.system(size: 20, weight: .heavy))
@@ -95,7 +97,7 @@ struct ParentGate: View {
                 }
                 .buttonStyle(BubbleButtonStyle(color: .sky, shape: .circle))
                 .accessibilityLabel(Text("Kapat"))
-            }
+            } }
             Text("Ebeveyn Köşesi")
                 .masalFont(.title)
                 .foregroundStyle(theme.ink)

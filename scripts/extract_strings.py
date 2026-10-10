@@ -13,12 +13,13 @@ SRC = ROOT / "Masalcik"
 CATALOG = SRC / "Resources" / "Localizable.xcstrings"
 
 # Interpolasyonları format belirteçlerine çevir (Int → %lld, diğerleri → %@).
-INT_HINTS = ("minutes", "durationMinutes", "filled", "total", "count")
+# Tam eşleşme: interpolasyondaki ifade bunlardan biriyse tamsayıdır.
+INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age"}
 
 def to_key(lit: str) -> str:
     def repl(m):
-        expr = m.group(1)
-        return "%lld" if any(h in expr for h in INT_HINTS) else "%@"
+        expr = m.group(1).strip()
+        return "%lld" if expr in INT_EXPRS else "%@"
     return re.sub(r"\\\(([^()]*(?:\([^()]*\)[^()]*)*)\)", repl, lit)
 
 PATTERNS = [
@@ -28,6 +29,11 @@ PATTERNS = [
     r'accessibilityLabel:\s*"((?:[^"\\]|\\.)*)"',
     r'\bsection\("((?:[^"\\]|\\.)*)"',
     r'\bPicker\("((?:[^"\\]|\\.)*)"',
+    r'\bTextField\("((?:[^"\\]|\\.)*)"',
+    r'\bDatePicker\("((?:[^"\\]|\\.)*)"',
+    r'\bOnboardingHeader\(title:\s*"((?:[^"\\]|\\.)*)"',
+    r'\b(?:subtitle|primaryTitle|secondaryTitle):\s*"((?:[^"\\]|\\.)*)"',
+    r'LocalizedStringKey\??\s*=\s*"((?:[^"\\]|\\.)*)"',
 ]
 
 keys = set()

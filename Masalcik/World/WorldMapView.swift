@@ -38,8 +38,13 @@ struct WorldMapView: View {
                 syncProgress(m)
                 if voiceOverEnabled { m.fitWholeIsland(viewport: viewport) }
                 else if isFirstLoad { m.resetCamera(viewport: viewport) }
+                if appState.opensTonightOnNextMapAppear {
+                    // Onboarding'den hemen sonra: doğrudan ilk masal (§3.1 adım 6).
+                    appState.opensTonightOnNextMapAppear = false
+                    sheet = .tonight
+                }
                 await m.load()
-                m.greetIfNeeded(isBedtimeNear: isBedtimeNear)
+                if sheet == nil { m.greetIfNeeded(isBedtimeNear: isBedtimeNear) }
                 AmbientSoundPlayer.shared.isEnabled = family?.settings?.ambientSoundEnabled ?? true
                 AmbientSoundPlayer.shared.play(for: theme.mode)
             }
