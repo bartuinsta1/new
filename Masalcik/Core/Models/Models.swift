@@ -203,6 +203,10 @@ final class AppSettings {
     var contentFilters: ContentFilters
     var defaultDuration: StoryDuration
     var lullabyMinutesAfterStory: Int   // 0 = kapalı, 10…30
+    /// Masal bittikten sonra çalan sakin ses: ninni ya da beyaz gürültü (§3.4).
+    var afterStorySound: AfterStorySound = AfterStorySound.lullaby
+    /// Masal sırasında alçak sesle ninni fonu.
+    var backgroundLullabyEnabled: Bool = false
     var voiceCloneConsentAt: Date?
     var hasVoiceClone: Bool
 

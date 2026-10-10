@@ -81,6 +81,54 @@
         }
       }
     },
+    "15 dk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 dk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 min"
+          }
+        }
+      }
+    },
+    "30 dk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 dk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 min"
+          }
+        }
+      }
+    },
+    "45 dk": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "45 dk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "45 min"
+          }
+        }
+      }
+    },
     "Ad yalnızca harflerden oluşabilir (en fazla 30).": {
       "localizations": {
         "tr": {
@@ -253,6 +301,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Read our privacy notice"
+          }
+        }
+      }
+    },
+    "Açık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
           }
         }
       }
@@ -1089,6 +1153,22 @@
         }
       }
     },
+    "Kapalı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapalı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
     "Kapat": {
       "localizations": {
         "tr": {
@@ -1329,6 +1409,38 @@
         }
       }
     },
+    "Masal bitince": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal bitince"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End of story"
+          }
+        }
+      }
+    },
+    "Masal hazırlanıyor": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal hazırlanıyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The story is on its way"
+          }
+        }
+      }
+    },
     "Masal seçmek için adada bir yere dokun!": {
       "localizations": {
         "tr": {
@@ -1517,6 +1629,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grandma"
+          }
+        }
+      }
+    },
+    "Ninni açık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninni açık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lullaby on"
+          }
+        }
+      }
+    },
+    "Ninni fonu": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninni fonu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background lullaby"
+          }
+        }
+      }
+    },
+    "Ninni kapalı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninni kapalı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lullaby off"
           }
         }
       }
@@ -2033,6 +2193,22 @@
         }
       }
     },
+    "Uyku zamanlayıcı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyku zamanlayıcı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep timer"
+          }
+        }
+      }
+    },
     "Uyku zamanı geldi! Uyku Evi'ne gidelim mi?": {
       "localizations": {
         "tr": {
@@ -2301,6 +2477,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "e.g. Emma"
+          }
+        }
+      }
+    },
+    "İyi geceler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi geceler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good night"
+          }
+        }
+      }
+    },
+    "İyi geceler!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi geceler!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good night!"
           }
         }
       }

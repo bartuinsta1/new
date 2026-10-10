@@ -412,6 +412,28 @@ function obFinale(lang,mode){const t=OB[lang],cols=[P.sun,P.berry,P.grass,P.grap
   <div style="position:absolute;left:0;right:0;top:400px;display:flex;justify-content:center;align-items:flex-end">${charSVG('pamuk','happy',120,mode)}<div style="margin:0 -16px">${avatarSVG(180,mode,'happy',2)}</div>${charSVG('lodos','happy',120,mode)}</div>
   ${obBottom(t.go,mode,{icon:'⌖',color:'sun'})}</div>`;}
 
+
+// ---------- Masal Oynatıcı (Player/StoryPlayerView.swift) ----------
+function dimFor(p){return p<.5?0:p<.8?(p-.5)/.3*.5:.5+(p-.8)/.2*.4;}
+function playerScreen(lang,{progress=.1,subtitle=null,word=0,timer=null,lullaby=false,finished=false}={}){
+  const mode='night',dim=finished?.9:dimFor(progress);
+  const T=lang==='tr'?{timer:timer??'Masal bitince',lul:lullaby?'Ninni açık':'Ninni kapalı'}:{timer:timer??'End of story',lul:lullaby?'Lullaby on':'Lullaby off'};
+  let sub='';
+  if(subtitle){const words=subtitle.split(' ');sub=`<div style="margin:0 16px 18px;padding:16px;border-radius:28px;background:rgba(30,27,75,.7);text-align:center;font:800 21px/1.25 'Baloo 2'">${words.map((w,i)=>`<span style="color:${i<=word?P.moon:'rgba(232,230,255,.45)'}">${w}</span>`).join(' ')}</div>`;}
+  const center=finished?`<div style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;font-size:44px;color:${P.moon}">☾✦</div>`
+    :bubble('',progress>0&&!finished?'❚❚':'▶','sky',mode,{circle:true}).replace('class="btn circle" style="','class="btn circle" style="width:96px;height:96px;font-size:34px;');
+  return `<div class="phone night" style="--outline:#14112F;color:${P.nightInk}"><canvas class="sky"></canvas>
+   <div style="position:absolute;left:-40%;right:-40%;top:62%;height:45%;border-radius:50%;background:${darkened(accent('grass','night'),.35)}"></div>
+   <div style="position:absolute;left:0;right:0;top:${subtitle?250:300}px;display:flex;justify-content:center;align-items:flex-end">${charSVG('pamuk','sleepy',160,mode)}<div style="margin-left:-10px">${charSVG('findik','sleepy',120,mode)}</div></div>
+   <div style="position:absolute;left:16px;top:54px">${bubble('','✕','grape',mode,{circle:true})}</div>
+   <div style="position:absolute;left:0;right:0;bottom:34px">${sub}
+    <div style="display:flex;justify-content:center;align-items:center;gap:24px">
+     <div style="text-align:center">${bubble('','☾z','grape',mode,{circle:true})}<div class="caption" style="opacity:.8;margin-top:6px">${T.timer}</div></div>
+     ${center}
+     <div style="text-align:center">${bubble('',lullaby?'♫':'♪̸',lullaby?'sky':'grape',mode,{circle:true})}<div class="caption" style="opacity:.8;margin-top:6px">${T.lul}</div></div>
+    </div></div>
+   <div style="position:absolute;inset:0;background:rgba(0,0,0,${dim})"></div></div>`;}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -419,10 +441,14 @@ const screens={
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
   onboarding:()=>obWelcome('tr','day')+obParent('en','day')+obChild('tr','day')+obInterests('tr','day')+obValues('en','day')+obAvatar('en','day')+obFinale('tr','day')+obInterests('en','night'),
+  player:()=>playerScreen('tr',{progress:.12,subtitle:"Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış.",word:5})
+    +playerScreen('en',{progress:.35,timer:'30 min',lullaby:true})
+    +playerScreen('tr',{progress:.78})
+    +playerScreen('en',{finished:true}),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map','onboarding']:[mode];
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding','player']:[mode];
 if(mode==='onboarding') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');

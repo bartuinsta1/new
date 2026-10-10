@@ -20,12 +20,25 @@ npm run check        # tür denetimi + testler + çeviri bütünlüğü
 Kod: `supabase/functions/_shared/engine/` — `prompt.ts` (yazım kuralları, TR/EN), `schema.ts` (JSON şeması),
 `safety.ts` (girdi/çıktı denetimi), `llm.ts` (Claude adaptörü), `engine.ts` (akış), `store.ts` (kalıcılık).
 
+## Seslendirme (Adım 6)
+
+- **Sağlayıcı:** Azure Neural TTS (`tr-TR-EmelNeural`, `tr-TR-AhmetNeural`, `en-US-AvaNeural`, `en-US-AndrewNeural`);
+  Anne/Baba/Nine/Dede tonları SSML ile (~%85 hız; Nine/Dede daha yavaş ve pes), paragraf duygusuna göre hafif ton.
+  Ebeveynin klon sesi (Premium) ElevenLabs ile. Sağlayıcı `TtsProvider` arayüzünün arkasında, değiştirilebilir.
+- **Akış:** masal güvenlik denetiminden geçince paragraflar sırayla seslendirilir; her biri hazır olur olmaz istemciye
+  gider. Seslendirilemeyen paragrafın `audio_url`'i boş gelir, uygulama onu cihaz sesiyle okur.
+- **Önbellek:** aynı metin + aynı ses → aynı dosya (`tts/<sha256>.mp3`); tekrar seslendirme ve maliyet yok.
+  Ses dosyaları çocuğun adını içerdiği için üretimde özel kova + imzalı URL kullanılmalı.
+- **Maliyet:** gerçekten seslendirilen karakter sayısı ayrı bir `tts` kaydıyla loglanır; panoda `ttsCostUSD`.
+
 ### Sırlar
 
 ```bash
 supabase secrets set ANTHROPIC_API_KEY=...   # tanımlı değilse fonksiyon sahte masal döner
 supabase secrets set ADMIN_TOKEN=...          # maliyet panosu
 supabase secrets set STORY_EFFORT=low         # isteğe bağlı: low (varsayılan) | medium | high
+supabase secrets set AZURE_TTS_KEY=... AZURE_TTS_REGION=westeurope   # yoksa uygulama cihaz sesiyle okur
+supabase secrets set ELEVENLABS_API_KEY=...   # isteğe bağlı: ebeveyn klon sesi
 ```
 
 ### Gerçek API ile deneme

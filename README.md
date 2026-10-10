@@ -54,4 +54,7 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
 - [x] Adım 4 — Onboarding (6 adım), avatar + yoldaş, ebeveyn kapısı akışa bağlı, kutlama → doğrudan ilk masal
 - [x] Adım 5 — StoryEngine (Claude Haiku 5.5): sistem promptu TR/EN, JSON şeması, güvenlik katmanı
       (girdi temizleme + kural denetimi + moderasyon + yedek), önbellek, idempotency, maliyet panosu — bkz. `backend/README.md`
-- [ ] Adım 6 — TTS + Masal Oynatıcı (Gece Modu, arka planda çalma, uyku zamanlayıcı, kademeli kararma)
+- [x] Adım 6 — Seslendirme (Azure Neural TR/EN, 4 ses tonu, duyguya göre ton; ebeveyn klon sesi için ElevenLabs)
+      + Masal Oynatıcı: paragraf paragraf akış, cihaz sesine düşme, kilit ekranı, uyku zamanlayıcı, ninni,
+      kademeli kararma, karaoke altyazı, çevrimdışı indirme
+- [ ] Adım 7 — "Bu Gece" akışı (seçim → üretim → dinleme, uçtan uca)

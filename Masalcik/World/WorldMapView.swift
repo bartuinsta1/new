@@ -184,7 +184,10 @@ struct WorldMapView: View {
         switch sheet {
         case .tonight: TonightFlowView().themed(.night)
         case .treasure: TreasureChestView().themed(theme.mode)
-        case .story: StoryPlayerView().themed(.night)
+        case .story(let item):
+            LibraryStoryPlayerContainer(item: item) { self.sheet = nil }
+                .themed(.night)
+                .interactiveDismissDisabled()
         case .parentZone: ParentZoneView().themed(.day)
         case .gallery: ComponentGalleryView()
         case .parentGate:

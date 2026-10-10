@@ -1,7 +1,7 @@
 // POST /stories  → masal üretimi (NDJSON akışı)
 // GET  /stories/:id → saklanan masal (yeniden üretim yok)
 // `engine` verilmezse sahte masal döner (yerel geliştirme / ANTHROPIC_API_KEY yokken).
-import { FREE_TIER, type Story, type StreamLine } from "../_shared/contract.ts";
+import { FREE_TIER, type Paragraph, type Story, type StoryRequest, type StreamLine } from "../_shared/contract.ts";
 import {
   type AuthProvider, type EntitlementStore, type UsageStore,
   errorResponse, istanbulDay, json, pathAfter, RateLimiter, requestLanguage,
@@ -10,6 +10,7 @@ import { mockStory } from "../_shared/mock.ts";
 import { type EngineDeps, generateStory } from "../_shared/engine/engine.ts";
 import { sanitizeRequest, UnsafeInputError } from "../_shared/engine/safety.ts";
 import { parseStoryRequest, ValidationError } from "../_shared/validate.ts";
+import { type CloneVoiceStore, type VoiceDeps, voiceStory } from "../_shared/tts/voice.ts";
 
 export interface StoriesDeps {
   auth: AuthProvider;
@@ -18,6 +19,9 @@ export interface StoriesDeps {
   limiter: RateLimiter;
   /** Gerçek masal motoru (Claude). Yoksa sahte masal. */
   engine?: EngineDeps;
+  /** Seslendirme (Azure / ElevenLabs). Yoksa audio_url null gider; istemci cihaz içi sesle okur. */
+  voice?: VoiceDeps;
+  cloneVoices?: CloneVoiceStore;
   now?: () => Date;
   /** Paragraflar arası yapay gecikme (ms, yalnızca sahte modda); testlerde 0. */
   paragraphDelayMs?: number;
@@ -64,7 +68,7 @@ export function createStoriesHandler(deps: StoriesDeps) {
     // Aynı isteğin tekrarı (ağ kopması): limit düşmeden önbellekten dön.
     if (deps.engine && idempotencyKey) {
       const cached = await deps.engine.stories.findByIdempotencyKey(userId, idempotencyKey);
-      if (cached) return streamStory(async () => cached.story, deps);
+      if (cached) return streamStory(async () => cached.story, deps, { voice: voicer(userId, request, cached.idempotencyKey) });
     }
 
     // Ücretsiz limit — sunucu tarafında (§4.6).
@@ -77,7 +81,10 @@ export function createStoriesHandler(deps: StoriesDeps) {
     if (!deps.engine) {
       await deps.usage.recordPersonalStory(userId, day);
       const story = mockStory(request);
-      return streamStory(async () => story, deps, deps.paragraphDelayMs ?? 400);
+      return streamStory(async () => story, deps, {
+        paragraphDelayMs: deps.voice ? 0 : deps.paragraphDelayMs ?? 400,
+        voice: voicer(userId, request),
+      });
     }
 
     const engine = deps.engine;
@@ -89,42 +96,73 @@ export function createStoriesHandler(deps: StoriesDeps) {
       throw e;
     }
     await deps.usage.recordPersonalStory(userId, day);
-    return streamStory(async () => (await generateStory(userId, request, engine, { idempotencyKey })).story, deps);
+    return streamStory(async () => (await generateStory(userId, request, engine, { idempotencyKey })).story, deps,
+      { voice: voicer(userId, request, idempotencyKey) });
   };
+
+  /** Seslendirme + sesli masalı kaydetme (sonraki GET ve tekrar dinleme sesi hazır bulur). */
+  function voicer(userId: string, request: StoryRequest, idempotencyKey?: string) {
+    const voice = deps.voice;
+    if (!voice) return undefined;
+    return async (story: Story, emit: (p: Paragraph) => void): Promise<Story> => {
+      // Zaten seslendirilmiş (önbellekteki) masal: yeniden seslendirme yok.
+      if (story.paragraphs.every((p) => p.audio_url)) {
+        story.paragraphs.forEach(emit);
+        return story;
+      }
+      const cloneVoiceId = request.voice === "parent_clone" ? await deps.cloneVoices?.get(userId) ?? null : null;
+      const result = await voiceStory(story, request, voice, { cloneVoiceId, onParagraph: emit });
+      const voiced = { ...story, paragraphs: result.paragraphs };
+      await deps.engine?.stories.save({ userId, story: voiced, language: request.language, idempotencyKey, createdAt: now() });
+      return voiced;
+    };
+  }
 }
 
 /**
  * NDJSON akışı. Üretim + moderasyon bitene kadar "progress" satırları gönderilir; masal ancak güvenlik
- * denetiminden geçtikten sonra çocuğa akar (güvenlik hızdan önce gelir).
- * Adım 6'da her paragraf seslendirildikçe gönderilecek; ilk paragraf hazır olur olmaz çalmaya başlar.
+ * denetiminden geçtikten sonra çocuğa akar (güvenlik hızdan önce gelir). Seslendirme varsa her paragraf
+ * sesi hazır olur olmaz gönderilir: istemci ilk paragrafı beklemeden çalmaya başlar.
  */
-function streamStory(produce: () => Promise<Story>, deps: StoriesDeps, paragraphDelayMs = 0): Response {
+function streamStory(
+  produce: () => Promise<Story>,
+  deps: StoriesDeps,
+  opts: { paragraphDelayMs?: number; voice?: (story: Story, emit: (p: Paragraph) => void) => Promise<Story> } = {},
+): Response {
   const enc = new TextEncoder();
   const line = (l: StreamLine) => enc.encode(JSON.stringify(l) + "\n");
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      controller.enqueue(line({ type: "progress", stage: "writing" }));
-      // İstemci bağlantıyı koparırsa enqueue fırlatır; üretim yine biter ve masal saklanır (sonra GET ile alınır).
-      const beat = setInterval(() => {
-        try { controller.enqueue(line({ type: "progress", stage: "writing" })); } catch { clearInterval(beat); }
-      }, deps.heartbeatMs ?? 3000);
+      let open = true;
+      const send = (l: StreamLine) => {
+        if (!open) return;
+        // İstemci bağlantıyı koparırsa enqueue fırlatır; üretim/seslendirme yine biter ve masal saklanır.
+        try { controller.enqueue(line(l)); } catch { open = false; }
+      };
+      send({ type: "progress", stage: "writing" });
+      const beat = setInterval(() => send({ type: "progress", stage: "writing" }), deps.heartbeatMs ?? 3000);
       let story: Story;
       try {
         story = await produce();
       } catch {
         clearInterval(beat);
-        controller.enqueue(line({ type: "error", code: "internal" }));
-        controller.close();
+        send({ type: "error", code: "internal" });
+        if (open) controller.close();
         return;
       }
       clearInterval(beat);
-      controller.enqueue(line({ type: "started", id: story.id, title: story.title, cover_scene: story.cover_scene }));
-      for (const p of story.paragraphs) {
-        if (paragraphDelayMs > 0) await sleep(paragraphDelayMs);
-        controller.enqueue(line({ type: "paragraph", paragraph: p }));
+      send({ type: "started", id: story.id, title: story.title, cover_scene: story.cover_scene });
+      if (opts.voice) {
+        send({ type: "progress", stage: "voicing" });
+        story = await opts.voice(story, (p) => send({ type: "paragraph", paragraph: p }));
+      } else {
+        for (const p of story.paragraphs) {
+          if (opts.paragraphDelayMs) await sleep(opts.paragraphDelayMs);
+          send({ type: "paragraph", paragraph: p });
+        }
       }
-      controller.enqueue(line({ type: "completed", story }));
-      controller.close();
+      send({ type: "completed", story });
+      if (open) controller.close();
     },
   });
   return new Response(stream, { headers: { "content-type": "application/x-ndjson; charset=utf-8" } });

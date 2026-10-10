@@ -109,8 +109,8 @@ export async function generateStory(
     at: now(), language: request.language, durationMinutes: request.duration_minutes,
     llmInputTokens: usage.input_tokens, llmOutputTokens: usage.output_tokens,
     llmCacheReadTokens: usage.cache_read_input_tokens, llmCacheWriteTokens: usage.cache_creation_input_tokens,
-    // TTS karakterleri Adım 6'da eklenecek; şimdilik seslendirilecek metnin uzunluğu.
-    ttsCharacters: story.paragraphs.reduce((s, p) => s + p.text.length, 0),
+    // Seslendirme maliyeti ayrı bir "tts" kaydıyla loglanır (voice.ts).
+    ttsCharacters: 0,
     costUSD, attempts, outcome: source,
   });
   return { story, source, warnings, costUSD };

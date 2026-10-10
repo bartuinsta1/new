@@ -1,4 +1,4 @@
 import { createVoiceCloneHandler } from "./handler.ts";
-import { auth, stores } from "../_shared/deps.ts";
+import { auth, cloneVoices, stores } from "../_shared/deps.ts";
 
-Deno.serve(createVoiceCloneHandler({ auth, entitlements: stores }));
+Deno.serve(createVoiceCloneHandler({ auth, entitlements: stores, cloneVoices }));

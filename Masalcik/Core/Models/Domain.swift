@@ -203,3 +203,10 @@ struct AvatarConfig: Codable, Hashable, Sendable {
 
     static let `default` = AvatarConfig(faceTemplate: 0, skinTone: 2, hairStyle: 0, hairColor: 1, pajamaColor: 0)
 }
+
+/// Masal sonrası sakin ses.
+enum AfterStorySound: String, Codable, CaseIterable, Sendable {
+    case lullaby, whiteNoise = "white_noise"
+    /// Paketteki ses dosyası adı (`Resources/Sounds/<ad>.m4a`). Dosya yoksa sessizce atlanır.
+    var resourceName: String { self == .lullaby ? "lullaby" : "white_noise" }
+}

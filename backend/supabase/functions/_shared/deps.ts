@@ -5,6 +5,8 @@ import { MemoryStores, mockAuth, RateLimiter } from "./http.ts";
 import type { EngineDeps } from "./engine/engine.ts";
 import { ClaudeStoryLLM, type Effort } from "./engine/llm.ts";
 import { MemoryCostLog, MemoryFlagLog, MemoryStoryStore } from "./engine/store.ts";
+import { AzureTts, ElevenLabsCloneTts, MemoryAudioStore } from "./tts/tts.ts";
+import { MemoryCloneVoiceStore, type VoiceDeps } from "./tts/voice.ts";
 
 export const stores = new MemoryStores();
 export const auth = mockAuth;
@@ -26,6 +28,22 @@ export function makeEngine(): EngineDeps | undefined {
     llm: new ClaudeStoryLLM({ storyEffort: effort }),
     stories: storyStore,
     flags: flagLog,
+    costs: costLog,
+  };
+}
+
+export const audioStore = new MemoryAudioStore();
+export const cloneVoices = new MemoryCloneVoiceStore();
+
+/** AZURE_TTS_KEY + AZURE_TTS_REGION tanımlıysa seslendirme açık; ELEVENLABS_API_KEY ebeveyn klon sesi için. */
+export function makeVoice(): VoiceDeps | undefined {
+  const key = env("AZURE_TTS_KEY"), region = env("AZURE_TTS_REGION");
+  if (!key || !region) return undefined;
+  const eleven = env("ELEVENLABS_API_KEY");
+  return {
+    tts: new AzureTts({ key, region }),
+    cloneTts: eleven ? new ElevenLabsCloneTts({ key: eleven }) : undefined,
+    audio: audioStore,
     costs: costLog,
   };
 }
