@@ -55,6 +55,26 @@ export class RateLimiter {
   }
 }
 
+/**
+ * Supabase oturumu: ağ geçidi (`verify_jwt = true`) JWT imzasını doğrular; burada yalnızca yükten kullanıcı
+ * kimliği okunur. Yalnızca oturum açmış (anonim dahil) kullanıcılar kabul edilir; "anon" anahtarı reddedilir.
+ */
+export const supabaseJwtAuth: AuthProvider = {
+  async userId(req) {
+    const m = /^Bearer\s+([\w-]+)\.([\w-]+)\.([\w-]+)$/.exec(req.headers.get("authorization") ?? "");
+    if (!m) return null;
+    try {
+      const b64 = m[2].replace(/-/g, "+").replace(/_/g, "/");
+      const payload = JSON.parse(atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4)));
+      if (payload.role !== "authenticated") return null;
+      if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) return null;
+      return typeof payload.sub === "string" && payload.sub.length > 0 ? payload.sub : null;
+    } catch {
+      return null;
+    }
+  },
+};
+
 export interface EntitlementStore {
   isPremium(userId: string): Promise<boolean>;
   setPremium(userId: string, expiresAt: Date | null): Promise<void>;

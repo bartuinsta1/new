@@ -18,6 +18,9 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
+configFiles:
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
 targets:
   Masalcik:
     type: application
@@ -42,6 +45,8 @@ targets:
         CFBundleDevelopmentRegion: tr
         CFBundleLocalizations: [tr, en]
         UIBackgroundModes: [audio]
+        MasalcikSupabaseURL: $(MASALCIK_SUPABASE_URL)
+        MasalcikSupabaseAnonKey: $(MASALCIK_SUPABASE_ANON_KEY)
         UIAppFonts:
           - Baloo2-ExtraBold.ttf
           - Nunito-SemiBold.ttf

@@ -5,12 +5,17 @@ enum AppConfig {
     /// Uygulama adı (yer tutucu). Ekranlarda ve seslendirmelerde bu sabit kullanılır.
     static let appName = "Masalcık"
 
-    /// Backend taban adresi.
-    /// VARSAYIM: Supabase Edge Functions kullanıyoruz; gerçek proje URL'si Config.xcconfig'den gelecek.
-    static let apiBaseURL = URL(string: "https://example.supabase.co/functions/v1")!
+    /// Supabase proje adresi ve herkese açık "anon" anahtarı — Config.xcconfig → Info.plist.
+    /// (Anon anahtar gizli değildir; asıl API anahtarları yalnızca sunucuda.) Boşsa uygulama sahte backend'le çalışır.
+    static let supabaseURL: URL? = (Bundle.main.object(forInfoDictionaryKey: "MasalcikSupabaseURL") as? String)
+        .flatMap { $0.isEmpty ? nil : URL(string: $0) }
+    static let supabaseAnonKey: String = (Bundle.main.object(forInfoDictionaryKey: "MasalcikSupabaseAnonKey") as? String) ?? ""
 
-    /// `true` iken ağ katmanı sahte (mock) yanıtlar döner. Adım 5'e kadar açık kalacak.
-    static let useMockBackend = true
+    /// Edge Functions taban adresi.
+    static var apiBaseURL: URL { (supabaseURL ?? URL(string: "https://example.supabase.co")!).appending(path: "functions/v1") }
+
+    /// Supabase ayarlanmadıysa sahte (mock) backend: uygulama ağsız da uçtan uca çalışır.
+    static var useMockBackend: Bool { supabaseURL == nil || supabaseAnonKey.isEmpty }
 
     /// Ücretsiz sürüm limitleri (şeffaf fiyatlandırma, bkz. şartname §1).
     /// Asıl uygulama backend'dedir; istemci yalnızca bilgi amaçlı gösterir.

@@ -465,6 +465,22 @@
         }
       }
     },
+    "Bu gecenin yeni masalı uyuyor. Kitaplıktan sevdiğin bir masalı dinleyelim mi?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu gecenin yeni masalı uyuyor. Kitaplıktan sevdiğin bir masalı dinleyelim mi?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tonight's new story is still asleep. Shall we listen to a favourite from the library?"
+          }
+        }
+      }
+    },
     "Bu masal şimdilik uyuyor": {
       "localizations": {
         "tr": {
@@ -1089,6 +1105,38 @@
         }
       }
     },
+    "Hoş geldin %@! Bu gece nasıl bir masal dinlemek istersin?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoş geldin %@! Bu gece nasıl bir masal dinlemek istersin?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome, %@! What kind of story would you like tonight?"
+          }
+        }
+      }
+    },
+    "Hoş geldin! Bu gece nasıl bir masal dinlemek istersin?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoş geldin! Bu gece nasıl bir masal dinlemek istersin?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome! What kind of story would you like tonight?"
+          }
+        }
+      }
+    },
     "Hu hu… Gel bakalım küçük dostum, sana bir masal anlatayım.": {
       "localizations": {
         "tr": {
@@ -1293,6 +1341,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choose how you look, then pick a buddy!"
+          }
+        }
+      }
+    },
+    "Kim olsun?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kim olsun?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who should it be?"
           }
         }
       }
@@ -1521,6 +1585,22 @@
         }
       }
     },
+    "Masalı Pamuk seçer": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalı Pamuk seçer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk picks the story"
+          }
+        }
+      }
+    },
     "Masalı dinlemek için dokun": {
       "localizations": {
         "tr": {
@@ -1549,6 +1629,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Who is the hero of the story?"
+          }
+        }
+      }
+    },
+    "Masalını yazıyorum… İstersen gözlerini kapatabilirsin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalını yazıyorum… İstersen gözlerini kapatabilirsin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm writing your story… You can close your eyes if you like."
           }
         }
       }
@@ -1613,6 +1709,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "How is it said? e.g. Shiv-awn"
+          }
+        }
+      }
+    },
+    "Ne olsun?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne olsun?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What should happen?"
+          }
+        }
+      }
+    },
+    "Nerede geçsin?": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nerede geçsin?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where should it be?"
           }
         }
       }
@@ -1725,6 +1853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pamuk"
+          }
+        }
+      }
+    },
+    "Pamuk seçsin": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk seçsin"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let Pamuk choose"
           }
         }
       }

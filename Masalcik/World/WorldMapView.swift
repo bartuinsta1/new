@@ -182,7 +182,13 @@ struct WorldMapView: View {
 
     @ViewBuilder private func destination(for sheet: MapSheet) -> some View {
         switch sheet {
-        case .tonight: TonightFlowView().themed(.night)
+        case .tonight:
+            TonightFlowView(onClose: { self.sheet = nil }, onOpenLibraryStory: { item in
+                // Bu Gece'yi kapat, ardından kitaplık masalını aç.
+                pendingSheet = .story(item)
+                self.sheet = nil
+            })
+            .interactiveDismissDisabled()
         case .treasure: TreasureChestView().themed(theme.mode)
         case .story(let item):
             LibraryStoryPlayerContainer(item: item) { self.sheet = nil }

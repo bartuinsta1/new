@@ -1,7 +1,7 @@
 // Fonksiyonların bağımlılıkları. ANTHROPIC_API_KEY tanımlıysa gerçek masal motoru (Claude Haiku 5.5), değilse sahte masal.
 // Not: her Edge Function ayrı bir isolate'te çalışır; bellek içi depolar fonksiyonlar arasında paylaşılmaz.
 // Üretimde StoryStore / FlagLog / CostLog Postgres tablolarına bağlanır (bkz. migrations; Adım 10'da Supabase istemcisiyle).
-import { MemoryStores, mockAuth, RateLimiter } from "./http.ts";
+import { MemoryStores, mockAuth, RateLimiter, supabaseJwtAuth } from "./http.ts";
 import type { EngineDeps } from "./engine/engine.ts";
 import { ClaudeStoryLLM, type Effort } from "./engine/llm.ts";
 import { MemoryCostLog, MemoryFlagLog, MemoryStoryStore } from "./engine/store.ts";
@@ -9,7 +9,13 @@ import { AzureTts, ElevenLabsCloneTts, MemoryAudioStore } from "./tts/tts.ts";
 import { MemoryCloneVoiceStore, type VoiceDeps } from "./tts/voice.ts";
 
 export const stores = new MemoryStores();
-export const auth = mockAuth;
+
+function env(key: string): string | undefined {
+  return typeof Deno !== "undefined" ? Deno.env.get(key) : undefined;
+}
+
+/** Supabase'de çalışırken gerçek oturum; yerel denemede `MOCK_AUTH=1` ile "Bearer <userId>". */
+export const auth = env("SUPABASE_URL") && env("MOCK_AUTH") !== "1" ? supabaseJwtAuth : mockAuth;
 /** Kullanıcı başına dakikada 20 istek. */
 export const limiter = new RateLimiter(20, 60_000);
 
@@ -17,9 +23,6 @@ export const storyStore = new MemoryStoryStore();
 export const flagLog = new MemoryFlagLog();
 export const costLog = new MemoryCostLog();
 
-function env(key: string): string | undefined {
-  return typeof Deno !== "undefined" ? Deno.env.get(key) : undefined;
-}
 
 export function makeEngine(): EngineDeps | undefined {
   if (!env("ANTHROPIC_API_KEY")) return undefined;

@@ -6,3 +6,4 @@ DerivedData/
 node_modules/
 backend/.env
 docs/preview/node_modules/
+Config.local.xcconfig

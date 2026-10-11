@@ -434,6 +434,39 @@ function playerScreen(lang,{progress=.1,subtitle=null,word=0,timer=null,lullaby=
     </div></div>
    <div style="position:absolute;inset:0;background:rgba(0,0,0,${dim})"></div></div>`;}
 
+
+// ---------- "Bu Gece" akışı (Tonight/*.swift) ----------
+const TN={tr:{greet:'Hoş geldin Ayşe! Bu gece nasıl bir masal dinlemek istersin?',who:'Kim olsun?',where:'Nerede geçsin?',what:'Ne olsun?',pamuk:'Pamuk seçsin',
+   writing:'Masalını yazıyorum… İstersen gözlerini kapatabilirsin.',title:'Ayşe ve Kayıp Fener',offer:'Bu gecenin yeni masalı uyuyor. Kitaplıktan sevdiğin bir masalı dinleyelim mi?',
+   chars:[['findik','Fındık'],['yildiz','Yıldız'],['kaptan_midye','Kaptan Midye']],regions:[['whisper_forest','Fısıltı Ormanı','♣','grass'],['storyteller_plane','Masalcı Çınarı','📖','orange'],['sleep_house','Uyku Evi','⌂','sun']],
+   moods:[['☾z','Sakin','sky'],['⌖','Macera','orange'],['☺','Komik','sun']],lib:[['Keloğlan ile Sihirli Kaşık','storyteller_plane',10,'nur'],["Fındık'ın Kış Hazırlığı",'whisper_forest',10,'findik']]},
+ en:{greet:"Welcome, Emma! What kind of story would you like tonight?",who:'Who should it be?',where:'Where should it be?',what:'What should happen?',pamuk:'Let Pamuk choose',
+   writing:"I'm writing your story… You can close your eyes if you like.",title:'Emma and the Lost Lantern',offer:"Tonight's new story is still asleep. Shall we listen to a favourite from the library?",
+   chars:[['findik','Fındık'],['yildiz','Yıldız'],['kaptan_midye','Captain Mussel']],regions:[['whisper_forest','Whisper Forest','♣','grass'],['storyteller_plane','Storyteller Tree','📖','orange'],['sleep_house','Sleep House','⌂','sun']],
+   moods:[['☾z','Calm','sky'],['⌖','Adventure','orange'],['☺','Funny','sun']],lib:[['Keloğlan and the Magic Spoon','storyteller_plane',10,'nur'],['Fındık Gets Ready for Winter','whisper_forest',10,'findik']]}};
+function tnShell(inner,{dots=0,back=false}={}){const m='night';
+  return `<div class="phone night" style="--outline:#14112F;color:${P.nightInk}"><canvas class="sky"></canvas>
+   <div style="position:absolute;left:16px;right:16px;top:54px;display:flex;justify-content:space-between;align-items:center">${bubble('','✕','grape',m,{circle:true})}
+   ${dots?`<div style="display:flex;gap:8px">${[1,2,3].map(i=>`<span style="width:${i===dots?28:14}px;height:14px;border-radius:99px;border:2px solid #14112F;background:${i<=dots?accent('grape',m):P.dusk}"></span>`).join('')}</div>`:''}
+   ${back?bubble('','‹','grape',m,{circle:true}):'<span style="width:64px"></span>'}</div>
+   <div style="position:absolute;left:16px;right:16px;top:140px;bottom:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px">${inner}</div></div>`;}
+function bigChoice(icon,label,color){const f=accent(color,'night');
+  return `<div style="width:140px;height:140px;border-radius:50%;background:${f};border:3px solid #14112F;box-shadow:0 6px 0 ${darkened(f)},0 6px 0 3px #14112F;display:flex;flex-direction:column;align-items:center;justify-content:center;color:${P.ink};text-align:center;padding:8px">${icon}<div class="caption" style="line-height:1.1">${label}</div></div>`;}
+function choiceGrid(items){return `<div style="display:flex;flex-direction:column;align-items:center;gap:22px"><div style="display:flex;gap:24px">${items.slice(0,2).join('')}</div><div style="display:flex;gap:24px">${items.slice(2).join('')}</div></div>`;}
+function pamukBtn(label){const f=accent('sun','night');return `<span class="btn" style="background:${f};box-shadow:0 6px 0 ${darkened(f)},0 6px 0 3px #14112F;padding:6px 18px 6px 8px;font:800 20px 'Baloo 2'">${charSVG('pamuk','happy',44,'night')}${label}</span>`;}
+function tnPrompt(text){return speakerRow('pamuk',text,'night',60);}
+function tnGreeting(l){const t=TN[l];return tnShell(`${charSVG('pamuk','sleepy',200,'night')}<div style="display:flex;align-items:center;gap:8px">${bubble('','🔊','sky','night',{circle:true})}</div>${bubble('','★','sky','night',{circle:true}).replace('width:64px;height:64px','width:96px;height:96px;font-size:36px')}`);}
+function tnChars(l){const t=TN[l];return tnShell(`${tnPrompt(t.who)}${choiceGrid(t.chars.map(([id,n])=>bigChoice(charSVG(id,'happy',92,'night'),n,'grape')))}${pamukBtn(t.pamuk)}`,{dots:1});}
+function tnRegions(l){const t=TN[l];return tnShell(`${tnPrompt(t.where)}${choiceGrid(t.regions.map(([id,n,ic,c])=>bigChoice(`<div style="font-size:44px">${ic}</div>`,n,c)))}${pamukBtn(t.pamuk)}`,{dots:2,back:true});}
+function tnMoods(l){const t=TN[l];return tnShell(`${tnPrompt(t.what)}${choiceGrid(t.moods.map(([ic,n,c])=>bigChoice(`<div style="font:800 40px 'Baloo 2'">${ic}</div>`,n,c)))}${pamukBtn(t.pamuk)}`,{dots:3,back:true});}
+function tnWaiting(l){const t=TN[l];const cols=[P.moon,P.firefly];let stars='';
+  for(let i=0;i<12;i++){const x=160+(i%2?1:-1)*(10+i*11),y=300-i*20;stars+=`<div style="position:absolute;left:${x}px;top:${y}px;opacity:${1-i/13}"><svg width="${18+i%3*6}" height="${18+i%3*6}" viewBox="0 0 32 32"><path d="${starPath(16,16,15)}" fill="${cols[i%2]}"/></svg></div>`;}
+  const book=`<div style="position:relative;width:236px;height:156px;border-radius:18px;background:${accent('berry','night')};border:3px solid #14112F;display:flex;gap:0;padding:8px"><div style="flex:1;border-radius:14px;background:#FFF1DA;border:3px solid #14112F"></div><div style="flex:1;border-radius:14px;background:#FFF8EC;border:3px solid #14112F"></div></div>`;
+  return tnShell(`<div style="position:relative;width:340px;height:330px">${stars}<div style="position:absolute;left:52px;top:170px">${book}</div><div style="position:absolute;left:95px;top:30px">${charSVG('pamuk','happy',150,'night')}</div></div>
+   <div class="h-title" style="color:${P.moon};text-align:center">${t.title}</div>${bubble('','🔊','sky','night',{circle:true})}`);}
+function tnOffer(l){const t=TN[l];return tnShell(`${charSVG('nur','sleepy',150,'night')}${speakerRow('nur',t.offer,'night',56)}
+  <div style="display:flex;gap:14px">${t.lib.map(([n,r,m,c])=>storyCard(n,r,m,c,'night',{lang:l})).join('')}</div>`);}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -441,15 +474,16 @@ const screens={
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
   onboarding:()=>obWelcome('tr','day')+obParent('en','day')+obChild('tr','day')+obInterests('tr','day')+obValues('en','day')+obAvatar('en','day')+obFinale('tr','day')+obInterests('en','night'),
+  tonight:()=>tnGreeting('tr')+tnChars('tr')+tnRegions('en')+tnMoods('tr')+tnWaiting('en')+tnOffer('tr'),
   player:()=>playerScreen('tr',{progress:.12,subtitle:"Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış.",word:5})
     +playerScreen('en',{progress:.35,timer:'30 min',lullaby:true})
     +playerScreen('tr',{progress:.78})
     +playerScreen('en',{finished:true}),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map','onboarding','player']:[mode];
-if(mode==='onboarding') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight']:[mode];
+if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');
 document.fonts.ready.then(()=>{document.querySelectorAll('canvas.sky').forEach(cv=>drawSky(cv,{dimming:+(cv.dataset.dim||0)}));document.body.dataset.ready='1';});

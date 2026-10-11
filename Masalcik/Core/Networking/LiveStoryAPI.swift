@@ -1,9 +1,10 @@
 import Foundation
 
-/// Gerçek backend istemcisi. Adım 5'te kimlik doğrulama (anonim Supabase oturumu) bağlanacak.
+/// Gerçek backend istemcisi: Supabase Edge Functions + anonim oturum jetonu (AuthSession).
 /// API anahtarları (LLM, TTS) asla istemcide durmaz; burada yalnızca kullanıcı oturum jetonu gider.
 struct LiveStoryAPI: StoryAPI {
     var baseURL: URL = AppConfig.apiBaseURL
+    var anonKey: String = AppConfig.supabaseAnonKey
     var session: URLSession = .shared
     var accessToken: @Sendable () async -> String? = { nil }
     var language: AppLanguage = .current
@@ -83,6 +84,8 @@ struct LiveStoryAPI: StoryAPI {
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         // Kütüphane başlıkları ve hata metinleri bu dilde döner.
         req.setValue(language.rawValue, forHTTPHeaderField: "Accept-Language")
+        req.setValue(anonKey, forHTTPHeaderField: "apikey")
+        // Jeton alınamazsa (ağ yok) istek yine gider; sunucu 401 döner, uygulama yerel yedeğe düşer.
         if let token = await accessToken() {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }

@@ -191,3 +191,16 @@ test("GET /library Accept-Language'e göre", async () => {
   assert.equal(en[0].title, "Keloğlan and the Magic Spoon");
   assert.deepEqual(tr.map((i: { id: string }) => i.id), en.map((i: { id: string }) => i.id));
 });
+
+test("Supabase JWT: yalnızca oturum açmış kullanıcı, süresi geçmemiş jeton", async () => {
+  const { supabaseJwtAuth } = await import("../supabase/functions/_shared/http.ts");
+  const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  const jwt = (payload: object) => `Bearer ${b64({ alg: "HS256" })}.${b64(payload)}.sig`;
+  const req = (h?: string) => new Request("https://x", { headers: h ? { authorization: h } : {} });
+  const future = Math.floor(Date.now() / 1000) + 3600;
+  assert.equal(await supabaseJwtAuth.userId(req(jwt({ sub: "uuid-1", role: "authenticated", exp: future }))), "uuid-1");
+  assert.equal(await supabaseJwtAuth.userId(req(jwt({ role: "anon", exp: future }))), null);           // anon anahtar
+  assert.equal(await supabaseJwtAuth.userId(req(jwt({ sub: "u", role: "authenticated", exp: 1 }))), null);  // süresi geçmiş
+  assert.equal(await supabaseJwtAuth.userId(req("Bearer bozuk")), null);
+  assert.equal(await supabaseJwtAuth.userId(req()), null);
+});

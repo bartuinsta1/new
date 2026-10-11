@@ -10,7 +10,10 @@ xcodegen generate
 open Masalcik.xcodeproj      # Masalcik şemasını çalıştır; ⌘U ile testler
 ```
 
-Backend (sahte yanıtlar, Adım 1):
+Gerçek backend'e bağlamak için `Config.xcconfig` içine Supabase adresini ve anon anahtarını yazın
+(ya da gitignore'daki `Config.local.xcconfig` dosyasına). Boş bırakılırsa uygulama sahte backend'le çalışır.
+
+Backend:
 
 ```bash
 cd backend && npm test        # Node 22+, ek bağımlılık yok
@@ -57,4 +60,7 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
 - [x] Adım 6 — Seslendirme (Azure Neural TR/EN, 4 ses tonu, duyguya göre ton; ebeveyn klon sesi için ElevenLabs)
       + Masal Oynatıcı: paragraf paragraf akış, cihaz sesine düşme, kilit ekranı, uyku zamanlayıcı, ninni,
       kademeli kararma, karaoke altyazı, çevrimdışı indirme
-- [ ] Adım 7 — "Bu Gece" akışı (seçim → üretim → dinleme, uçtan uca)
+- [x] Adım 7 — "Bu Gece" akışı uçtan uca: Uyku Evi → Kim/Nerede/Ne (ya da "Pamuk seçsin") → kitap animasyonu
+      → ilk paragraf gelince oynatıcı; hata/ağ yoksa yerel güvenli masal, hak dolunca kitaplık önerisi;
+      cihaza bağlı anonim hesap (Supabase) ve sunucuda JWT kimliği
+- [ ] Adım 8 — Kitaplık, Hazine Sandığı, kalıcı karakter hafızası

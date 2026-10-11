@@ -1,0 +1,10 @@
+// Ortam ayarları. Supabase'i bağlamak için doldurun; boş bırakılırsa uygulama sahte backend'le çalışır.
+// Not: xcconfig'te "//" yorum başlatır; URL'de "https:/$()/" yazımı kullanılır.
+// Anon anahtar herkese açıktır (gizli değil); LLM/TTS anahtarları asla burada olmaz, yalnızca sunucuda.
+MASALCIK_SUPABASE_URL =
+MASALCIK_SUPABASE_ANON_KEY =
+
+// Örnek:
+// MASALCIK_SUPABASE_URL = https:/$()/abcdefgh.supabase.co
+// MASALCIK_SUPABASE_ANON_KEY = eyJhbGciOi...
+#include? "Config.local.xcconfig"
