@@ -45,6 +45,7 @@ private struct TonightContent: View {
     var onOpenLibraryStory: (LibraryItemDTO) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showsLibrary = false
 
     var body: some View {
         ZStack {
@@ -70,6 +71,13 @@ private struct TonightContent: View {
             }
         }
         .animation(Motion.standard(.night, reduceMotion: reduceMotion), value: model.step)
+        .fullScreenCover(isPresented: $showsLibrary) {
+            LibraryView(onPlay: { story in
+                showsLibrary = false
+                model.playStored(story)
+            }, onClose: { showsLibrary = false })
+            .themed(.night)
+        }
     }
 
     private var header: some View {
@@ -96,8 +104,19 @@ private struct TonightContent: View {
                 CharacterView(character: .pamuk, mood: .sleepy, size: 200)
                 VoicePromptPlayer(text: TonightLines.greeting(name: model.childName), recordingKey: nil,
                                   speaker: .pamuk, autoplay: true, showsText: false)
-                BubbleButton(systemImage: "star.fill", color: .sky, size: .large, accessibilityLabel: "Başlayalım") {
-                    model.begin()
+                HStack(spacing: Metrics.spacingXL) {
+                    VStack(spacing: 6) {
+                        BubbleButton(systemImage: "star.fill", color: .sky, size: .large, accessibilityLabel: "Yeni masal") {
+                            model.begin()
+                        }
+                        Text("Yeni masal").masalFont(.caption, scales: false).foregroundStyle(Palette.nightInk)
+                    }
+                    VStack(spacing: 6) {
+                        BubbleButton(systemImage: "books.vertical.fill", color: .grape, size: .large, accessibilityLabel: "Kitaplığım") {
+                            showsLibrary = true
+                        }
+                        Text("Kitaplığım").masalFont(.caption, scales: false).foregroundStyle(Palette.nightInk)
+                    }
                 }
             }
         case .character:

@@ -132,6 +132,14 @@ final class TonightModel {
         streamTask = Task { [weak self] in await self?.consume(request) }
     }
 
+    /// Kitaplıktan kayıtlı masal: yeniden üretim yok, kayıttan (indirilmişse çevrimdışı) çalar.
+    func playStored(_ story: Story) {
+        streamTask?.cancel()
+        streamTask = nil
+        player = StoryPlayerModel(story: story, child: child, settings: settings, language: language)
+        step = .playing
+    }
+
     func cancel() {
         streamTask?.cancel()
         streamTask = nil

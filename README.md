@@ -63,4 +63,6 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
 - [x] Adım 7 — "Bu Gece" akışı uçtan uca: Uyku Evi → Kim/Nerede/Ne (ya da "Pamuk seçsin") → kitap animasyonu
       → ilk paragraf gelince oynatıcı; hata/ağ yoksa yerel güvenli masal, hak dolunca kitaplık önerisi;
       cihaza bağlı anonim hesap (Supabase) ve sunucuda JWT kimliği
-- [ ] Adım 8 — Kitaplık, Hazine Sandığı, kalıcı karakter hafızası
+- [x] Adım 8 — Kitaplık (favoriler / benim masallarım / kitaplık rafları, kayıttan tekrar dinleme), Hazine Sandığı
+      (masal başına çıkartma, 7 gece arka arkaya → kıyafet, ceza yok, gece kutlama yok), masal arkadaşları
+- [ ] Adım 9 — Ebeveyn Köşesi (3 sekme), içerik filtreleri, veri silme

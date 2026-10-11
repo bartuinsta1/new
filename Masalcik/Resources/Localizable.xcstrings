@@ -81,6 +81,34 @@
         }
       }
     },
+    "%lld masalda": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld masalda"
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "in %lld story"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "in %lld stories"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "15 dk": {
       "localizations": {
         "tr": {
@@ -289,6 +317,34 @@
         }
       }
     },
+    "Arka arkaya %lld gece daha masal dinlersen yeni bir kıyafet kazanırsın!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arka arkaya %lld gece daha masal dinlersen yeni bir kıyafet kazanırsın!"
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Listen to a story %lld more night in a row and you'll win a new outfit!"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Listen to stories %lld more nights in a row and you'll win a new outfit!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Aydınlatma metnini okuyun": {
       "localizations": {
         "tr": {
@@ -349,6 +405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Let's begin"
+          }
+        }
+      }
+    },
+    "Benim masallarım": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benim masallarım"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My stories"
           }
         }
       }
@@ -481,6 +553,50 @@
         }
       }
     },
+    "Bu hafta": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hafta"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        }
+      }
+    },
+    "Bu hafta %lld gece masal dinledin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu hafta %lld gece masal dinledin."
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You listened to a story on %lld night this week."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You listened to stories on %lld nights this week."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Bu masal şimdilik uyuyor": {
       "localizations": {
         "tr": {
@@ -525,6 +641,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "BubbleButton"
+          }
+        }
+      }
+    },
+    "Burası senin Hazine Sandığın! Dinlediğin her masal için bir çıkartma kazanırsın.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Burası senin Hazine Sandığın! Dinlediğin her masal için bir çıkartma kazanırsın."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is your Treasure Chest! You win a sticker for every story you listen to."
           }
         }
       }
@@ -833,6 +965,54 @@
         }
       }
     },
+    "Favorilerden çıkar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorilerden çıkar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from favourites"
+          }
+        }
+      }
+    },
+    "Favorilere ekle": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorilere ekle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to favourites"
+          }
+        }
+      }
+    },
+    "Favorilerim": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorilerim"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My favourites"
+          }
+        }
+      }
+    },
     "Futbol": {
       "localizations": {
         "tr": {
@@ -877,6 +1057,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "I found a hazelnut! Shall I share it with you?"
+          }
+        }
+      }
+    },
+    "Fındık'ın yıldızlı atkısı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık'ın yıldızlı atkısı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık's starry scarf"
           }
         }
       }
@@ -957,6 +1153,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entered: %@"
+          }
+        }
+      }
+    },
+    "Giyiliyor": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giyiliyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wearing"
           }
         }
       }
@@ -1069,6 +1281,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "I'm ready!"
+          }
+        }
+      }
+    },
+    "Henüz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henüz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not yet"
           }
         }
       }
@@ -1249,6 +1477,22 @@
         }
       }
     },
+    "Kaptan Midye'nin atkısı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptan Midye'nin atkısı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captain Mussel's scarf"
+          }
+        }
+      }
+    },
     "Karakterler": {
       "localizations": {
         "tr": {
@@ -1361,6 +1605,54 @@
         }
       }
     },
+    "Kitaplık masalları": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kitaplık masalları"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library stories"
+          }
+        }
+      }
+    },
+    "Kitaplığım": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kitaplığım"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My library"
+          }
+        }
+      }
+    },
+    "Kitaplığın şimdilik boş. Dinlediğin her masal buraya, rafına gelir!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kitaplığın şimdilik boş. Dinlediğin her masal buraya, rafına gelir!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your library is empty for now. Every story you listen to will come and sit on these shelves!"
+          }
+        }
+      }
+    },
     "Komik": {
       "localizations": {
         "tr": {
@@ -1393,6 +1685,22 @@
         }
       }
     },
+    "Kıyafetler": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kıyafetler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outfits"
+          }
+        }
+      }
+    },
     "Lodos": {
       "localizations": {
         "tr": {
@@ -1405,6 +1713,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lodos"
+          }
+        }
+      }
+    },
+    "Lodos'un kurdelesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos'un kurdelesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos's ribbon"
           }
         }
       }
@@ -1469,6 +1793,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Welcome to Story Island, %@!"
+          }
+        }
+      }
+    },
+    "Masal arkadaşların": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal arkadaşların"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your story friends"
           }
         }
       }
@@ -1809,6 +2149,22 @@
         }
       }
     },
+    "Nur'un uyku şapkası": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur'un uyku şapkası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur's sleeping cap"
+          }
+        }
+      }
+    },
     "Ooo, bu ne? Hadi gidip bakalım!": {
       "localizations": {
         "tr": {
@@ -1885,6 +2241,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pamuk gave a long, slow yawn and gently closed both eyes."
+          }
+        }
+      }
+    },
+    "Pamuk'un gece lambası şapkası": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk'un gece lambası şapkası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk's night-light hat"
           }
         }
       }
@@ -2433,6 +2805,22 @@
         }
       }
     },
+    "Yeni": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New"
+          }
+        }
+      }
+    },
     "Yeni kardeş": {
       "localizations": {
         "tr": {
@@ -2445,6 +2833,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "A new baby sibling"
+          }
+        }
+      }
+    },
+    "Yeni masal": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni masal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New story"
+          }
+        }
+      }
+    },
+    "Yeni ödül var": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yeni ödül var"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's a new reward"
           }
         }
       }
@@ -2545,6 +2965,22 @@
         }
       }
     },
+    "Yıldız'ın ay tacı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız'ın ay tacı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız's moon crown"
+          }
+        }
+      }
+    },
     "Çocuğunuz için yalnızca adını, yaşını ve ilgi alanlarını saklarız. Reklam yok, üçüncü taraf takip yok.": {
       "localizations": {
         "tr": {
@@ -2589,6 +3025,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sticker"
+          }
+        }
+      }
+    },
+    "Çıkartmalarım": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çıkartmalarım"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My stickers"
           }
         }
       }

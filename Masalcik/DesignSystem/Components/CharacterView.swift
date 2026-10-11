@@ -29,6 +29,8 @@ struct CharacterView: View {
     var isInteractive = true
     /// Dokunulunca sesli tepki verilsin mi? (Galeride/Preview'da kapatılabilir)
     var speaksOnTap = true
+    /// Giydirilmiş kıyafet (yalnızca bu karaktere aitse çizilir).
+    var outfit: Outfit? = nil
 
     @Environment(\.theme) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -59,7 +61,7 @@ struct CharacterView: View {
         if UIImage(named: assetName) != nil {
             Image(assetName).resizable().scaledToFit()
         } else {
-            CharacterArt(character: character, mood: shownMood, blink: blink, mode: theme.mode)
+            CharacterArt(character: character, mood: shownMood, blink: blink, mode: theme.mode, outfit: outfit)
                 .scaleEffect(size / 200)
                 .frame(width: size, height: size)
         }

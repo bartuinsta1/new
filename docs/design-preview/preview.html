@@ -467,6 +467,46 @@ function tnWaiting(l){const t=TN[l];const cols=[P.moon,P.firefly];let stars='';
 function tnOffer(l){const t=TN[l];return tnShell(`${charSVG('nur','sleepy',150,'night')}${speakerRow('nur',t.offer,'night',56)}
   <div style="display:flex;gap:14px">${t.lib.map(([n,r,m,c])=>storyCard(n,r,m,c,'night',{lang:l})).join('')}</div>`);}
 
+
+// ---------- Kitaplık + Hazine Sandığı (Library/*, Treasure/*) ----------
+const OUTFIT_ANCHOR={pamuk:{head:[104,46],neck:[100,152]},findik:{head:[98,44],neck:[98,162]},lodos:{head:[100,24],neck:[100,174]},nur:{head:[100,36],neck:[100,152]},yildiz:{head:[100,18],neck:[100,160]},kaptan_midye:{head:[100,20],neck:[100,164]}};
+function outfitSVG(char,style,color,mode){const O=outline(mode),st=`stroke="${O}" stroke-width="3" stroke-linejoin="round"`,a=OUTFIT_ANCHOR[char],f=accent(color,mode);
+  if(style==='nightcap'){const [x,y]=a.head;return `<g transform="translate(${x} ${y}) rotate(12)"><path d="M-39 31 C-31 -31 0 -37 39 -25 Q43 -16 35 -12 C11 -6 33 17 35 31Z" fill="${f}" ${st}/><rect x="-37" y="18" width="74" height="16" rx="8" fill="#fff" ${st}/><circle cx="40" cy="-22" r="15" fill="${P.firefly}" fill-opacity=".45"/><circle cx="40" cy="-22" r="9" fill="${P.sun}" ${st}/></g>`;}
+  if(style==='scarf'){const [x,y]=a.neck;return `<g transform="translate(${x} ${y})"><rect x="-56" y="-12" width="112" height="24" rx="12" fill="${f}" ${st}/><rect x="17" y="2" width="22" height="40" rx="8" fill="${f}" ${st} transform="rotate(-12 28 22)"/>${[-30,0,30].map(dx=>`<path d="${starPath(dx,0,6)}" fill="#fff"/>`).join('')}</g>`;}
+  if(style==='crown'){const [x,y]=a.head;return `<g transform="translate(${x-31} ${y-18})"><path d="M0 36 L0 9 Q7 20 19 20 Q26 4 31 0 Q36 4 43 20 Q55 20 62 9 L62 36Z" fill="${P.moon}" ${st}/><circle cx="31" cy="22" r="6" fill="${f}" ${st}/></g>`;}
+  const [x,y]=a.neck;return `<g transform="translate(${x} ${y})"><ellipse cx="-14" cy="0" rx="15" ry="11" fill="${f}" ${st}/><ellipse cx="14" cy="0" rx="15" ry="11" fill="${f}" ${st}/><circle r="7" fill="${darkened(f,.15)}" ${st}/></g>`;}
+function charWithOutfit(id,mood,size,mode,o){return charSVG(id,mood,size,mode).replace('</svg>',o?outfitSVG(id,o[0],o[1],mode)+'</svg>':'</svg>');}
+const LIBT={tr:{shelves:[['♥','Favorilerim',[['Ayşe ve Kayıp Fener','whisper_forest',10,'findik',true]]],['✦','Benim masallarım',[['Ayşe ve Uykucu Yıldız','star_hill',10,'yildiz'],['Ayşe ile Şarkı Söyleyen Deniz','lighthouse_cove',15,'kaptan_midye']]],['▥','Kitaplık masalları',[['Keloğlan ile Sihirli Kaşık','storyteller_plane',10,'nur'],["Fındık'ın Kış Hazırlığı",'whisper_forest',10,'findik']]]]},
+ en:{shelves:[['♥','My favourites',[['Emma and the Lost Lantern','whisper_forest',10,'findik',true]]],['✦','My stories',[['Emma and the Sleepy Star','star_hill',10,'yildiz'],['Emma and the Singing Sea','lighthouse_cove',15,'kaptan_midye']]]]}};
+function libraryScreen(lang,mode){const t=LIBT[lang],O=outline(mode);
+  const card=(n,r,m,c,fav)=>`<div style="position:relative;flex:none">${storyCard(n,r,m,c,mode,{fav,lang})}<div style="position:absolute;right:-6px;bottom:64px">${bubble('',fav?'♥':'♡','berry',mode,{circle:true}).replace('width:64px;height:64px','').replace('class="btn circle" style="','class="btn circle" style="width:44px;height:44px;font-size:20px;')}</div></div>`;
+  return `<div class="phone ${mode}" style="--outline:${O};background:${mode==='day'?P.cream:P.nightSky};color:${mode==='day'?P.ink:P.nightInk}">${mode==='night'?'<canvas class="sky"></canvas>':''}
+   <div style="position:absolute;left:16px;right:16px;top:54px;display:flex;justify-content:space-between;align-items:center">${bubble('','✕','grape',mode,{circle:true})}<span style="font-size:30px">▥</span><span style="width:64px"></span></div>
+   <div style="position:absolute;left:0;right:0;top:140px;bottom:0;overflow:hidden">${t.shelves.map(([ic,title,items])=>`<div style="margin-bottom:6px"><div class="h-headline" style="padding:0 16px 8px;color:${ic==='♥'?P.berry:'inherit'}">${ic} ${title}</div>
+   <div style="display:flex;gap:16px;padding:0 16px 14px;overflow:hidden">${items.map(([n,r,m,c,f])=>card(n,r,m,c,!!f)).join('')}</div>
+   <div style="height:12px;margin:-8px 8px 10px;border-radius:6px;background:#C98F4E${mode==='night'?'99':''};border:2px solid ${O}"></div></div>`).join('')}</div></div>`;}
+const TRT={tr:{intro:'Burası senin Hazine Sandığın! Dinlediğin her masal için bir çıkartma kazanırsın.',week:'Bu hafta',weekLine:'Bu hafta 5 gece masal dinledin.',toGo:'Arka arkaya 2 gece daha masal dinlersen yeni bir kıyafet kazanırsın!',stickers:'Çıkartmalarım',outfits:'Kıyafetler',friends:'Masal arkadaşların',
+   o1:"Pamuk'un gece lambası şapkası",not:'Henüz',f:[['Fener Tavşan','Küçük, beyaz, utangaç bir tavşan; elinde sarı bir fener taşır.','3 masalda'],['Işık Yaprak','Geceleri parlayan küçük bir yaprak.','1 masalda']]},
+ en:{intro:'This is your Treasure Chest! You win a sticker for every story you listen to.',week:'This week',weekLine:'You listened to stories on 5 nights this week.',toGo:"Listen to stories 2 more nights in a row and you'll win a new outfit!",stickers:'My stickers',outfits:'Outfits',friends:'Your story friends',
+   o1:"Pamuk's night-light hat",not:'Not yet',f:[['Lantern Bunny','A small, shy white bunny who carries a little yellow lantern.','in 3 stories']]}};
+function treasureScreen(lang,mode){const t=TRT[lang],O=outline(mode),ink=mode==='day'?P.ink:P.nightInk;
+  const earned=[['🍃','grass',true],['⭐️','sun',false],['🐚','sky',false],['🏮','orange',true],['🌙','grape',false]];
+  const ghosts=[['🌷','berry'],['📖','orange'],['🌈','grape']];
+  const stk=earned.map(([e,c,n],i)=>`<div style="position:relative">${sticker(e,c,true,mode,[-3,4,-5,2,3][i])}${n?`<span style="position:absolute;top:-6px;right:-6px;background:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:${P.berry};font-weight:900">✦</span>`:''}</div>`).join('')+ghosts.map(([e,c],i)=>sticker(e,c,false,mode,[2,-4,5][i])).join('');
+  const out=(id,o,has,worn,label)=>`<div style="width:104px;padding:6px;border-radius:24px;text-align:center;border:${worn?4:2}px solid ${worn?P.grass:O};background:${worn?'rgba(126,217,87,.35)':(mode==='day'?'rgba(255,255,255,.6)':'rgba(59,47,107,.6)')}"><div style="${has?'':'filter:grayscale(1);opacity:.4'}">${charWithOutfit(id,has?'happy':'sleepy',88,mode,has?o:null)}</div><div class="caption" style="line-height:1.1">${label}</div></div>`;
+  return `<div class="phone ${mode}" style="--outline:${O};background:${mode==='day'?P.cream:P.nightSky};color:${ink}">${mode==='night'?'<canvas class="sky"></canvas>':''}
+   <div style="position:absolute;left:16px;right:16px;top:54px;bottom:0;overflow:hidden;display:flex;flex-direction:column;gap:14px">
+    <div>${bubble('','✕','grape',mode,{circle:true})}</div>
+    ${speakerRow('pamuk',t.intro,mode,58)}
+    <div><div class="h-headline">★ ${t.week}</div><div class="stars" style="margin:6px 0">${[0,1,2,3,4,5,6].map(i=>star(i<5,mode)).join('')}</div><div class="bodyBold">${t.weekLine}</div><div class="body" style="opacity:.7">${t.toGo}</div></div>
+    <div><div class="h-headline">✸ ${t.stickers}</div><div style="display:grid;grid-template-columns:repeat(4,64px);gap:14px 18px;margin-top:8px">${stk}</div></div>
+    <div><div class="h-headline">👕 ${t.outfits}</div><div style="display:flex;gap:12px;margin-top:8px">${out('pamuk',['nightcap','berry'],true,true,t.o1)}${out('findik',null,false,false,t.not)}${out('lodos',null,false,false,t.not)}</div></div>
+    <div><div class="h-headline">👥 ${t.friends}</div>${t.f.map(([n,c,a])=>`<div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div style="flex:none;width:56px;height:56px;border-radius:50%;background:${accent('sun',mode)};border:3px solid ${O};display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 32 32"><path d="${starPath(16,16,14)}" fill="#fff"/></svg></div><div><div class="bodyBold">${n}</div><div class="caption" style="opacity:.7">${c}</div><div class="caption" style="opacity:.7">${a}</div></div></div>`).join('')}</div>
+   </div></div>`;}
+function greetingTwo(lang){const l=lang==='tr'?['Yeni masal','Kitaplığım']:['New story','My library'];
+  const big=(ic,c)=>bubble('',ic,c,'night',{circle:true}).replace('width:64px;height:64px','').replace('class="btn circle" style="','class="btn circle" style="width:96px;height:96px;font-size:36px;');
+  return tnShell(`${charWithOutfit('pamuk','sleepy',200,'night',['nightcap','berry'])}${bubble('','🔊','sky','night',{circle:true})}<div style="display:flex;gap:32px;text-align:center"><div>${big('★','sky')}<div class="caption" style="margin-top:6px">${l[0]}</div></div><div>${big('▥','grape')}<div class="caption" style="margin-top:6px">${l[1]}</div></div></div>`);}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -474,6 +514,7 @@ const screens={
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
   onboarding:()=>obWelcome('tr','day')+obParent('en','day')+obChild('tr','day')+obInterests('tr','day')+obValues('en','day')+obAvatar('en','day')+obFinale('tr','day')+obInterests('en','night'),
+  treasure:()=>greetingTwo('tr')+libraryScreen('tr','night')+treasureScreen('tr','day')+treasureScreen('en','night'),
   tonight:()=>tnGreeting('tr')+tnChars('tr')+tnRegions('en')+tnMoods('tr')+tnWaiting('en')+tnOffer('tr'),
   player:()=>playerScreen('tr',{progress:.12,subtitle:"Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış.",word:5})
     +playerScreen('en',{progress:.35,timer:'30 min',lullaby:true})
@@ -481,8 +522,8 @@ const screens={
     +playerScreen('en',{finished:true}),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight']:[mode];
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure']:[mode];
 if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');

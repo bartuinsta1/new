@@ -12,6 +12,10 @@ enum StickerCatalog {
         .init(key: "leaf", emoji: "🍃", color: .grass),
         .init(key: "lantern", emoji: "🏮", color: .orange),
         .init(key: "kite", emoji: "🪁", color: .berry),
+        .init(key: "wave", emoji: "🌊", color: .sky),
+        .init(key: "book", emoji: "📖", color: .orange),
+        .init(key: "heart", emoji: "💛", color: .berry),
+        .init(key: "rainbow", emoji: "🌈", color: .grape),
     ]
     static func item(_ key: String) -> Item { all.first { $0.key == key } ?? all[0] }
 }

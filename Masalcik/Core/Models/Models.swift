@@ -46,6 +46,10 @@ final class ChildProfile {
     var values: [ValueTopic]
     var avatar: AvatarConfig
     var companion: CharacterID
+    /// Masal dinlenen geceler ("2026-10-11"; gece yarısından sonraki masal önceki geceye sayılır).
+    var listeningNights: [String] = []
+    /// Karakterlere giydirilen kıyafetler: karakter → kıyafet anahtarı.
+    var equippedOutfits: [String: String] = [:]
     var createdAt: Date
 
     var family: Family?
@@ -181,6 +185,8 @@ final class Sticker {
     var assetKey: String
     var earnedAt: Date
     var storyID: String?
+    /// Hazine Sandığı'nda henüz görülmedi: haritadaki sandık düğmesinde küçük bir parıltı (gece kutlama yok).
+    var isNew: Bool = true
     var child: ChildProfile?
 
     init(id: UUID = UUID(), kind: Kind, assetKey: String, earnedAt: Date = .now, storyID: String? = nil) {

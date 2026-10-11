@@ -14,7 +14,7 @@ CATALOG = SRC / "Resources" / "Localizable.xcstrings"
 
 # Interpolasyonları format belirteçlerine çevir (Int → %lld, diğerleri → %@).
 # Tam eşleşme: interpolasyondaki ifade bunlardan biriyse tamsayıdır.
-INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age"}
+INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age", "week", "toGo", "f.appearances"}
 
 def to_key(lit: str) -> str:
     def repl(m):
@@ -51,7 +51,10 @@ TRANSLATIONS = {
     for lang in ("en",)
 }
 
-def unit(value: str) -> dict:
+def unit(value) -> dict:
+    """Düz çeviri ya da çoğul biçimler: {"one": "...", "other": "..."} → String Catalog plural varyasyonu."""
+    if isinstance(value, dict):
+        return {"variations": {"plural": {k: {"stringUnit": {"state": "translated", "value": v}} for k, v in value.items()}}}
     return {"stringUnit": {"state": "translated", "value": value}}
 
 # Katalog her seferinde koddan yeniden üretilir: koddan silinen anahtar katalogda kalmaz.

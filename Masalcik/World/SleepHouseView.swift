@@ -5,6 +5,7 @@ import SwiftUI
 struct SleepHouseView: View {
     var avatar: AvatarConfig = .default
     var companion: CharacterID = .pamuk
+    var companionOutfit: Outfit? = nil
     var isBedtimeNear = false
     var size: CGFloat = WorldLayout.sleepHouseSize
     var action: () -> Void = {}
@@ -23,7 +24,7 @@ struct SleepHouseView: View {
                 HStack(alignment: .bottom, spacing: -size * 0.06) {
                     AvatarView(config: avatar, size: size * 0.42, mood: theme.mode == .night ? .sleepy : .happy)
                     CharacterView(character: companion, mood: theme.mode == .night ? .sleepy : .happy,
-                                  size: size * 0.36, isInteractive: false)
+                                  size: size * 0.36, isInteractive: false, outfit: companionOutfit)
                 }
                 .offset(y: size * 0.42)
             }

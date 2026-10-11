@@ -93,6 +93,7 @@ struct WorldMapView: View {
                     .position(WorldLayout.position(of: region))
             }
             SleepHouseView(avatar: child?.avatar ?? .default, companion: child?.companion ?? .pamuk,
+                           companionOutfit: child.flatMap { $0.outfit(for: $0.companion) },
                            isBedtimeNear: isBedtimeNear) {
                 // "Bu Gece" akışı (Adım 7): Pamuk karşılar, seçimler orada yapılır.
                 sheet = .tonight
@@ -142,6 +143,16 @@ struct WorldMapView: View {
             BubbleButton(systemImage: "shippingbox.fill", color: .sun, accessibilityLabel: "Hazine Sandığı") {
                 sheet = .treasure
             }
+            // Yeni ödül varsa küçük bir parıltı (gece kutlama ekranı yok; çocuk sabah fark eder).
+            .overlay(alignment: .topTrailing) {
+                if (child?.newRewardCount ?? 0) > 0 {
+                    Image(systemName: "sparkle").font(.system(size: 18, weight: .heavy))
+                        .foregroundStyle(Palette.berry)
+                        .padding(4).background(Circle().fill(.white))
+                        .offset(x: 6, y: -6)
+                        .accessibilityLabel(Text("Yeni ödül var"))
+                }
+            }
             Spacer()
             // Ebeveyn köşesi: küçük ve kilitli; çocuk için bir "oyun" düğmesi gibi görünmez.
             BubbleButton(systemImage: "lock.fill", color: .grape, accessibilityLabel: "Ebeveyn Köşesi") {
@@ -189,7 +200,7 @@ struct WorldMapView: View {
                 self.sheet = nil
             })
             .interactiveDismissDisabled()
-        case .treasure: TreasureChestView().themed(theme.mode)
+        case .treasure: TreasureChestView { self.sheet = nil }.themed(theme.mode)
         case .story(let item):
             LibraryStoryPlayerContainer(item: item) { self.sheet = nil }
                 .themed(.night)

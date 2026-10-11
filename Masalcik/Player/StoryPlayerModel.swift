@@ -11,6 +11,7 @@ final class StoryPlayerModel {
     let engine: StoryAudioEngine
     let subtitlesEnabled: Bool
     private let childName: String?
+    private let child: ChildProfile?
     private let expectedParagraphs: Int
     private let nowPlaying = NowPlayingController()
     private let dimmer = ScreenDimmer()
@@ -21,6 +22,7 @@ final class StoryPlayerModel {
     init(story: Story, child: ChildProfile?, settings: AppSettings?, language: AppLanguage = .current) {
         self.story = story
         self.childName = child?.name
+        self.child = child
         self.subtitlesEnabled = settings?.subtitlesEnabled ?? false
         // Süreye göre beklenen paragraf sayısı (akış sürerken ilerleme tahmini için; backend ile aynı tablo).
         self.expectedParagraphs = [5: 8, 10: 14, 15: 20][story.durationMinutes] ?? 10
@@ -129,12 +131,14 @@ final class StoryPlayerModel {
         }
     }
 
-    /// Masal dinlendi: sayaç + çevrimdışı indirme. (Çıkartma ödülü Adım 8'de buraya bağlanır.)
+    /// Masal dinlendi: sayaç, ödüller (çıkartma, 7 gece kıyafeti) ve çevrimdışı indirme.
+    /// Ödüller sessizce sandığa girer; uyumak üzere olan çocuğa kutlama ekranı gösterilmez.
     private func markPlayed() {
         guard !markedFinished else { return }
         markedFinished = true
         story.playCount += 1
         story.lastPlayedAt = .now
+        if let child { RewardEngine.storyFinished(story, child: child) }
         Analytics.shared.track(.storyFinished(durationSeconds: Int(Date.now.timeIntervalSince(startedAt))))
         let story = self.story
         Task { await AudioDownloader.download(story) }

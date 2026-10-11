@@ -181,6 +181,8 @@ struct CharacterArt: View {
     var mood: CharacterMood = .happy
     var blink = false
     var mode: DisplayMode = .day
+    /// Hazine Sandığı'ndan kazanılan kıyafet (7 gece arka arkaya masal).
+    var outfit: Outfit? = nil
 
     private func c(_ hex: String) -> Color {
         let base = Color(hex: hex)
@@ -196,6 +198,9 @@ struct CharacterArt: View {
             case .nur: nur
             case .yildiz: yildiz
             case .kaptanMidye: kaptanMidye
+            }
+            if let outfit, outfit.character == character {
+                OutfitAccessory(outfit: outfit, character: character, mode: mode)
             }
         }
         .frame(width: 200, height: 200)
