@@ -1,14 +1,31 @@
 // DELETE /account → tüm verileri sil (KVKK/COPPA: tek dokunuşla silme).
-// Gerçekte: auth kullanıcısı + aile, çocuk profilleri, masallar, ses dosyaları, ses klonu, kullanım kayıtları.
-// Maliyet logları ve işaretli içerik logları zaten kişisel veri içermez (anonim).
+// Silinenler: kullanım sayaçları, abonelik önbelleği, masallar (metin + ses kaydı), ses klonu, paylaşım bağlantıları.
+// Üretimde ayrıca auth kullanıcısı (service role ile) ve Storage'daki ses dosyaları silinir.
+// Maliyet ve işaretli içerik logları kişisel veri içermez (anonim), silinecek bir şey yoktur.
 import { type AuthProvider, errorResponse, type UsageStore } from "../_shared/http.ts";
+import type { StoryStore } from "../_shared/engine/store.ts";
+import type { CloneVoiceStore } from "../_shared/tts/voice.ts";
+import type { ShareStore } from "../_shared/share.ts";
 
-export function createAccountHandler(deps: { auth: AuthProvider; usage: UsageStore }) {
+export interface AccountDeps {
+  auth: AuthProvider;
+  usage: UsageStore;
+  stories?: StoryStore;
+  cloneVoices?: CloneVoiceStore;
+  shares?: ShareStore;
+}
+
+export function createAccountHandler(deps: AccountDeps) {
   return async (req: Request): Promise<Response> => {
     if (req.method !== "DELETE") return errorResponse(405, "method_not_allowed");
     const userId = await deps.auth.userId(req);
     if (!userId) return errorResponse(401, "unauthorized");
-    await deps.usage.deleteUser(userId);
+    await Promise.all([
+      deps.usage.deleteUser(userId),
+      deps.stories?.deleteUser(userId),
+      deps.cloneVoices?.delete(userId),
+      deps.shares?.deleteUser(userId),
+    ]);
     return new Response(null, { status: 204 });
   };
 }

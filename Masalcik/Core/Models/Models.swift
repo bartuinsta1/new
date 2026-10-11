@@ -15,6 +15,8 @@ final class Family {
     var bedtime: Bedtime
     /// Onboarding'de söylenen çocuk sayısı (1…4). Ebeveyn Köşesi eksik profilleri eklemeyi hatırlatır.
     var expectedChildCount: Int = 1
+    /// Uygulamanın şu an kimin için çalıştığı (ebeveyn Ebeveyn Köşesi'nden değiştirir).
+    var activeChildID: UUID?
 
     @Relationship(deleteRule: .cascade, inverse: \ChildProfile.family)
     var children: [ChildProfile] = []
@@ -35,6 +37,18 @@ final class Family {
     }
 }
 
+extension Family {
+    /// Sıralı profiller (ilk eklenen önce).
+    var orderedChildren: [ChildProfile] { children.sorted { $0.createdAt < $1.createdAt } }
+
+    /// Aktif çocuk; seçilmemişse ya da silinmişse ilk profil.
+    var activeChild: ChildProfile? {
+        orderedChildren.first { $0.id == activeChildID } ?? orderedChildren.first
+    }
+
+    var canAddChild: Bool { children.count < AppConfig.maxChildProfiles }
+}
+
 @Model
 final class ChildProfile {
     @Attribute(.unique) var id: UUID
@@ -50,6 +64,8 @@ final class ChildProfile {
     var listeningNights: [String] = []
     /// Karakterlere giydirilen kıyafetler: karakter → kıyafet anahtarı.
     var equippedOutfits: [String: String] = [:]
+    /// Masalın bittiği anlar: haftalık özette "tahmini uykuya dalma saati" (§3.7).
+    var storyEndTimes: [Date] = []
     var createdAt: Date
 
     var family: Family?

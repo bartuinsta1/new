@@ -17,13 +17,20 @@ protocol StoryAPI: Sendable {
     func verifyEntitlement(signedTransaction: String?) async throws -> EntitlementDTO
     /// `DELETE /account` — tüm verileri siler.
     func deleteAccount() async throws
+    /// `POST /share` — masal için paylaşım bağlantısı (web önizleme + uygulama daveti).
+    func shareStory(id: String) async throws -> URL
 }
 
 extension StoryAPI {
     func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         generateStory(request, idempotencyKey: UUID().uuidString)
     }
+
+    /// Varsayılan: paylaşım desteklenmiyor (test sahteleri).
+    func shareStory(id: String) async throws -> URL { throw APIError.server(status: 501) }
 }
+
+struct ShareResponseDTO: Codable, Sendable { var url: URL }
 
 enum APICoding {
     static let encoder: JSONEncoder = {

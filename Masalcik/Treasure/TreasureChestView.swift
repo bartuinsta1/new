@@ -9,7 +9,7 @@ struct TreasureChestView: View {
     @Query private var families: [Family]
     @Environment(\.theme) private var theme
 
-    private var child: ChildProfile? { families.first?.children.sorted { $0.createdAt < $1.createdAt }.first }
+    private var child: ChildProfile? { families.first?.activeChild }
 
     var body: some View {
         ZStack {

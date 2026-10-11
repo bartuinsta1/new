@@ -29,4 +29,7 @@ final class Analytics {
     func track(_ event: AnalyticsEvent) {
         buffer.append(event)
     }
+
+    /// Veri silmede gönderilmemiş olaylar da atılır.
+    func clear() { buffer.removeAll() }
 }

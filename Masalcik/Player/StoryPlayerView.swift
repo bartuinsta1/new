@@ -206,7 +206,7 @@ struct LibraryStoryPlayerContainer: View {
             context.insert(story)
         } else {
             // Çevrimdışı ve indirilmemiş: güvenli yerel masal (sahte içerik) — çocuk hata görmez.
-            let child = families.first?.children.first
+            let child = families.first?.activeChild
             let req = MockStoryAPI.previewRequest(language: .current)
             story = StoryEngineClient.makeStory(from: MockStoryAPI.sampleStory(for: child.map {
                 StoryEngineClient.makeRequest(child: $0, settings: AppSettings(), region: item.region, mood: .calm)
@@ -214,7 +214,7 @@ struct LibraryStoryPlayerContainer: View {
             context.insert(story)
         }
         let family = families.first
-        model = StoryPlayerModel(story: story, child: family?.children.first, settings: family?.settings)
+        model = StoryPlayerModel(story: story, child: family?.activeChild, settings: family?.settings)
     }
 }
 

@@ -10,7 +10,7 @@ struct LibraryView: View {
     @Query private var families: [Family]
     @Environment(\.theme) private var theme
 
-    private var child: ChildProfile? { families.first?.children.sorted { $0.createdAt < $1.createdAt }.first }
+    private var child: ChildProfile? { families.first?.activeChild }
     private var shelves: [LibraryShelves.Shelf] { LibraryShelves.shelves(from: child?.stories ?? []) }
 
     var body: some View {

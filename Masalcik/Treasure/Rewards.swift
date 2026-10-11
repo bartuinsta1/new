@@ -93,6 +93,8 @@ enum RewardEngine {
         var earned: [Sticker] = []
         let night = RewardRules.nightKey(for: now, calendar: calendar)
         if !child.listeningNights.contains(night) { child.listeningNights.append(night) }
+        // Haftalık özet için bitiş anı (son 60 kayıt yeter).
+        child.storyEndTimes = Array((child.storyEndTimes + [now]).suffix(60))
 
         // Masal başına bir çıkartma (ilk dinleyişte).
         if !child.stickers.contains(where: { $0.kind == .sticker && $0.storyID == story.id }) {

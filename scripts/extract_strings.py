@@ -14,7 +14,9 @@ CATALOG = SRC / "Resources" / "Localizable.xcstrings"
 
 # Interpolasyonları format belirteçlerine çevir (Int → %lld, diğerleri → %@).
 # Tam eşleşme: interpolasyondaki ifade bunlardan biriyse tamsayıdır.
-INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age", "week", "toGo", "f.appearances"}
+INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age", "week", "toGo", "f.appearances", "child.age", "child.stories.count",
+             "family.expectedChildCount", "AppConfig.maxChildProfiles", "AppConfig.maxInterests", "story.durationMinutes",
+             "d.rawValue", "m"}
 
 def to_key(lit: str) -> str:
     def repl(m):
@@ -34,6 +36,8 @@ PATTERNS = [
     r'\bOnboardingHeader\(title:\s*"((?:[^"\\]|\\.)*)"',
     r'\b(?:subtitle|primaryTitle|secondaryTitle):\s*"((?:[^"\\]|\\.)*)"',
     r'LocalizedStringKey\??\s*=\s*"((?:[^"\\]|\\.)*)"',
+    r'\b(?:Label|Button|Toggle|Section|Link|ContentUnavailableView|LabeledContent)\("((?:[^"\\]|\\.)*)"',
+    r'\.(?:confirmationDialog|navigationTitle|alert)\("((?:[^"\\]|\\.)*)"',
 ]
 
 keys = set()

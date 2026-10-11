@@ -24,3 +24,6 @@ verify_jwt = true
 [functions.admin-costs]
 # Kendi ADMIN_TOKEN denetimini yapar; kullanıcı oturumu gerektirmez.
 verify_jwt = false
+[functions.share]
+# GET /share/:token herkese açık önizleme; POST kendi oturum denetimini yapar.
+verify_jwt = false

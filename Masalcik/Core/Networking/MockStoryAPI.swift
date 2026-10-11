@@ -54,6 +54,8 @@ struct MockStoryAPI: StoryAPI {
 
     func deleteAccount() async throws {}
 
+    func shareStory(id: String) async throws -> URL { URL(string: "https://masalcik.app/s/mock-\(id.prefix(8))")! }
+
     // MARK: - Örnek içerik
 
     static func previewRequest(language: AppLanguage = .tr) -> StoryRequest {

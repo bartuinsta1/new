@@ -18,7 +18,7 @@ struct WorldMapView: View {
     @GestureState private var pinchScale: CGFloat = 1
 
     private var family: Family? { families.first }
-    private var child: ChildProfile? { family?.children.sorted { $0.createdAt < $1.createdAt }.first }
+    private var child: ChildProfile? { family?.activeChild }
     private var isBedtimeNear: Bool { BedtimeNudge.isNear(.now, bedtime: appState.bedtime) }
 
     var body: some View {
@@ -205,7 +205,7 @@ struct WorldMapView: View {
             LibraryStoryPlayerContainer(item: item) { self.sheet = nil }
                 .themed(.night)
                 .interactiveDismissDisabled()
-        case .parentZone: ParentZoneView().themed(.day)
+        case .parentZone: ParentZoneView { self.sheet = nil }.themed(.day)
         case .gallery: ComponentGalleryView()
         case .parentGate:
             ParentGate(onUnlock: {

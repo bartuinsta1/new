@@ -16,21 +16,27 @@ final class AppState {
     }
 
     let api: StoryAPI
+    /// Anonim oturum (gerçek backend'de). Veri silmede jetonlar da silinir.
+    let auth: AuthSession?
 
     /// Onboarding bittiğinde haritaya geçilir ve "Bu Gece" akışı doğrudan açılır (§3.1 adım 6: "ardından doğrudan ilk masal").
     var opensTonightOnNextMapAppear = false
 
-    init(api: StoryAPI = AppState.makeAPI()) {
-        self.api = api
+    init(services: (api: StoryAPI, auth: AuthSession?) = AppState.makeServices()) {
+        self.api = services.api
+        self.auth = services.auth
         self.displayMode = DisplayModeResolver.mode(for: .now, bedtime: .default)
     }
 
+    convenience init(api: StoryAPI) { self.init(services: (api, nil)) }
+
     /// Supabase ayarlıysa gerçek backend (anonim hesapla), değilse sahte backend.
-    nonisolated static func makeAPI() -> StoryAPI {
-        guard !AppConfig.useMockBackend, let url = AppConfig.supabaseURL else { return MockStoryAPI() }
+    nonisolated static func makeServices() -> (api: StoryAPI, auth: AuthSession?) {
+        guard !AppConfig.useMockBackend, let url = AppConfig.supabaseURL else { return (MockStoryAPI(), nil) }
         let auth = AuthSession(baseURL: url, anonKey: AppConfig.supabaseAnonKey)
-        return LiveStoryAPI(baseURL: AppConfig.apiBaseURL, anonKey: AppConfig.supabaseAnonKey,
-                            accessToken: { await auth.accessToken() })
+        let api = LiveStoryAPI(baseURL: AppConfig.apiBaseURL, anonKey: AppConfig.supabaseAnonKey,
+                               accessToken: { await auth.accessToken() })
+        return (api, auth)
     }
 
     func refreshDisplayMode(now: Date = .now) {

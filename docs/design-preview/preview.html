@@ -507,6 +507,37 @@ function greetingTwo(lang){const l=lang==='tr'?['Yeni masal','Kitaplığım']:['
   const big=(ic,c)=>bubble('',ic,c,'night',{circle:true}).replace('width:64px;height:64px','').replace('class="btn circle" style="','class="btn circle" style="width:96px;height:96px;font-size:36px;');
   return tnShell(`${charWithOutfit('pamuk','sleepy',200,'night',['nightcap','berry'])}${bubble('','🔊','sky','night',{circle:true})}<div style="display:flex;gap:32px;text-align:center"><div>${big('★','sky')}<div class="caption" style="margin-top:6px">${l[0]}</div></div><div>${big('▥','grape')}<div class="caption" style="margin-top:6px">${l[1]}</div></div></div>`);}
 
+
+// ---------- Ebeveyn Köşesi (ParentZone/*) — iOS gruplu liste ----------
+function ios(title,sections,{tab=0,lang='tr'}={}){const tabs=lang==='tr'?['Çocuklar','Ayarlar','Hesap']:['Children','Settings','Account'];const icons=['👨‍👧','⚙︎','◉'];
+  const sec=([h,rows,f])=>`${h?`<div style="font:600 13px -apple-system,system-ui;color:#6d6d72;text-transform:uppercase;margin:22px 32px 6px">${h}</div>`:'<div style="height:22px"></div>'}<div style="margin:0 16px;background:#fff;border-radius:12px;overflow:hidden">${rows.map((r,i)=>`<div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 16px;${i?'border-top:0.5px solid #d1d1d6;':''}font:17px -apple-system,system-ui;color:#000">${r}</div>`).join('')}</div>${f?`<div style="font:13px -apple-system,system-ui;color:#6d6d72;margin:6px 32px 0;line-height:1.35">${f}</div>`:''}`;
+  return `<div class="phone" lang="${lang}" style="background:#f2f2f7"><div style="position:absolute;inset:0;padding-top:50px;overflow:hidden">
+   <div style="display:flex;justify-content:flex-end;padding:6px 16px;font:17px -apple-system,system-ui;color:${P.grape}">${lang==='tr'?'Kapat':'Close'}</div>
+   <div style="font:700 34px -apple-system,system-ui;padding:0 16px 4px">${title}</div>${sections.map(sec).join('')}</div>
+   <div style="position:absolute;left:0;right:0;bottom:0;height:78px;background:rgba(249,249,249,.94);border-top:0.5px solid #c6c6c8;display:flex;justify-content:space-around;padding-top:8px">${tabs.map((t,i)=>`<div style="text-align:center;font:600 10px -apple-system,system-ui;color:${i===tab?P.grape:'#8e8e93'}"><div style="font-size:22px">${icons[i]}</div>${t}</div>`).join('')}</div></div>`;}
+const tog=(on)=>`<span style="margin-left:auto;width:51px;height:31px;border-radius:16px;background:${on?P.grass:'#e9e9eb'};position:relative;flex:none"><span style="position:absolute;top:2px;${on?'right:2px':'left:2px'};width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2)"></span></span>`;
+const val=(v)=>`<span style="margin-left:auto;color:#8e8e93">${v}</span>`;
+const chev=`<span style="color:#c7c7cc;font-size:20px;margin-left:6px">›</span>`;
+function parentChildren(){return ios('Çocuklar',[
+  ['Bu hafta — Ayşe',[`<div style="display:flex;width:100%;text-align:center">${[['5','masal'],['4/7','gece'],['20:52','tahmini uyku']].map(([v,l],i)=>`<div style="flex:1;${i?'border-left:0.5px solid #d1d1d6':''}"><div style="font:700 22px -apple-system,system-ui">${v}</div><div style="font:12px -apple-system,system-ui;color:#8e8e93">${l}</div></div>`).join('')}</div>`]],
+  ['Profiller',[`${avatarSVG(48,'day','happy',2)}<div><div style="font-weight:600">Ayşe</div><div style="font-size:15px;color:#8e8e93">5 yaş · 12 masal</div></div><span style="margin-left:auto;color:${P.grass};font-size:22px">✔︎</span>${chev}`,
+    `${avatarSVG(48,'day','happy',4)}<div><div style="font-weight:600">Mert</div><div style="font-size:15px;color:#8e8e93">7 yaş · 3 masal</div></div><span style="margin-left:auto"></span>${chev}`,
+    `<span style="color:${P.grape}">⊕ Profil ekle</span>`],'En fazla 4 profil. Uygulamanın kimin için çalışacağını seçmek için profile girin.']],{tab:0});}
+function parentSettingsEn(){return ios('Settings',[
+  [null,[`Bedtime${val('<span style="background:#eeeef0;border-radius:6px;padding:4px 10px;color:#000">8:00 PM</span>')}`],'One hour before bedtime, the app switches to its calm night mode.'],
+  ['Voice',[`Narrator${val('Mum')}${chev}`,`<span style="color:${P.grape}">▶︎ Hear a sample</span>`,`<span style="color:${P.grape}">🎙 Narrate in my own voice</span>`]],
+  ['Story',[`Story length${val('10 min')}${chev}`,`Subtitles (word by word)${tog(false)}`,`After the story${val('15 min')}${chev}`]],
+  ['Content filters',[`Mild excitement${tog(false)}`,`Small disagreements${tog(false)}`,`Loss and separation themes${tog(false)}`],'All are off by default. Violence, frightening imagery, brands and real people are always excluded; every story passes a safety check before it plays.']],{tab:1,lang:'en'});}
+function parentAccount(){return ios('Hesap',[
+  ['Abonelik',[`Plan${val('Ücretsiz')}`,`<span style="color:${P.grape}">★ Premium'u incele</span>`,`<span style="color:${P.grape}">Satın alımları geri yükle</span>`],'Ücretsiz sürümde her gün 1 kişisel masal ve kitaplıktan haftada 3 masal. Kredi ya da jeton yok.'],
+  ['Gizlilik',[`✨ <span style="font-size:15px">Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer.</span>`,`🛡 <span style="font-size:15px">Çocuğunuz için yalnızca adını, yaşını ve ilgi alanlarını saklarız. Reklam yok, üçüncü taraf takip yok.</span>`,`<span style="color:${P.grape}">Aydınlatma metnini okuyun</span>`]],
+  [null,[`<span style="color:#ff3b30">🗑 Tüm verilerimi sil</span>`],"Hesabınız, çocuk profilleri, masallar, ses dosyaları ve ses örneğiniz sunucudan ve bu cihazdan kalıcı olarak silinir."]],{tab:2});}
+function storyText(){return `<div class="phone" style="background:#fff"><div style="position:absolute;inset:0;padding:54px 20px 0;overflow:hidden;font-family:-apple-system,system-ui">
+  <div style="display:flex;justify-content:space-between;color:${P.grape};font-size:17px"><span>‹ Masal geçmişi</span><span>⬆︎ Paylaş</span></div>
+  <div style="font:700 24px -apple-system,system-ui;margin-top:16px">Ayşe ve Kayıp Fener</div><div style="color:#8e8e93;margin:4px 0 14px">Fısıltı Ormanı · 10 dk</div>
+  ${["Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış. En yakın arkadaşı Fındık her akşam onun penceresine gelirmiş.","Bir akşam Fındık heyecanla gelmiş: \"Ayşe, ağaçların arasında küçük bir fener kaybolmuş! Onu bulursak bütün orman ışıl ışıl olacak.\"","Ayşe ile Fındık el ele vermişler. Yaprakların altına, çiçeklerin arkasına bakmışlar. Sonunda feneri bir sincap yuvasının yanında bulmuşlar.","Fenerin sahibi küçük bir tavşanmış. Feneri ona uzatmışlar, tavşan da kocaman gülümsemiş. Paylaşınca ışık iki katına çıkmış."].map(t=>`<p style="font-size:17px;line-height:1.45;margin:0 0 14px">${t}</p>`).join('')}
+  </div><div style="position:absolute;left:12px;right:12px;bottom:14px;background:#f2f2f7;border-radius:14px;padding:12px;font:13px -apple-system,system-ui;box-shadow:0 -4px 20px rgba(0,0,0,.15)"><div style="color:#8e8e93;margin-bottom:8px">Ayşe ve Kayıp Fener — Masalcık ile çocuğuma özel bir uyku masalı. Sen de dinle: masalcik.app/s/…</div><div style="display:flex;gap:18px;justify-content:center">${[['#25D366','WhatsApp'],['#34C759','Mesajlar'],['#007AFF','Mail']].map(([c,n])=>`<div style="text-align:center"><div style="width:52px;height:52px;border-radius:12px;background:${c}"></div><div style="margin-top:4px">${n}</div></div>`).join('')}</div></div></div>`;}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -514,6 +545,7 @@ const screens={
   night:()=>gallery('night')+gallery2('night'),
   extras:()=>gate()+player(0)+player(0.9),
   onboarding:()=>obWelcome('tr','day')+obParent('en','day')+obChild('tr','day')+obInterests('tr','day')+obValues('en','day')+obAvatar('en','day')+obFinale('tr','day')+obInterests('en','night'),
+  parent:()=>parentChildren()+parentSettingsEn()+parentAccount()+storyText(),
   treasure:()=>greetingTwo('tr')+libraryScreen('tr','night')+treasureScreen('tr','day')+treasureScreen('en','night'),
   tonight:()=>tnGreeting('tr')+tnChars('tr')+tnRegions('en')+tnMoods('tr')+tnWaiting('en')+tnOffer('tr'),
   player:()=>playerScreen('tr',{progress:.12,subtitle:"Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış.",word:5})
@@ -522,8 +554,8 @@ const screens={
     +playerScreen('en',{finished:true}),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure']:[mode];
+const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure','parent']:[mode];
 if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');

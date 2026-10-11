@@ -27,7 +27,7 @@ struct TonightFlowView: View {
             guard model == nil else { return }
             let family = families.first
             model = TonightModel(api: appState.api, context: context,
-                                 child: family?.children.sorted { $0.createdAt < $1.createdAt }.first,
+                                 child: family?.activeChild,
                                  settings: family?.settings,
                                  isBedtimeNear: BedtimeNudge.isNear(.now, bedtime: appState.bedtime))
         }

@@ -65,6 +65,14 @@ struct LiveStoryAPI: StoryAPI {
         return try APICoding.decoder.decode(EntitlementDTO.self, from: data)
     }
 
+    func shareStory(id: String) async throws -> URL {
+        var req = try await makeRequest("share", method: "POST")
+        req.httpBody = try APICoding.encoder.encode(["story_id": id])
+        let (data, response) = try await session.data(for: req)
+        try Self.check(response)
+        return try APICoding.decoder.decode(ShareResponseDTO.self, from: data).url
+    }
+
     func deleteAccount() async throws {
         let (_, response) = try await session.data(for: try await makeRequest("account", method: "DELETE"))
         try Self.check(response)

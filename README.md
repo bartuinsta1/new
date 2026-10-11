@@ -65,4 +65,7 @@ Uygulama baştan iki dilli: arayüz, sesli yönergeler, karakter replikleri ve m
       cihaza bağlı anonim hesap (Supabase) ve sunucuda JWT kimliği
 - [x] Adım 8 — Kitaplık (favoriler / benim masallarım / kitaplık rafları, kayıttan tekrar dinleme), Hazine Sandığı
       (masal başına çıkartma, 7 gece arka arkaya → kıyafet, ceza yok, gece kutlama yok), masal arkadaşları
-- [ ] Adım 9 — Ebeveyn Köşesi (3 sekme), içerik filtreleri, veri silme
+- [x] Adım 9 — Ebeveyn Köşesi: Çocuklar (en fazla 4 profil, aktif çocuk, telaffuz, avatar, masal geçmişi, haftalık
+      özet), Ayarlar (uyku saati, anlatıcı, süre, altyazı, ninni, ortam sesi, içerik filtreleri, ses klonu + açık rıza,
+      dil), Hesap (abonelik durumu, gizlilik, tek dokunuşla veri silme, destek); WhatsApp paylaşım bağlantısı
+- [ ] Adım 10 — Paywall ve StoreKit 2, sunucu tarafı doğrulama, ücretsiz limitler

@@ -6,6 +6,24 @@ import SwiftData
 struct AvatarStepView: View {
     @Bindable var model: OnboardingModel
     @Environment(\.modelContext) private var context
+
+    var body: some View {
+        OnboardingScaffold(step: .avatar, primaryTitle: "Hazırım!", primaryIcon: "sparkles",
+                           onPrimary: { model.finish(in: context) }, onBack: model.back) {
+            VStack(spacing: Metrics.spacingM) {
+                VoicePromptPlayer(text: String(localized: "Kendine bir görünüş seç, sonra bir yol arkadaşı!"),
+                                  recordingKey: "vp_avatar", speaker: .pamuk, autoplay: true)
+                AvatarEditor(avatar: $model.avatar, companion: $model.companion)
+            }
+        }
+    }
+}
+
+/// Avatar + yoldaş düzenleyici: önizleme, simgeli sekmeler, seçenek ızgarası.
+/// Onboarding'de ve Ebeveyn Köşesi'nde (profil düzenleme) kullanılır.
+struct AvatarEditor: View {
+    @Binding var avatar: AvatarConfig
+    @Binding var companion: CharacterID
     @Environment(\.theme) private var theme
     @State private var tab: Tab = .face
 
@@ -35,37 +53,32 @@ struct AvatarStepView: View {
     }
 
     var body: some View {
-        OnboardingScaffold(step: .avatar, primaryTitle: "Hazırım!", primaryIcon: "sparkles",
-                           onPrimary: { model.finish(in: context) }, onBack: model.back) {
-            VStack(spacing: Metrics.spacingM) {
-                VoicePromptPlayer(text: String(localized: "Kendine bir görünüş seç, sonra bir yol arkadaşı!"),
-                                  recordingKey: "vp_avatar", speaker: .pamuk, autoplay: true)
-                // Önizleme: avatar + seçilen yoldaş, Uyku Evi önünde duracakları gibi.
-                HStack(alignment: .bottom, spacing: -12) {
-                    AvatarView(config: model.avatar, size: 170)
-                    CharacterView(character: model.companion, size: 120, speaksOnTap: true)
-                }
-                .padding(.vertical, Metrics.spacingS)
-                .frame(maxWidth: .infinity)
-                .background(Ellipse().fill(Palette.grass.opacity(theme.mode == .day ? 0.45 : 0.25)).frame(height: 60)
-                    .offset(y: 70))
-
-                // Sekmeler: simgeli kabarcıklar (metin minimum; VoiceOver için etiketli).
-                HStack(spacing: 8) {
-                    ForEach(Tab.allCases) { t in
-                        Button { tab = t } label: {
-                            Image(systemName: t.icon).font(.system(size: 22, weight: .bold))
-                                .frame(width: 48, height: 48)
-                        }
-                        .buttonStyle(BubbleButtonStyle(color: tab == t ? .grape : .sky, shape: .circle))
-                        .saturation(tab == t ? 1 : 0.4)
-                        .accessibilityLabel(Text(t.label))
-                        .accessibilityAddTraits(tab == t ? .isSelected : [])
-                    }
-                }
-                Text(tab.label).masalFont(.headline).foregroundStyle(theme.ink)
-                options
+        VStack(spacing: Metrics.spacingM) {
+            // Önizleme: avatar + seçilen yoldaş, Uyku Evi önünde duracakları gibi.
+            HStack(alignment: .bottom, spacing: -12) {
+                AvatarView(config: avatar, size: 170)
+                CharacterView(character: companion, size: 120, speaksOnTap: true)
             }
+            .padding(.vertical, Metrics.spacingS)
+            .frame(maxWidth: .infinity)
+            .background(Ellipse().fill(Palette.grass.opacity(theme.mode == .day ? 0.45 : 0.25)).frame(height: 60)
+                .offset(y: 70))
+
+            // Sekmeler: simgeli kabarcıklar (metin minimum; VoiceOver için etiketli).
+            HStack(spacing: 8) {
+                ForEach(Tab.allCases) { t in
+                    Button { tab = t } label: {
+                        Image(systemName: t.icon).font(.system(size: 22, weight: .bold))
+                            .frame(width: 48, height: 48)
+                    }
+                    .buttonStyle(BubbleButtonStyle(color: tab == t ? .grape : .sky, shape: .circle))
+                    .saturation(tab == t ? 1 : 0.4)
+                    .accessibilityLabel(Text(t.label))
+                    .accessibilityAddTraits(tab == t ? .isSelected : [])
+                }
+            }
+            Text(tab.label).masalFont(.headline).foregroundStyle(theme.ink)
+            options
         }
     }
 
@@ -74,38 +87,38 @@ struct AvatarStepView: View {
             switch tab {
             case .face:
                 ForEach(0..<6, id: \.self) { i in
-                    optionButton(selected: model.avatar.faceTemplate == i, label: Text("Yüz \(i + 1)")) {
-                        model.avatar.faceTemplate = i
+                    optionButton(selected: avatar.faceTemplate == i, label: Text("Yüz \(i + 1)")) {
+                        avatar.faceTemplate = i
                     } content: { AvatarFacePreview(config: withChange(\.faceTemplate, i)) }
                 }
             case .skin:
                 ForEach(0..<6, id: \.self) { i in
-                    optionButton(selected: model.avatar.skinTone == i, label: Text("Ten rengi \(i + 1)")) {
-                        model.avatar.skinTone = i
+                    optionButton(selected: avatar.skinTone == i, label: Text("Ten rengi \(i + 1)")) {
+                        avatar.skinTone = i
                     } content: { swatch(AvatarPalette.skin[i]) }
                 }
             case .hair:
                 ForEach(0..<6, id: \.self) { i in
-                    optionButton(selected: model.avatar.hairStyle == i, label: Text("Saç \(i + 1)")) {
-                        model.avatar.hairStyle = i
+                    optionButton(selected: avatar.hairStyle == i, label: Text("Saç \(i + 1)")) {
+                        avatar.hairStyle = i
                     } content: { AvatarFacePreview(config: withChange(\.hairStyle, i)) }
                 }
             case .hairColor:
                 ForEach(0..<6, id: \.self) { i in
-                    optionButton(selected: model.avatar.hairColor == i, label: Text("Saç rengi \(i + 1)")) {
-                        model.avatar.hairColor = i
+                    optionButton(selected: avatar.hairColor == i, label: Text("Saç rengi \(i + 1)")) {
+                        avatar.hairColor = i
                     } content: { swatch(AvatarPalette.hair[i]) }
                 }
             case .pajama:
                 ForEach(0..<6, id: \.self) { i in
-                    optionButton(selected: model.avatar.pajamaColor == i, label: Text("Pijama \(i + 1)")) {
-                        model.avatar.pajamaColor = i
+                    optionButton(selected: avatar.pajamaColor == i, label: Text("Pijama \(i + 1)")) {
+                        avatar.pajamaColor = i
                     } content: { swatch(AvatarPalette.pajama[i]) }
                 }
             case .companion:
                 ForEach(CharacterID.allCases) { c in
-                    optionButton(selected: model.companion == c, label: Text(c.displayName)) {
-                        model.companion = c
+                    optionButton(selected: companion == c, label: Text(c.displayName)) {
+                        companion = c
                         VoicePrompter.shared.speak(c.reactionLines[0])
                     } content: { CharacterView(character: c, size: 70, isInteractive: false) }
                 }
@@ -114,7 +127,7 @@ struct AvatarStepView: View {
     }
 
     private func withChange(_ key: WritableKeyPath<AvatarConfig, Int>, _ value: Int) -> AvatarConfig {
-        var c = model.avatar
+        var c = avatar
         c[keyPath: key] = value
         return c
     }

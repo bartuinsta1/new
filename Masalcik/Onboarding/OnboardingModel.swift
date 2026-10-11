@@ -168,6 +168,7 @@ final class OnboardingModel {
                                  interests: interests, values: ValueTopic.allCases.filter { values.contains($0) },
                                  avatar: avatar, companion: companion)
         family.children.append(child)
+        family.activeChildID = child.id
         context.insert(family)
         try? context.save()
         createdFamily = family
