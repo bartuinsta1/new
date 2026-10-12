@@ -538,6 +538,44 @@ function storyText(){return `<div class="phone" style="background:#fff"><div sty
   ${["Bir varmış bir yokmuş, Fısıltı Ormanı'nda Ayşe adında meraklı bir çocuk yaşarmış. En yakın arkadaşı Fındık her akşam onun penceresine gelirmiş.","Bir akşam Fındık heyecanla gelmiş: \"Ayşe, ağaçların arasında küçük bir fener kaybolmuş! Onu bulursak bütün orman ışıl ışıl olacak.\"","Ayşe ile Fındık el ele vermişler. Yaprakların altına, çiçeklerin arkasına bakmışlar. Sonunda feneri bir sincap yuvasının yanında bulmuşlar.","Fenerin sahibi küçük bir tavşanmış. Feneri ona uzatmışlar, tavşan da kocaman gülümsemiş. Paylaşınca ışık iki katına çıkmış."].map(t=>`<p style="font-size:17px;line-height:1.45;margin:0 0 14px">${t}</p>`).join('')}
   </div><div style="position:absolute;left:12px;right:12px;bottom:14px;background:#f2f2f7;border-radius:14px;padding:12px;font:13px -apple-system,system-ui;box-shadow:0 -4px 20px rgba(0,0,0,.15)"><div style="color:#8e8e93;margin-bottom:8px">Ayşe ve Kayıp Fener — Masalcık ile çocuğuma özel bir uyku masalı. Sen de dinle: masalcik.app/s/…</div><div style="display:flex;gap:18px;justify-content:center">${[['#25D366','WhatsApp'],['#34C759','Mesajlar'],['#007AFF','Mail']].map(([c,n])=>`<div style="text-align:center"><div style="width:52px;height:52px;border-radius:12px;background:${c}"></div><div style="margin-top:4px">${n}</div></div>`).join('')}</div></div></div>`;}
 
+// ---------- Paywall (Paywall/PaywallView.swift) ----------
+const PW={
+  tr:{sub:'Her gece ona özel, yepyeni bir masal.',free:'Ücretsiz',rows:[['Kişisel masal','Günde 1',"Günde 10'a kadar"],['Hazır kitaplık','Haftada 3 masal','Tüm masallar'],['Sizin sesinizle masal','—','Var'],['Masal Adası, ninni, uyku zamanlayıcı, Hazine Sandığı','Var','Var']],
+      yearly:'Yıllık',monthly:'Aylık',best:'En avantajlı',per:'Ayda yaklaşık ₺37,50 · aylığa göre %53 daha uygun',cta:'7 gün ücretsiz dene',
+      end:'Ücretsiz deneme bitişi: 19 Ekim 2026',renew:'Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra yılda ₺449,99 ödenir ve her yıl otomatik yenilenir.',
+      cancel:'İstediğiniz an iPhone Ayarları › Apple Hesabı › Abonelikler bölümünden iki dokunuşla iptal edebilirsiniz.',restore:'Satın alımları geri yükle',terms:'Kullanım Koşulları',privacy:'Gizlilik Politikası',
+      foot:'Reklam yok, kredi ya da jeton yok. Tek abonelik, tüm aile için (4 çocuğa kadar).'},
+  en:{sub:'A brand-new story made just for them, every night.',free:'Free',rows:[['Personal stories','1 a day','Up to 10 a day'],['Story library','3 stories a week','Every story'],['Stories in your own voice','—','Included'],['Story Island, lullabies, sleep timer, Treasure Chest','Included','Included']],
+      yearly:'Yearly',monthly:'Monthly',best:'Best value',per:'About £3.33 a month · 53% less than monthly',cta:'Try free for 7 days',
+      end:'Free trial ends: 19 October 2026',renew:"Cancel before then and you won't be charged. After that it's £39.99 per year, renewing automatically every year.",
+      cancel:'You can cancel anytime in a couple of taps: iPhone Settings › Apple Account › Subscriptions.',restore:'Restore purchases',terms:'Terms of Use',privacy:'Privacy Policy',
+      foot:'No ads, no credits or tokens. One subscription for the whole family (up to 4 children).'}};
+function paywallScreen(lang){const t=PW[lang],price=lang==='tr'?['₺449,99','₺79,99']:['£39.99','£6.99'];
+  const plan=(name,pr,sel,extra)=>`<div style="display:flex;align-items:center;gap:12px;background:#fff;border:${sel?4:2}px solid ${sel?P.grape:P.ink};border-radius:28px;padding:12px 14px">
+    <div style="width:22px;height:22px;border-radius:50%;border:3px solid ${sel?P.grape:'#8a8aa0'};display:grid;place-items:center">${sel?`<div style="width:11px;height:11px;border-radius:50%;background:${P.grape}"></div>`:''}</div>
+    <div style="flex:1;text-align:left"><div class="h-headline" style="font-size:20px">${name}${extra?` <span class="caption" style="font-family:Nunito;background:${P.sun};border-radius:99px;padding:2px 8px;vertical-align:middle">${t.best}</span>`:''}</div>${extra?`<div class="caption" style="opacity:.65;font-weight:700">${t.per}</div>`:''}</div>
+    <div class="h-headline" style="font-size:20px">${pr}</div></div>`;
+  return `<div class="phone day" lang="${lang}" style="--outline:${P.ink};background:${P.cream}">
+  <div style="position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid ${P.ink};display:grid;place-items:center;font:900 18px Nunito;z-index:2">✕</div>
+  <div style="position:absolute;inset:0;padding:40px 16px 0;display:flex;flex-direction:column;gap:12px;align-items:stretch">
+   <div style="display:flex;flex-direction:column;align-items:center">${charSVG('pamuk','sleepy',82,'day')}<div class="h-title" style="font-size:26px">Masalcık Premium</div><div class="body" style="opacity:.7;font-size:15px;text-align:center">${t.sub}</div></div>
+   <div style="background:#fff;border:3px solid ${P.ink};border-radius:24px;padding:10px 12px;font:700 13px Nunito">
+    <div style="display:grid;grid-template-columns:1.5fr .9fr .9fr;gap:6px 8px;align-items:center">
+     <div></div><div style="text-align:center;opacity:.6">${t.free}</div><div style="text-align:center;color:${P.grape}">Premium</div>
+     ${t.rows.map(([a,b,c])=>`<div style="font-weight:600;font-size:14px">${a}</div><div style="text-align:center;opacity:.6">${b}</div><div style="text-align:center">${c}</div>`).join('')}
+    </div></div>
+   ${plan(t.yearly,price[0],true,true)}${plan(t.monthly,price[1],false,false)}
+   <div class="btn" style="background:${P.sun};box-shadow:0 6px 0 ${darkened(P.sun)},0 6px 0 3px ${P.ink};border-radius:24px;min-height:60px;display:grid;place-items:center;font:800 21px 'Baloo 2'">${t.cta}</div>
+   <div style="text-align:center;font:600 13px Nunito;color:#55566b;display:flex;flex-direction:column;gap:5px"><b style="color:${P.ink};font-size:14px">${t.end}</b><span>${t.renew}</span><span>${t.cancel}</span></div>
+   <div style="text-align:center;font:800 14px Nunito">${t.restore}<div style="font-size:12px;margin-top:4px;opacity:.8">${t.terms} &nbsp;·&nbsp; ${t.privacy}</div></div>
+  </div></div>`;}
+function paywallDone(){return `<div class="phone day" style="--outline:${P.ink};background:${P.cream}"><div style="position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid ${P.ink};display:grid;place-items:center;font:900 18px Nunito">✕</div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:0 28px;text-align:center">${charSVG('pamuk','happy',160,'day')}<div class="h-title">Premium açıldı</div>
+  <div class="body" style="opacity:.7">Deneme bitmeden bir gün önce App Store size hatırlatır. İyi geceler, tatlı masallar!</div>
+  <div class="btn" style="background:${P.grass};box-shadow:0 6px 0 ${darkened(P.grass)},0 6px 0 3px ${P.ink};border-radius:24px;min-height:64px;width:260px;display:grid;place-items:center;font:800 22px 'Baloo 2'">Tamam</div></div></div>`;}
+function libraryLimit(){return tnShell(`<div style="flex:1"></div>${charSVG('yildiz','sleepy',170,'night')}${speakerRow('yildiz','Bu masal bu hafta uyuyor. Bu hafta dinlediğin masalları istediğin kadar yeniden dinleyebilirsin!','night',56)}
+  ${bubble('','🏠','sky','night',{large:true,circle:true})}<div style="flex:1"></div><div style="font:700 14px Nunito;color:#b9b5e0">🔒 Ebeveynler için</div>`);}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -552,10 +590,11 @@ const screens={
     +playerScreen('en',{progress:.35,timer:'30 min',lullaby:true})
     +playerScreen('tr',{progress:.78})
     +playerScreen('en',{finished:true}),
+  paywall:()=>paywallScreen('tr')+paywallScreen('en')+paywallDone()+libraryLimit(),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
-const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure','parent']:[mode];
+const caps={paywall:['Paywall — yıllık seçili, deneme bitişi açık (TR)','Paywall (EN)','Satın alma sonrası (TR)','Kitaplık hakkı doldu: çocuğa uykulu mesaj, ebeveyne kapılı bağlantı (TR)'],day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure','parent','paywall']:[mode];
 if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
   return [...tmp.children].map((el,i)=>`<div>${el.outerHTML}<div class="caption-under">${caps[k][i]}</div></div>`).join('');}).join('');

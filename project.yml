@@ -71,6 +71,8 @@ schemes:
     run:
       language: tr
       region: TR
+      # Yerel StoreKit testi (Xcode): App Store Connect olmadan satın alma/deneme/yenileme denenebilir.
+      storeKitConfiguration: StoreKit/Masalcik.storekit
     test:
       targets: [MasalcikTests]
       language: tr
@@ -84,6 +86,7 @@ schemes:
     run:
       language: en
       region: GB
+      storeKitConfiguration: StoreKit/Masalcik.storekit
     test:
       targets: [MasalcikTests]
       language: en

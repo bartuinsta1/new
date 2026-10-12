@@ -1,7 +1,7 @@
 // POST /stories  → masal üretimi (NDJSON akışı)
 // GET  /stories/:id → saklanan masal (yeniden üretim yok)
 // `engine` verilmezse sahte masal döner (yerel geliştirme / ANTHROPIC_API_KEY yokken).
-import { FREE_TIER, type Paragraph, type Story, type StoryRequest, type StreamLine } from "../_shared/contract.ts";
+import { FREE_TIER, type Paragraph, PREMIUM_TIER, type Story, type StoryRequest, type StreamLine } from "../_shared/contract.ts";
 import {
   type AuthProvider, type EntitlementStore, type UsageStore,
   errorResponse, istanbulDay, json, pathAfter, RateLimiter, requestLanguage,
@@ -71,10 +71,11 @@ export function createStoriesHandler(deps: StoriesDeps) {
       if (cached) return streamStory(async () => cached.story, deps, { voice: voicer(userId, request, cached.idempotencyKey) });
     }
 
-    // Ücretsiz limit — sunucu tarafında (§4.6).
+    // Günlük limit — sunucu tarafında (§4.6): ücretsizde 1, Premium'da adil kullanım sınırı.
     const day = istanbulDay(now());
     const premium = await deps.entitlements.isPremium(userId);
-    if (!premium && (await deps.usage.personalStoriesOn(userId, day)) >= FREE_TIER.personalStoriesPerDay) {
+    const dailyLimit = premium ? PREMIUM_TIER.personalStoriesPerDay : FREE_TIER.personalStoriesPerDay;
+    if ((await deps.usage.personalStoriesOn(userId, day)) >= dailyLimit) {
       return errorResponse(402, "daily_limit_reached");
     }
 

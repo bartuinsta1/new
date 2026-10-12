@@ -8,9 +8,10 @@ const page_url = pathToFileURL(path.join(here, "preview.html")).href;
 const { chromium } = await import("playwright").catch(() => import("/opt/node22/lib/node_modules/playwright/index.mjs"));
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 900, height: 960 }, deviceScaleFactor: 2 });
-const widths = { day: 900, night: 900, extras: 1340, map: 1760, onboarding: 1760, player: 1760, tonight: 1340, treasure: 1760, parent: 1760 };
-const stepOf = { map: "step3", onboarding: "step4", player: "step6", tonight: "step7", treasure: "step8", parent: "step9" };
-for (const screen of Object.keys(widths)) {
+const widths = { day: 900, night: 900, extras: 1340, map: 1760, onboarding: 1760, player: 1760, tonight: 1340, treasure: 1760, parent: 1760, paywall: 1760 };
+const stepOf = { map: "step3", onboarding: "step4", player: "step6", tonight: "step7", treasure: "step8", parent: "step9", paywall: "step10" };
+const only = process.argv[2];
+for (const screen of Object.keys(widths).filter((s) => !only || s === only)) {
   await page.setViewportSize({ width: widths[screen], height: 960 });
   await page.goto(`${page_url}?screen=${screen}`);
   await page.waitForSelector("body[data-ready='1']");

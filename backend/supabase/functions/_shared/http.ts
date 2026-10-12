@@ -1,5 +1,6 @@
 // Ortak HTTP yardımcıları: JSON yanıt, kimlik, hız sınırlama, kullanım sayacı.
 // Adım 1: bellek içi uygulamalar (sahte). Adım 5/10: Supabase Auth + Postgres tablolarına bağlanacak.
+import type { Subscription } from "./appstore.ts";
 
 export const json = (data: unknown, status = 200, headers: Record<string, string> = {}) =>
   new Response(JSON.stringify(data), {
@@ -77,19 +78,38 @@ export const supabaseJwtAuth: AuthProvider = {
 
 export interface EntitlementStore {
   isPremium(userId: string): Promise<boolean>;
+  /** Geçerli (süresi dolmamış) abonelik; yoksa null. */
+  subscription(userId: string): Promise<Subscription | null>;
+  /**
+   * Doğrulanmış aboneliği kullanıcıya bağlar. Aynı `originalTransactionId` başka bir kullanıcıdaysa oradan
+   * alınır (aynı Apple Kimliği yeni cihazda "geri yükle" yaptığında abonelik yeni anonim hesaba taşınır;
+   * bir abonelik aynı anda tek hesabı açar — paylaşım/çoğaltma engeli).
+   */
+  saveSubscription(userId: string, sub: Subscription): Promise<void>;
+  /** App Store bildirimi hangi kullanıcıya ait? */
+  userForOriginalTransaction(originalTransactionId: string): Promise<string | null>;
+  /** İade / iptal: aboneliği kapatır. */
+  revoke(originalTransactionId: string): Promise<void>;
+  /** Yalnızca testler ve yerel geliştirme: belirli bir tarihe kadar (null = süresiz) premium. */
   setPremium(userId: string, expiresAt: Date | null): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
 }
 
 /** Ücretsiz kullanım sayacı. Limit backend'de uygulanır — istemciye güvenilmez (§4.6). */
 export interface UsageStore {
   personalStoriesOn(userId: string, day: string): Promise<number>;
   recordPersonalStory(userId: string, day: string): Promise<void>;
+  /** Bu hafta açılan (farklı) kitaplık masalları. Aynı masalı tekrar dinlemek hakkı azaltmaz. */
+  libraryStoriesInWeek(userId: string, week: string): Promise<string[]>;
+  recordLibraryStory(userId: string, week: string, storyId: string): Promise<void>;
   deleteUser(userId: string): Promise<void>;
 }
 
 export class MemoryStores implements UsageStore, EntitlementStore {
   private usage = new Map<string, number>();
-  private premium = new Map<string, Date | null>();
+  private library = new Map<string, Set<string>>();
+  private subs = new Map<string, Subscription>();
+  private owners = new Map<string, string>();
   private now: () => Date;
   constructor(now: () => Date = () => new Date()) {
     this.now = now;
@@ -100,20 +120,51 @@ export class MemoryStores implements UsageStore, EntitlementStore {
     const k = `${userId}:${day}`;
     this.usage.set(k, (this.usage.get(k) ?? 0) + 1);
   }
-  async isPremium(userId: string) {
-    if (!this.premium.has(userId)) return false;
-    const exp = this.premium.get(userId);
-    return exp === null || (exp !== undefined && exp > this.now());
+  async libraryStoriesInWeek(userId: string, week: string) { return [...(this.library.get(`${userId}:${week}`) ?? [])]; }
+  async recordLibraryStory(userId: string, week: string, storyId: string) {
+    const k = `${userId}:${week}`;
+    this.library.set(k, (this.library.get(k) ?? new Set()).add(storyId));
   }
-  async setPremium(userId: string, expiresAt: Date | null) { this.premium.set(userId, expiresAt); }
+
+  async isPremium(userId: string) { return (await this.subscription(userId)) !== null; }
+  async subscription(userId: string) {
+    const s = this.subs.get(userId);
+    return s && s.expiresAt > this.now() ? s : null;
+  }
+  async saveSubscription(userId: string, sub: Subscription) {
+    const previous = this.owners.get(sub.originalTransactionId);
+    if (previous && previous !== userId) this.subs.delete(previous);
+    this.owners.set(sub.originalTransactionId, userId);
+    this.subs.set(userId, sub);
+  }
+  async userForOriginalTransaction(id: string) { return this.owners.get(id) ?? null; }
+  async revoke(originalTransactionId: string) {
+    const owner = this.owners.get(originalTransactionId);
+    if (owner && this.subs.get(owner)?.originalTransactionId === originalTransactionId) this.subs.delete(owner);
+  }
+  async setPremium(userId: string, expiresAt: Date | null) {
+    await this.saveSubscription(userId, {
+      productId: "masalcik.premium.yearly", expiresAt: expiresAt ?? new Date(8.64e15), isInTrial: false,
+      originalTransactionId: `dev-${userId}`, environment: "Xcode",
+    });
+  }
   async deleteUser(userId: string) {
-    this.premium.delete(userId);
+    this.subs.delete(userId);
+    for (const [k, v] of [...this.owners]) if (v === userId) this.owners.delete(k);
     for (const k of [...this.usage.keys()]) if (k.startsWith(`${userId}:`)) this.usage.delete(k);
+    for (const k of [...this.library.keys()]) if (k.startsWith(`${userId}:`)) this.library.delete(k);
   }
 }
 
 /** Günlük limit için gün anahtarı (Türkiye saati, UTC+3). */
 export const istanbulDay = (d: Date) => new Date(d.getTime() + 3 * 3600_000).toISOString().slice(0, 10);
+
+/** Haftalık kitaplık limiti için hafta anahtarı: Türkiye saatine göre o haftanın pazartesisi (YYYY-MM-DD). */
+export function istanbulWeek(d: Date): string {
+  const local = new Date(d.getTime() + 3 * 3600_000);
+  const daysSinceMonday = (local.getUTCDay() + 6) % 7;
+  return new Date(local.getTime() - daysSinceMonday * 86_400_000).toISOString().slice(0, 10);
+}
 
 /** Accept-Language başlığından desteklenen dil (varsayılan Türkçe). */
 export function requestLanguage(req: Request): "tr" | "en" {

@@ -8,6 +8,7 @@ import { MemoryCostLog, MemoryFlagLog, MemoryStoryStore } from "./engine/store.t
 import { AzureTts, ElevenLabsCloneTts, MemoryAudioStore } from "./tts/tts.ts";
 import { MemoryCloneVoiceStore, type VoiceDeps } from "./tts/voice.ts";
 import { MemoryShareStore } from "./share.ts";
+import { type AppStoreEnvironment, JwsAppStoreVerifier } from "./appstore.ts";
 
 export const stores = new MemoryStores();
 
@@ -52,3 +53,15 @@ export function makeVoice(): VoiceDeps | undefined {
     costs: costLog,
   };
 }
+
+/**
+ * App Store doğrulayıcısı: APPLE_BUNDLE_ID tanımlıysa gerçek JWS doğrulaması. Kabul edilen ortamlar
+ * APPSTORE_ENVIRONMENTS (varsayılan "Production,Sandbox" — App Review sandbox'ta satın alır).
+ */
+export const appStoreVerifier = env("APPLE_BUNDLE_ID")
+  ? new JwsAppStoreVerifier({
+    bundleId: env("APPLE_BUNDLE_ID")!,
+    environments: (env("APPSTORE_ENVIRONMENTS") ?? "Production,Sandbox").split(",").map((s) => s.trim()) as AppStoreEnvironment[],
+    rootFingerprintSha256: env("APPLE_ROOT_CA_SHA256") || undefined,
+  })
+  : undefined;

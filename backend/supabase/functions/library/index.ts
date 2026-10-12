@@ -1,4 +1,4 @@
 import { createLibraryHandler } from "./handler.ts";
-import { auth } from "../_shared/deps.ts";
+import { auth, stores } from "../_shared/deps.ts";
 
-Deno.serve(createLibraryHandler({ auth }));
+Deno.serve(createLibraryHandler({ auth, entitlements: stores, usage: stores }));

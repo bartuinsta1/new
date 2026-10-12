@@ -96,3 +96,19 @@ export function mockLibrary(lang: Language): LibraryItem[] {
     id, title: lang === "tr" ? tr : en, region, duration_minutes, is_free,
   }));
 }
+
+/**
+ * Kitaplık masalının içeriği (SAHTE). Gerçekte kitaplık önceden üretilip insan editörden geçer ve CDN'de durur;
+ * kişiselleştirilmez. Kahraman cinsiyetsiz bir ad: "Deniz" / "Robin".
+ */
+export function mockLibraryStory(item: LibraryItem, lang: Language): Story {
+  const story = mockStory({
+    child_name: lang === "tr" ? "Deniz" : "Robin", child_age: 5, interests: [], companion_character: "findik",
+    region: item.region === "treasure_chest" ? "sleep_house" : item.region, mood: "calm",
+    duration_minutes: item.duration_minutes as 5 | 10 | 15, recurring_characters: [], recent_story_titles: [],
+    voice: "mother",
+    content_filters: { allow_mild_scary: false, allow_conflict: false, allow_loss_and_separation: false },
+    language: lang,
+  }, item.id);
+  return { ...story, title: item.title, new_recurring_character: null };
+}

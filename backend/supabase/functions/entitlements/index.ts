@@ -1,4 +1,4 @@
 import { createEntitlementsHandler } from "./handler.ts";
-import { auth, stores } from "../_shared/deps.ts";
+import { appStoreVerifier, auth, stores } from "../_shared/deps.ts";
 
-Deno.serve(createEntitlementsHandler({ auth, entitlements: stores, usage: stores }));
+Deno.serve(createEntitlementsHandler({ auth, entitlements: stores, usage: stores, verifier: appStoreVerifier }));

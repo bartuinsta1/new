@@ -62,10 +62,15 @@ test("Ücretsiz kullanıcı: günde 1 kişisel masal (sunucu tarafında)", async
   assert.equal((await stories(post("stories", validBody, "user-2"))).status, 200);
 });
 
-test("Premium kullanıcıda günlük limit yok", async () => {
+test("Premium: günde 10 kişisel masala kadar (adil kullanım)", async () => {
   const { stores, stories } = setup();
   await stores.setPremium("user-1", null);
-  for (let i = 0; i < 3; i++) assert.equal((await stories(post("stories", validBody))).status, 200);
+  for (let i = 0; i < 10; i++) {
+    const res = await stories(post("stories", validBody));
+    assert.equal(res.status, 200);
+    await res.text();
+  }
+  assert.equal((await stories(post("stories", validBody))).status, 402);
 });
 
 test("Kimliksiz istek reddedilir", async () => {
@@ -111,7 +116,7 @@ test("GET /stories/:id", async () => {
 });
 
 test("GET /library", async () => {
-  const h = createLibraryHandler({ auth: mockAuth });
+  const h = createLibraryHandler({ auth: mockAuth, entitlements: new MemoryStores(), usage: new MemoryStores() });
   const res = await h(new Request(`${BASE}/library`, { headers: { authorization: "Bearer user-1" } }));
   const items = await res.json();
   assert.equal(res.status, 200);
@@ -183,7 +188,7 @@ test("Dil gönderilmezse Türkçe (eski istemciler)", async () => {
 });
 
 test("GET /library Accept-Language'e göre", async () => {
-  const h = createLibraryHandler({ auth: mockAuth });
+  const h = createLibraryHandler({ auth: mockAuth, entitlements: new MemoryStores(), usage: new MemoryStores() });
   const get = (lang: string) => h(new Request(`${BASE}/library`, { headers: { authorization: "Bearer user-1", "accept-language": lang } }));
   const tr = await (await get("tr-TR")).json();
   const en = await (await get("en-US,en;q=0.9")).json();

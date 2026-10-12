@@ -13,8 +13,12 @@ protocol StoryAPI: Sendable {
     func createVoiceClone(sample: Data, consentedAt: Date) async throws -> VoiceCloneResponseDTO
     /// `DELETE /voice-clone`
     func deleteVoiceClone() async throws
-    /// `POST /entitlements/verify` — StoreKit 2 JWS işlemini sunucuda doğrular.
+    /// `GET /library/:id` — kitaplık masalının tamamı. Ücretsiz haftalık hak sunucuda sayılır.
+    func libraryStory(id: String) async throws -> StoryDTO
+    /// `POST /entitlements/verify` — StoreKit 2 JWS işlemini sunucuda doğrular (nil: yalnızca durum sorgusu).
     func verifyEntitlement(signedTransaction: String?) async throws -> EntitlementDTO
+    /// `POST /entitlements/verify` — "Satın alımları geri yükle": cihazdaki tüm geçerli işlemler.
+    func restoreEntitlements(signedTransactions: [String]) async throws -> EntitlementDTO
     /// `DELETE /account` — tüm verileri siler.
     func deleteAccount() async throws
     /// `POST /share` — masal için paylaşım bağlantısı (web önizleme + uygulama daveti).
@@ -24,6 +28,14 @@ protocol StoryAPI: Sendable {
 extension StoryAPI {
     func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         generateStory(request, idempotencyKey: UUID().uuidString)
+    }
+
+    /// Varsayılan (test sahteleri): kitaplık masalı da saklanan masal gibi okunur.
+    func libraryStory(id: String) async throws -> StoryDTO { try await story(id: id) }
+
+    /// Varsayılan (test sahteleri): son işlem tek başına doğrulanır.
+    func restoreEntitlements(signedTransactions: [String]) async throws -> EntitlementDTO {
+        try await verifyEntitlement(signedTransaction: signedTransactions.last)
     }
 
     /// Varsayılan: paylaşım desteklenmiyor (test sahteleri).
@@ -75,6 +87,7 @@ struct StreamLine: Decodable {
             return .completed(story)
         case .error:
             if code == "daily_limit_reached" { throw APIError.dailyLimitReached }
+            if code == "weekly_limit_reached" { throw APIError.weeklyLimitReached }
             if code == "rate_limited" { throw APIError.rateLimited }
             if code == "unsafe_input" { throw APIError.unsafeInput }
             throw APIError.server(status: 500)

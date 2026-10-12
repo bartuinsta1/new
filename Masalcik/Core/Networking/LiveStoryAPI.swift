@@ -42,6 +42,10 @@ struct LiveStoryAPI: StoryAPI {
         try await get("library")
     }
 
+    func libraryStory(id: String) async throws -> StoryDTO {
+        try await get("library/\(id)")
+    }
+
     func createVoiceClone(sample: Data, consentedAt: Date) async throws -> VoiceCloneResponseDTO {
         var req = try await makeRequest("voice-clone", method: "POST")
         req.setValue("audio/m4a", forHTTPHeaderField: "Content-Type")
@@ -60,6 +64,14 @@ struct LiveStoryAPI: StoryAPI {
     func verifyEntitlement(signedTransaction: String?) async throws -> EntitlementDTO {
         var req = try await makeRequest("entitlements/verify", method: "POST")
         req.httpBody = try APICoding.encoder.encode(["signed_transaction": signedTransaction])
+        let (data, response) = try await session.data(for: req)
+        try Self.check(response)
+        return try APICoding.decoder.decode(EntitlementDTO.self, from: data)
+    }
+
+    func restoreEntitlements(signedTransactions: [String]) async throws -> EntitlementDTO {
+        var req = try await makeRequest("entitlements/verify", method: "POST")
+        req.httpBody = try APICoding.encoder.encode(["signed_transactions": signedTransactions])
         let (data, response) = try await session.data(for: req)
         try Self.check(response)
         return try APICoding.decoder.decode(EntitlementDTO.self, from: data)
@@ -107,7 +119,10 @@ struct LiveStoryAPI: StoryAPI {
         // Ayrıntılı kod (unsafe_input vb.) gövdededir; akışlı istekte gövde okunmadan önce kontrol edilir.
         case 400 where http.value(forHTTPHeaderField: "X-Error-Code") == "unsafe_input": throw APIError.unsafeInput
         case 401: throw APIError.unauthorized
+        case 402 where http.value(forHTTPHeaderField: "X-Error-Code") == "premium_required": throw APIError.premiumRequired
         case 402: throw APIError.dailyLimitReached
+        case 403 where http.value(forHTTPHeaderField: "X-Error-Code") == "weekly_limit_reached":
+            throw APIError.weeklyLimitReached
         case 429: throw APIError.rateLimited
         default: throw APIError.server(status: http.statusCode)
         }

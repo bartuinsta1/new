@@ -113,6 +113,34 @@
         }
       }
     },
+    "%lld gün ücretsiz dene": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld gün ücretsiz dene"
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Try free for %lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Try free for %lld days"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld masalda": {
       "localizations": {
         "tr": {
@@ -205,6 +233,22 @@
         }
       }
     },
+    "Abone ol": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abone ol"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscribe"
+          }
+        }
+      }
+    },
     "Abonelik": {
       "localizations": {
         "tr": {
@@ -221,6 +265,54 @@
         }
       }
     },
+    "Abonelik bulunamadı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abonelik bulunamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No subscription found"
+          }
+        }
+      }
+    },
+    "Aboneliği yönet ya da iptal et": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aboneliği yönet ya da iptal et"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage or cancel subscription"
+          }
+        }
+      }
+    },
+    "Aboneliğiniz geri yüklendi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aboneliğiniz geri yüklendi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your subscription has been restored"
+          }
+        }
+      }
+    },
     "Ad yalnızca harflerden oluşabilir (en fazla 30).": {
       "localizations": {
         "tr": {
@@ -233,6 +325,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "The name can only contain letters (up to 30)."
+          }
+        }
+      }
+    },
+    "Adaya dön": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaya dön"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the island"
           }
         }
       }
@@ -489,6 +597,54 @@
         }
       }
     },
+    "Ayda %@ ödenir ve her ay otomatik yenilenir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayda %@ ödenir ve her ay otomatik yenilenir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ per month, renews automatically every month."
+          }
+        }
+      }
+    },
+    "Ayda yaklaşık %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayda yaklaşık %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %@ a month"
+          }
+        }
+      }
+    },
+    "Ayda yaklaşık %@ · aylığa göre %@ daha uygun": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayda yaklaşık %@ · aylığa göre %@ daha uygun"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %1$@ a month · %2$@ less than monthly"
+          }
+        }
+      }
+    },
     "Aydınlatma metnini okuyun": {
       "localizations": {
         "tr": {
@@ -501,6 +657,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Read our privacy notice"
+          }
+        }
+      }
+    },
+    "Aylık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aylık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
           }
         }
       }
@@ -713,6 +885,22 @@
         }
       }
     },
+    "Bu Apple Hesabında etkin bir Masalcık aboneliği yok.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu Apple Hesabında etkin bir Masalcık aboneliği yok."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's no active Masalcık subscription on this Apple Account."
+          }
+        }
+      }
+    },
     "Bu bilgilerle masal saatini çocuğunuzun rutinine uyduruyoruz.": {
       "localizations": {
         "tr": {
@@ -869,6 +1057,22 @@
         }
       }
     },
+    "Bu masal bu hafta uyuyor. Bu hafta dinlediğin masalları istediğin kadar yeniden dinleyebilirsin!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu masal bu hafta uyuyor. Bu hafta dinlediğin masalları istediğin kadar yeniden dinleyebilirsin!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This story is asleep this week. You can listen to this week's stories again as many times as you like!"
+          }
+        }
+      }
+    },
     "Bu masal şimdilik uyuyor": {
       "localizations": {
         "tr": {
@@ -901,6 +1105,22 @@
         }
       }
     },
+    "Bu masal şimdilik uyuyor. Haydi, sevdiğin bir masalı yeniden dinleyelim!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu masal şimdilik uyuyor. Haydi, sevdiğin bir masalı yeniden dinleyelim!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This story is asleep for now. Let's listen to one of your favourites again!"
+          }
+        }
+      }
+    },
     "Bu metni sakin bir sesle okuyun": {
       "localizations": {
         "tr": {
@@ -913,6 +1133,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Read this text in a calm voice"
+          }
+        }
+      }
+    },
+    "Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra ayda %@ ödenir ve her ay otomatik yenilenir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra ayda %@ ödenir ve her ay otomatik yenilenir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel before then and you won't be charged. After that it's %@ per month, renewing automatically every month."
+          }
+        }
+      }
+    },
+    "Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra yılda %@ ödenir ve her yıl otomatik yenilenir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra yılda %@ ödenir ve her yıl otomatik yenilenir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel before then and you won't be charged. After that it's %@ per year, renewing automatically every year."
           }
         }
       }
@@ -1041,6 +1293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trial ends"
+          }
+        }
+      }
+    },
+    "Deneme bitmeden bir gün önce App Store size hatırlatır. İyi geceler, tatlı masallar!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deneme bitmeden bir gün önce App Store size hatırlatır. İyi geceler, tatlı masallar!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The App Store will remind you a day before your trial ends. Good night and sweet stories!"
           }
         }
       }
@@ -1317,6 +1585,38 @@
         }
       }
     },
+    "Ebeveynler için": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ebeveynler için"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For parents"
+          }
+        }
+      }
+    },
+    "En avantajlı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En avantajlı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best value"
+          }
+        }
+      }
+    },
     "En fazla %lld profil. Uygulamanın kimin için çalışacağını seçmek için profile girin.": {
       "localizations": {
         "tr": {
@@ -1441,6 +1741,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "My favourites"
+          }
+        }
+      }
+    },
+    "Fiyatlar şu an yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fiyatlar şu an yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prices couldn't be loaded right now. Check your internet connection and try again."
           }
         }
       }
@@ -1573,6 +1889,22 @@
         }
       }
     },
+    "Geri yüklenemedi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geri yüklenemedi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't restore"
+          }
+        }
+      }
+    },
     "Girilen: %@": {
       "localizations": {
         "tr": {
@@ -1621,6 +1953,22 @@
         }
       }
     },
+    "Gizlilik Politikası": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizlilik Politikası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        }
+      }
+    },
     "Gözlüklerim nerede? Ha, burnumun üstündeymiş!": {
       "localizations": {
         "tr": {
@@ -1633,6 +1981,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Where are my glasses? Oh, they're on my beak!"
+          }
+        }
+      }
+    },
+    "Günde 1": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günde 1"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 a day"
+          }
+        }
+      }
+    },
+    "Günde 10'a kadar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günde 10'a kadar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to 10 a day"
           }
         }
       }
@@ -1685,6 +2065,22 @@
         }
       }
     },
+    "Haftada 3 masal": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haftada 3 masal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3 stories a week"
+          }
+        }
+      }
+    },
     "Hayvanlar": {
       "localizations": {
         "tr": {
@@ -1729,6 +2125,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "The stickers you've earned are waiting in the Treasure Chest!"
+          }
+        }
+      }
+    },
+    "Hazır kitaplık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazır kitaplık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story library"
           }
         }
       }
@@ -1825,6 +2237,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "All are off by default. Violence, frightening imagery, brands and real people are always excluded; every story passes a safety check before it plays."
+          }
+        }
+      }
+    },
+    "Her gece ona özel, yepyeni bir masal.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her gece ona özel, yepyeni bir masal."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A brand-new story made just for them, every night."
           }
         }
       }
@@ -2325,6 +2753,22 @@
         }
       }
     },
+    "Kişisel masal": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kişisel masal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personal stories"
+          }
+        }
+      }
+    },
     "Komik": {
       "localizations": {
         "tr": {
@@ -2353,6 +2797,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starting nursery / school"
+          }
+        }
+      }
+    },
+    "Kullanım Koşulları": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Koşulları"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
           }
         }
       }
@@ -2497,6 +2957,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Welcome to Story Island, %@!"
+          }
+        }
+      }
+    },
+    "Masal Adası, ninni, uyku zamanlayıcı, Hazine Sandığı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal Adası, ninni, uyku zamanlayıcı, Hazine Sandığı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story Island, lullabies, sleep timer, Treasure Chest"
           }
         }
       }
@@ -2981,6 +3457,22 @@
         }
       }
     },
+    "Onay bekleniyor": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Onay bekleniyor"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for approval"
+          }
+        }
+      }
+    },
     "Onboarding'de %lld çocuk demiştiniz; diğer profilleri buradan ekleyebilirsiniz.": {
       "localizations": {
         "tr": {
@@ -3233,6 +3725,22 @@
         }
       }
     },
+    "Premium açıldı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium açıldı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium is on"
+          }
+        }
+      }
+    },
     "Premium'u incele": {
       "localizations": {
         "tr": {
@@ -3345,6 +3853,22 @@
         }
       }
     },
+    "Reklam yok, kredi ya da jeton yok. Tek abonelik, tüm aile için (4 çocuğa kadar).": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reklam yok, kredi ya da jeton yok. Tek abonelik, tüm aile için (4 çocuğa kadar)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No ads, no credits or tokens. One subscription for the whole family (up to 4 children)."
+          }
+        }
+      }
+    },
     "Renkler": {
       "localizations": {
         "tr": {
@@ -3373,6 +3897,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Calm"
+          }
+        }
+      }
+    },
+    "Satın alma bir onay bekliyor (ör. Aile Paylaşımı'nda “Satın Almadan Önce Sor”). Onaylandığında Premium kendiliğinden açılır.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın alma bir onay bekliyor (ör. Aile Paylaşımı'nda “Satın Almadan Önce Sor”). Onaylandığında Premium kendiliğinden açılır."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This purchase is waiting for approval (for example, Ask to Buy in Family Sharing). Premium will turn on by itself once it's approved."
+          }
+        }
+      }
+    },
+    "Satın alma tamamlanamadı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın alma tamamlanamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase couldn't be completed"
           }
         }
       }
@@ -3617,6 +4173,22 @@
         }
       }
     },
+    "Sizin sesinizle masal": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sizin sesinizle masal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories in your own voice"
+          }
+        }
+      }
+    },
     "StoryCard": {
       "localizations": {
         "tr": {
@@ -3697,6 +4269,22 @@
         }
       }
     },
+    "Tekrar dene": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tekrar dene"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      }
+    },
     "Tekrar dinlemek için dokun": {
       "localizations": {
         "tr": {
@@ -3745,6 +4333,22 @@
         }
       }
     },
+    "Teşekkür ederiz. İyi geceler, tatlı masallar!": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teşekkür ederiz. İyi geceler, tatlı masallar!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you. Good night and sweet stories!"
+          }
+        }
+      }
+    },
     "Tipografi": {
       "localizations": {
         "tr": {
@@ -3773,6 +4377,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hold on to me, or I'll fly up to the clouds!"
+          }
+        }
+      }
+    },
+    "Tüm masallar": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tüm masallar"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every story"
           }
         }
       }
@@ -3969,6 +4589,22 @@
         }
       }
     },
+    "Var": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Var"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Included"
+          }
+        }
+      }
+    },
     "Vazgeç": {
       "localizations": {
         "tr": {
@@ -4145,6 +4781,22 @@
         }
       }
     },
+    "Yok": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yok"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not included"
+          }
+        }
+      }
+    },
     "Yol arkadaşı": {
       "localizations": {
         "tr": {
@@ -4209,6 +4861,22 @@
         }
       }
     },
+    "Yılda %@ ödenir ve her yıl otomatik yenilenir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yılda %@ ödenir ve her yıl otomatik yenilenir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ per year, renews automatically every year."
+          }
+        }
+      }
+    },
     "Yıldız": {
       "localizations": {
         "tr": {
@@ -4269,6 +4937,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yıldız's moon crown"
+          }
+        }
+      }
+    },
+    "Yıllık": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıllık"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
           }
         }
       }
@@ -4417,6 +5101,22 @@
         }
       }
     },
+    "Ödeme alındıysa Premium birkaç dakika içinde kendiliğinden açılır. Açılmazsa “Satın alımları geri yükle”ye dokunun.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödeme alındıysa Premium birkaç dakika içinde kendiliğinden açılır. Açılmazsa “Satın alımları geri yükle”ye dokunun."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you were charged, Premium will turn on by itself within a few minutes. If it doesn't, tap “Restore purchases”."
+          }
+        }
+      }
+    },
     "Önce bir çocukla başlayalım; diğerlerini Ebeveyn Köşesi'nden ekleyebilirsiniz.": {
       "localizations": {
         "tr": {
@@ -4497,6 +5197,22 @@
         }
       }
     },
+    "Ücretsiz deneme bitişi: %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ücretsiz deneme bitişi: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free trial ends: %@"
+          }
+        }
+      }
+    },
     "Ücretsiz sürümde her gün 1 kişisel masal ve kitaplıktan haftada 3 masal. Kredi ya da jeton yok.": {
       "localizations": {
         "tr": {
@@ -4525,6 +5241,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Interests"
+          }
+        }
+      }
+    },
+    "İnternet bağlantınızı kontrol edip tekrar deneyin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İnternet bağlantınızı kontrol edip tekrar deneyin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check your internet connection and try again."
+          }
+        }
+      }
+    },
+    "İstediğiniz an iPhone Ayarları › Apple Hesabı › Abonelikler bölümünden iki dokunuşla iptal edebilirsiniz.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstediğiniz an iPhone Ayarları › Apple Hesabı › Abonelikler bölümünden iki dokunuşla iptal edebilirsiniz."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can cancel anytime in a couple of taps: iPhone Settings › Apple Account › Subscriptions."
           }
         }
       }

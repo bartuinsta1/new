@@ -94,6 +94,10 @@ struct VoiceCloneResponseDTO: Codable, Hashable, Sendable {
 
 enum APIError: Error, Equatable, Sendable {
     case dailyLimitReached
+    /// Ücretsiz sürümde bu haftanın 3 kitaplık masalı açıldı (bu hafta açılanlar tekrar dinlenebilir).
+    case weeklyLimitReached
+    /// Bu kitaplık masalı yalnızca Premium'da.
+    case premiumRequired
     /// Ad ya da telaffuz güvenlik filtresine takıldı: ebeveyn düzeltmeli (çocuğa gösterilmez).
     case unsafeInput
     case rateLimited

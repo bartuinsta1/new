@@ -41,6 +41,28 @@ supabase secrets set AZURE_TTS_KEY=... AZURE_TTS_REGION=westeurope   # yoksa uyg
 supabase secrets set ELEVENLABS_API_KEY=...   # isteğe bağlı: ebeveyn klon sesi
 ```
 
+## Abonelik ve ücretsiz limitler (Adım 10)
+
+- **`POST /entitlements/verify`**: StoreKit 2 işlem JWS'i (`signed_transaction`) ya da geri yüklemede liste
+  (`signed_transactions`, en çok 10). İmza + x5c zinciri (Apple Root CA G3 parmak izi sabit, WWDR ve alındı
+  OID'leri), paket kimliği ve ortam doğrulanır (`_shared/appstore.ts`, bağımlılıksız). Bir abonelik aynı anda
+  tek hesabı açar; geri yükleme aboneliği yeni (anonim) hesaba taşır.
+- **`POST /appstore-notifications`**: App Store Server Notifications V2 (App Store Connect › Uygulama ›
+  App Store Server Notifications › Production/Sandbox URL). Yenileme uzatır; iade/iptal/süre bitişi kapatır.
+- **Limitler sunucuda:** ücretsiz günde 1 kişisel masal, kitaplıktan haftada 3 *farklı* masal
+  (`GET /library/:id`, Türkiye saatiyle pazartesi başlar; tekrar dinleme sayılmaz; `is_free` olmayanlar 402).
+  Premium: günde 10 kişisel masal (adil kullanım).
+- **Yerel geliştirme:** `APPLE_BUNDLE_ID` yoksa doğrulayıcı kapalıdır ve yalnızca `mock-...` işlemler kabul
+  edilir. Xcode'un yerel StoreKit testi (`StoreKit/Masalcik.storekit`) yerel sertifikayla imzalar; gerçek
+  doğrulayıcı bunları reddeder (doğru davranış) — Xcode'da sahte backend ile deneyin, Sandbox'ta gerçekle.
+- **Üretimden önce:** `APPLE_ROOT_CA_G3_SHA256` değerini apple.com/certificateauthority'den indirilen
+  sertifikayla teyit edin (bu ortamdan erişilemedi).
+
+```bash
+supabase secrets set APPLE_BUNDLE_ID=com.masalcik.app
+supabase secrets set APPSTORE_ENVIRONMENTS=Production,Sandbox   # App Review sandbox'ta satın alır
+```
+
 ### Gerçek API ile deneme
 
 ```bash

@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 /// Hesap (§3.7): abonelik, satın alma/geri yükleme, gizlilik, veri silme, destek.
 struct AccountTab: View {
@@ -9,6 +10,14 @@ struct AccountTab: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var context
     @State private var showsPaywall = false
+    @State private var showsManageSubscriptions = false
+    @State private var restoring = false
+    @State private var restoreMessage: RestoreMessage?
+
+    enum RestoreMessage: String, Identifiable {
+        case restored, nothing, failed
+        var id: String { rawValue }
+    }
     @State private var confirmErase = false
     @State private var erasing = false
     @State private var eraseFailed = false
@@ -28,10 +37,17 @@ struct AccountTab: View {
                         e.isInTrial ? Text("Deneme bitişi") : Text("Yenileme")
                     }
                 }
-                if entitlement?.isPremium != true {
+                if entitlement?.isPremium == true {
+                    Button { showsManageSubscriptions = true } label: {
+                        Label("Aboneliği yönet ya da iptal et", systemImage: "creditcard")
+                    }
+                } else {
                     Button { showsPaywall = true } label: { Label("Premium'u incele", systemImage: "star.circle.fill") }
                 }
-                Button("Satın alımları geri yükle") { Task { await restore() } }
+                Button { Task { await restore() } } label: {
+                    if restoring { ProgressView() } else { Text("Satın alımları geri yükle") }
+                }
+                .disabled(restoring)
             } header: {
                 Text("Abonelik")
             } footer: {
@@ -68,7 +84,18 @@ struct AccountTab: View {
             }
         }
         .navigationTitle(Text("Hesap"))
-        .sheet(isPresented: $showsPaywall) { PaywallView() }
+        // Hesap sekmesi zaten ebeveyn kapısının arkasında: Paywall doğrudan açılır.
+        .sheet(isPresented: $showsPaywall) { PaywallView(onClose: { showsPaywall = false }).themed(.day) }
+        .manageSubscriptionsSheet(isPresented: $showsManageSubscriptions)
+        .alert(item: $restoreMessage) { message in
+            switch message {
+            case .restored: Alert(title: Text("Aboneliğiniz geri yüklendi"))
+            case .nothing: Alert(title: Text("Abonelik bulunamadı"),
+                                 message: Text("Bu Apple Hesabında etkin bir Masalcık aboneliği yok."))
+            case .failed: Alert(title: Text("Geri yüklenemedi"),
+                                message: Text("İnternet bağlantınızı kontrol edip tekrar deneyin."))
+            }
+        }
         .confirmationDialog("Tüm verilerimi sil", isPresented: $confirmErase, titleVisibility: .visible) {
             Button("Kalıcı olarak sil", role: .destructive) { Task { await erase() } }
             Button("Vazgeç", role: .cancel) {}
@@ -83,8 +110,17 @@ struct AccountTab: View {
     }
 
     private func restore() async {
-        guard let dto = try? await appState.api.verifyEntitlement(signedTransaction: nil) else { return }
-        EntitlementSync.apply(dto, to: family)
+        restoring = true
+        defer { restoring = false }
+        do {
+            let dto = try await appState.purchases.restore()
+            EntitlementSync.apply(dto, to: family)
+            restoreMessage = dto.tier == .premium ? .restored : .nothing
+        } catch PurchaseError.nothingToRestore {
+            restoreMessage = .nothing
+        } catch {
+            restoreMessage = .failed
+        }
     }
 
     private func erase() async {
@@ -99,7 +135,7 @@ struct AccountTab: View {
     }
 }
 
-/// Sunucudaki abonelik durumunu yerel önbelleğe yazar (Adım 10'da StoreKit 2 ile genişler).
+/// Sunucudaki abonelik durumunu yerel önbelleğe yazar. Yerel kayıt yalnızca görüntü içindir; asıl kapı sunucuda.
 enum EntitlementSync {
     @MainActor static func apply(_ dto: EntitlementDTO, to family: Family) {
         let e = family.entitlement ?? Entitlement()

@@ -93,3 +93,8 @@ export interface Entitlement {
 }
 
 export const FREE_TIER = { personalStoriesPerDay: 1, libraryStoriesPerWeek: 3 } as const;
+/**
+ * Premium adil kullanım sınırı. VARSAYIM: "her gece yeni masal" için bol bol yeter (bir aile 4 çocukla bile
+ * günde 10'u nadiren aşar), LLM + TTS maliyetini ve kötüye kullanımı sınırlar. Paywall'da açıkça yazar.
+ */
+export const PREMIUM_TIER = { personalStoriesPerDay: 10 } as const;

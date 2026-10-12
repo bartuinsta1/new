@@ -181,11 +181,15 @@ struct LibraryStoryPlayerContainer: View {
     @Environment(\.modelContext) private var context
     @Query private var families: [Family]
     @State private var model: StoryPlayerModel?
+    /// Ücretsiz haftalık hak doldu ya da masal Premium'da (sunucu söyler; istemci saymaz).
+    @State private var blocked: APIError?
 
     var body: some View {
         ZStack {
             if let model {
                 StoryPlayerView(model: model, onClose: onClose)
+            } else if let blocked {
+                LibraryLimitView(reason: blocked, guide: item.region.guide, onClose: onClose)
             } else {
                 NightSkyBackground()
                 CharacterView(character: item.region.guide, mood: .sleepy, size: 160, isInteractive: false)
@@ -195,27 +199,71 @@ struct LibraryStoryPlayerContainer: View {
     }
 
     private func load() async {
-        let story: Story
         let id = item.id
         if let existing = try? context.fetch(FetchDescriptor<Story>(predicate: #Predicate { $0.id == id })).first,
            !existing.paragraphs.isEmpty {
-            story = existing
-        } else if let dto = try? await appState.api.story(id: item.id) {
-            story = StoryEngineClient.makeStory(from: dto)
+            // İndirilmiş masal: tekrar dinleme hak harcamaz (sunucu da bu hafta açılanı saymaz).
+            play(existing)
+            return
+        }
+        do {
+            let story = StoryEngineClient.makeStory(from: try await appState.api.libraryStory(id: id))
             story.isLibraryStory = true
             context.insert(story)
-        } else {
+            play(story)
+        } catch let error as APIError where error == .weeklyLimitReached || error == .premiumRequired {
+            blocked = error
+        } catch {
             // Çevrimdışı ve indirilmemiş: güvenli yerel masal (sahte içerik) — çocuk hata görmez.
             let child = families.first?.activeChild
-            let req = MockStoryAPI.previewRequest(language: .current)
-            story = StoryEngineClient.makeStory(from: MockStoryAPI.sampleStory(for: child.map {
+            let req = child.map {
                 StoryEngineClient.makeRequest(child: $0, settings: AppSettings(), region: item.region, mood: .calm)
-            } ?? req))
+            } ?? MockStoryAPI.previewRequest(language: .current)
+            let story = StoryEngineClient.makeStory(from: MockStoryAPI.sampleStory(for: req))
             context.insert(story)
+            play(story)
         }
+    }
+
+    private func play(_ story: Story) {
         let family = families.first
         model = StoryPlayerModel(story: story, child: family?.activeChild, settings: family?.settings)
     }
+}
+
+/// Kitaplık hakkı doldu: çocuğa suçlayıcı olmayan, uykulu bir mesaj; ebeveyne küçük, kapılı bir bağlantı.
+private struct LibraryLimitView: View {
+    let reason: APIError
+    let guide: CharacterID
+    var onClose: () -> Void
+    @Query private var families: [Family]
+
+    var body: some View {
+        ZStack {
+            NightSkyBackground()
+            VStack(spacing: Metrics.spacingL) {
+                Spacer()
+                CharacterView(character: guide, mood: .sleepy, size: 170)
+                VoicePromptPlayer(text: reason == .weeklyLimitReached ? LibraryLimitLines.weekly : LibraryLimitLines.premium,
+                                  speaker: guide, autoplay: true, showsText: true)
+                BubbleButton(systemImage: "house.fill", color: .sky, size: .large, accessibilityLabel: "Adaya dön",
+                             action: onClose)
+                Spacer()
+                if PaywallPolicy.canOffer(family: families.first) {
+                    ForParentsLink()
+                }
+            }
+            .padding(Metrics.spacingL)
+        }
+        .themed(.night)
+    }
+}
+
+enum LibraryLimitLines {
+    static var weekly: String {
+        String(localized: "Bu masal bu hafta uyuyor. Bu hafta dinlediğin masalları istediğin kadar yeniden dinleyebilirsin!")
+    }
+    static var premium: String { String(localized: "Bu masal şimdilik uyuyor. Haydi, sevdiğin bir masalı yeniden dinleyelim!") }
 }
 
 #Preview("Oynatıcı") {

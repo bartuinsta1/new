@@ -8,6 +8,8 @@ enum AnalyticsEvent: Sendable, Equatable {
     case storyFinished(durationSeconds: Int)
     case paywallShown
     case paywallClosed
+    /// Yalnızca plan türü (aylık/yıllık); fiyat ya da kullanıcı bilgisi yok.
+    case paywallPurchased(yearly: Bool)
 
     var name: String {
         switch self {
@@ -16,6 +18,7 @@ enum AnalyticsEvent: Sendable, Equatable {
         case .storyFinished: "story_finished"
         case .paywallShown: "paywall_shown"
         case .paywallClosed: "paywall_closed"
+        case .paywallPurchased: "paywall_purchased"
         }
     }
 }

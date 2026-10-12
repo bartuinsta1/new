@@ -50,6 +50,13 @@ actor AuthSession {
         return tokens?.accessToken
     }
 
+    /// Supabase kullanıcı kimliği (UUID). StoreKit 2 satın almasında `appAccountToken` olarak gider; böylece
+    /// App Store işlemi ve sunucu bildirimleri bu hesapla eşleşir. Oturum yoksa (çevrimdışı) nil.
+    func userID() async -> UUID? {
+        _ = await accessToken()
+        return cached.flatMap { UUID(uuidString: $0.userId) }
+    }
+
     /// Hesap silindiğinde (§6): jetonları cihazdan da sil.
     func signOut() {
         cached = nil

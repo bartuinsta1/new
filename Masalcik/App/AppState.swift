@@ -19,12 +19,17 @@ final class AppState {
     /// Anonim oturum (gerçek backend'de). Veri silmede jetonlar da silinir.
     let auth: AuthSession?
 
+    /// Abonelik satın alma / geri yükleme (StoreKit 2 + sunucu doğrulaması).
+    let purchases: PurchaseService
+
     /// Onboarding bittiğinde haritaya geçilir ve "Bu Gece" akışı doğrudan açılır (§3.1 adım 6: "ardından doğrudan ilk masal").
     var opensTonightOnNextMapAppear = false
 
-    init(services: (api: StoryAPI, auth: AuthSession?) = AppState.makeServices()) {
+    init(services: (api: StoryAPI, auth: AuthSession?) = AppState.makeServices(), purchases: PurchaseService? = nil) {
         self.api = services.api
         self.auth = services.auth
+        let auth = services.auth
+        self.purchases = purchases ?? StoreKitPurchaseService(api: services.api, accountToken: { await auth?.userID() })
         self.displayMode = DisplayModeResolver.mode(for: .now, bedtime: .default)
     }
 

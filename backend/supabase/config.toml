@@ -27,3 +27,6 @@ verify_jwt = false
 [functions.share]
 # GET /share/:token herkese açık önizleme; POST kendi oturum denetimini yapar.
 verify_jwt = false
+[functions.appstore-notifications]
+# App Store Server Notifications V2: Apple çağırır, oturum yok. Güven JWS imzası + Apple sertifika zincirinde.
+verify_jwt = false

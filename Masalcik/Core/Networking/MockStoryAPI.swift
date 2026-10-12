@@ -35,6 +35,17 @@ struct MockStoryAPI: StoryAPI {
 
     func library() async throws -> [LibraryItemDTO] { Self.sampleLibrary(language) }
 
+    /// Sahte modda haftalık sayaç ve Premium kilidi yok (gerçek limitler sunucuda).
+    func libraryStory(id: String) async throws -> StoryDTO {
+        guard let item = Self.sampleLibrary(language).first(where: { $0.id == id }) else { throw APIError.server(status: 404) }
+        var s = Self.sampleStory(for: Self.previewRequest(language: language))
+        s.id = id
+        s.title = item.title
+        s.durationMinutes = item.durationMinutes
+        s.newRecurringCharacter = nil
+        return s
+    }
+
     func createVoiceClone(sample: Data, consentedAt: Date) async throws -> VoiceCloneResponseDTO {
         VoiceCloneResponseDTO(voiceId: "mock-voice", status: "processing")
     }

@@ -316,6 +316,7 @@ private struct LibraryOfferView: View {
     var onOpen: (LibraryItemDTO) -> Void
 
     @Environment(AppState.self) private var appState
+    @Query private var families: [Family]
     @State private var items: [LibraryItemDTO] = []
 
     var body: some View {
@@ -334,6 +335,10 @@ private struct LibraryOfferView: View {
                 }
                 .padding(.horizontal, Metrics.spacingM)
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            // Günlük ücretsiz masal bitti: Premium'u yalnızca ebeveyne, kapının arkasında öner (§3.9).
+            if PaywallPolicy.canOffer(family: families.first) { ForParentsLink() }
         }
         .task {
             items = ((try? await appState.api.library()) ?? []).filter(\.isFree).prefix(4).map { $0 }

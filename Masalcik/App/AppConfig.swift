@@ -30,6 +30,9 @@ enum AppConfig {
         URL(string: lang == .tr ? "https://masalcik.app/gizlilik" : "https://masalcik.app/en/privacy")!
     }
 
+    /// Abonelik kullanım koşulları: Apple'ın standart son kullanıcı sözleşmesi (App Store Connect'te özel EULA yok).
+    static let termsOfUseURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
+
     /// Ebeveyn başına en fazla çocuk profili.
     static let maxChildProfiles = 4
     /// Onboarding'de seçilebilecek en fazla ilgi alanı.
