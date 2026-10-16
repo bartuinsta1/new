@@ -18,6 +18,11 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
+packages:
+  # Yalnızca test hedefinde (görsel regresyon). Uygulamaya üçüncü taraf kod girmez.
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.17.0
 configFiles:
   Debug: Config.xcconfig
   Release: Config.xcconfig
@@ -58,23 +63,36 @@ targets:
     sources: [MasalcikTests]
     dependencies:
       - target: Masalcik
+      - package: SnapshotTesting
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.masalcik.app.tests
+  MasalcikUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [MasalcikUITests]
+    dependencies:
+      - target: Masalcik
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.masalcik.app.uitests
+        TEST_TARGET_NAME: Masalcik
 schemes:
   Masalcik:
     build:
       targets:
         Masalcik: all
         MasalcikTests: [test]
+        MasalcikUITests: [test]
     run:
       language: tr
       region: TR
       # Yerel StoreKit testi (Xcode): App Store Connect olmadan satın alma/deneme/yenileme denenebilir.
       storeKitConfiguration: StoreKit/Masalcik.storekit
     test:
-      targets: [MasalcikTests]
+      targets: [MasalcikTests, MasalcikUITests]
       language: tr
       region: TR
   # İngilizce arayüzü hızlı denemek için: aynı uygulama, çalıştırma ve test dili İngilizce.

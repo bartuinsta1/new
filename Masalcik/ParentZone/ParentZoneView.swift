@@ -25,7 +25,7 @@ struct ParentZoneView: View {
                         .tabItem { Label("Hesap", systemImage: "person.crop.circle") }
                         .tag(Tab.account)
                 }
-                .tint(Palette.grape)
+                .tint(Palette.grapeText)
             } else {
                 ContentUnavailableView("Ebeveyn Köşesi", systemImage: "lock.fill")
             }

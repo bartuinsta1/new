@@ -50,6 +50,11 @@ enum Palette {
     static let moon = Color(hex: "#FFE8A3")
     static let firefly = Color(hex: "#FFD166")
     static let nightInk = Color(hex: "#E8E6FF")
+    /// Gece modunda renkli dolguların (buton, rozet) üstündeki metin. Açık metin %40 soluk dolgularda okunmuyordu
+    /// (WCAG kontrast 1,5–2,5); koyu lacivertle 6–10 (bkz. AccessibilityTests).
+    static let nightOnAccent = Color(hex: "#14112F")
+    /// Beyaz/krem zeminde mor metin ve bağlantı rengi. `grape` metin için 3,8 kontrastta kalıyordu; bu ton 5,9.
+    static let grapeText = Color(hex: "#6A4BD6")
 }
 
 /// Mod bağımsız bir "vurgu" rengi. Gece modunda otomatik olarak %40 doygunluk kaybeder.

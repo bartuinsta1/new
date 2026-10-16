@@ -15,9 +15,11 @@ struct PaywallView: View {
     @Query private var families: [Family]
     @State private var model: PaywallModel?
 
-    init(onClose: @escaping () -> Void, service: PurchaseService? = nil) {
+    /// - Parameter preloaded: snapshot testleri için fiyatları yüklenmiş model (yükleme ekranı atlanır).
+    init(onClose: @escaping () -> Void, service: PurchaseService? = nil, preloaded: PaywallModel? = nil) {
         self.onClose = onClose
         self.service = service
+        _model = State(initialValue: preloaded)
     }
 
     var body: some View {
@@ -55,6 +57,7 @@ struct PaywallView: View {
         }
         .padding(Metrics.spacingM)
         .accessibilityLabel(Text("Kapat"))
+        .accessibilityIdentifier("paywall.close")
         .accessibilitySortPriority(10) // VoiceOver'da ilk öğe
     }
 
@@ -137,12 +140,13 @@ struct PaywallView: View {
                     Text("Abone ol")
                 }
             }
-            .masalFont(.headline, scales: false)
+            .masalFont(.headline)
             .foregroundStyle(Palette.ink)
             .frame(maxWidth: .infinity, minHeight: Metrics.minTapTarget)
         }
         .buttonStyle(BubbleButtonStyle(color: .sun))
         .disabled(model.selected == nil || model.isBusy)
+        .accessibilityIdentifier("paywall.purchase")
     }
 
     /// Fiyat, dönem ve deneme bitişi düğmenin hemen altında, okunur puntoyla (gizli küçük yazı değil).
@@ -155,6 +159,7 @@ struct PaywallView: View {
                     Text("Ücretsiz deneme bitişi: \(date)")
                         .masalFont(.bodyBold)
                         .foregroundStyle(theme.ink)
+                        .accessibilityIdentifier("paywall.trialEnd")
                     if product.period == .year {
                         Text("Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra yılda \(price) ödenir ve her yıl otomatik yenilenir.")
                     } else {
@@ -166,6 +171,7 @@ struct PaywallView: View {
                     Text("Ayda \(price) ödenir ve her ay otomatik yenilenir.")
                 }
                 Text("İstediğiniz an iPhone Ayarları › Apple Hesabı › Abonelikler bölümünden iki dokunuşla iptal edebilirsiniz.")
+                    .accessibilityIdentifier("paywall.cancelInfo")
             }
             .masalFont(.body)
             .foregroundStyle(theme.secondaryInk)
@@ -245,7 +251,7 @@ private struct ComparisonCard: View {
                 Color.clear.frame(height: 1).gridCellUnsizedAxes([.horizontal, .vertical])
                 Text("Ücretsiz").masalFont(.caption).foregroundStyle(theme.secondaryInk)
                     .gridColumnAlignment(.center)
-                Text(verbatim: "Premium").masalFont(.caption).foregroundStyle(Palette.grape)
+                Text(verbatim: "Premium").masalFont(.caption).foregroundStyle(Palette.grapeText)
                     .gridColumnAlignment(.center)
             }
             Divider()
@@ -290,7 +296,7 @@ private struct PlanCard: View {
                         if product.period == .year { Text("Yıllık") } else { Text("Aylık") }
                         if product.period == .year {
                             Text("En avantajlı")
-                                .masalFont(.caption, scales: false)
+                                .masalFont(.caption)
                                 .foregroundStyle(Palette.ink)
                                 .padding(.horizontal, 8).padding(.vertical, 2)
                                 .background(Capsule().fill(Palette.sun))
@@ -324,6 +330,7 @@ private struct PlanCard: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("paywall.plan.\(product.id)")
     }
 }
 
@@ -337,6 +344,7 @@ private struct PaywallDoneView: View {
             CharacterView(character: .pamuk, mood: .happy, size: 160, isInteractive: false)
                 .accessibilityHidden(true)
             Text("Premium açıldı").masalFont(.title).foregroundStyle(theme.ink)
+                .accessibilityIdentifier("paywall.done")
             Group {
                 if isTrial {
                     Text("Deneme bitmeden bir gün önce App Store size hatırlatır. İyi geceler, tatlı masallar!")
@@ -348,7 +356,7 @@ private struct PaywallDoneView: View {
             .foregroundStyle(theme.secondaryInk)
             .multilineTextAlignment(.center)
             Button(action: onClose) {
-                Text("Tamam").masalFont(.headline, scales: false).foregroundStyle(Palette.ink)
+                Text("Tamam").masalFont(.headline).foregroundStyle(Palette.ink)
                     .frame(maxWidth: 280, minHeight: Metrics.minTapTarget)
             }
             .buttonStyle(BubbleButtonStyle(color: .grass))
@@ -371,7 +379,7 @@ private struct PaywallMessageView: View {
             title.masalFont(.title).foregroundStyle(theme.ink)
             message.masalFont(.body).foregroundStyle(theme.secondaryInk).multilineTextAlignment(.center)
             Button(action: onClose) {
-                Text("Tamam").masalFont(.headline, scales: false).foregroundStyle(Palette.ink)
+                Text("Tamam").masalFont(.headline).foregroundStyle(Palette.ink)
                     .frame(maxWidth: 280, minHeight: Metrics.minTapTarget)
             }
             .buttonStyle(BubbleButtonStyle(color: .sky))

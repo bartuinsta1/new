@@ -46,9 +46,14 @@ final class ParentGateModel {
     private(set) var shakeTrigger = 0
     @ObservationIgnored private let makeChallenge: () -> ParentGateChallenge
 
-    init(makeChallenge: @escaping () -> ParentGateChallenge = { .random() }) {
+    init(makeChallenge: @escaping () -> ParentGateChallenge = ParentGateModel.defaultChallenge) {
         self.makeChallenge = makeChallenge
         self.challenge = makeChallenge()
+    }
+
+    /// UI testlerinde (yalnızca DEBUG) soru sabitlenebilir; aksi halde rastgele.
+    nonisolated static func defaultChallenge() -> ParentGateChallenge {
+        LaunchOptions.fixedGateAnswer.map { ParentGateChallenge(answer: $0) } ?? .random()
     }
 
     var digitsNeeded: Int { String(challenge.answer).count }
@@ -84,7 +89,16 @@ struct ParentGate: View {
     /// Onboarding içinde gömülüyken kapatma düğmesi yerine akışın geri düğmesi kullanılır.
     var showsClose = true
 
-    @State private var model = ParentGateModel()
+    @State private var model: ParentGateModel
+
+    @MainActor
+    init(onUnlock: @escaping () -> Void, onCancel: @escaping () -> Void, showsClose: Bool = true,
+         makeChallenge: @escaping () -> ParentGateChallenge = ParentGateModel.defaultChallenge) {
+        self.onUnlock = onUnlock
+        self.onCancel = onCancel
+        self.showsClose = showsClose
+        _model = State(initialValue: ParentGateModel(makeChallenge: makeChallenge))
+    }
     @Environment(\.theme) private var theme
 
     var body: some View {
@@ -97,6 +111,7 @@ struct ParentGate: View {
                 }
                 .buttonStyle(BubbleButtonStyle(color: .sky, shape: .circle))
                 .accessibilityLabel(Text("Kapat"))
+                .accessibilityIdentifier("gate.close")
             } }
             Text("Ebeveyn Köşesi")
                 .masalFont(.title)
@@ -110,6 +125,7 @@ struct ParentGate: View {
                 .foregroundStyle(theme.ink)
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("gate.prompt")
 
             // Girilen rakamlar
             HStack(spacing: Metrics.spacingS) {
@@ -161,12 +177,14 @@ struct ParentGate: View {
             }
             .buttonStyle(BubbleButtonStyle(color: .berry))
             .accessibilityLabel(Text("Sil"))
+            .accessibilityIdentifier("gate.delete")
         case .some(let d):
             Button { model.type(d) } label: {
                 Text(verbatim: "\(d)").masalFont(.title, scales: false)
                     .frame(width: 76, height: 58)
             }
             .buttonStyle(BubbleButtonStyle(color: .sun))
+            .accessibilityIdentifier("gate.key.\(d)")
         }
     }
 }

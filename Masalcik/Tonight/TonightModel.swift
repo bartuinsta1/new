@@ -1,4 +1,5 @@
 import Foundation
+import os
 import SwiftData
 import Observation
 
@@ -153,6 +154,8 @@ final class TonightModel {
             await self?.timedOut(request)
         }
         defer { timeout.cancel() }
+        var signpost: OSSignpostIntervalState? = Perf.beginStoryGeneration()
+        defer { if let signpost { Perf.end("StoryFirstParagraph", signpost) } }
         do {
             for try await event in api.generateStory(request, idempotencyKey: idempotencyKey) {
                 if Task.isCancelled || usedLocalFallback { return }
@@ -166,6 +169,7 @@ final class TonightModel {
                     if player == nil { startPlayer(id: UUID().uuidString, title: title ?? "", region: request.region, request: request) }
                     player?.appendStreamed(p)
                     timeout.cancel()
+                    if let s = signpost { Perf.end("StoryFirstParagraph", s); signpost = nil }
                     // İlk paragraf geldi: oynatıcıya geç; ses hemen başlar.
                     if step == .generating { step = .playing }
                 case .completed(let dto):

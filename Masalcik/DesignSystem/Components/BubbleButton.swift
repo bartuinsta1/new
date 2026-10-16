@@ -17,7 +17,7 @@ struct BubbleButtonStyle: ButtonStyle {
         let shadow = color.shadow(for: theme.mode)
 
         configuration.label
-            .foregroundStyle(theme.mode == .day ? Palette.ink : Palette.nightInk)
+            .foregroundStyle(theme.mode == .day ? Palette.ink : Palette.nightOnAccent)
             .background {
                 shapeView(fill: fill)
             }

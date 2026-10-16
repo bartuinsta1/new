@@ -12,12 +12,16 @@ struct NightSkyBackground: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    /// Hareketi Azalt açıksa ya da masalın son bölümünde (kararma ≥ %80) gökyüzü durağandır.
+    private var isStatic: Bool { reduceMotion || dimming >= 0.8 }
+
     private static let stars: [Star] = Star.generate(count: 70, seed: 7)
     private static let fireflies: [Star] = Star.generate(count: 14, seed: 42)
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { context in
-            let t = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
+        // Pil: 24 fps yeterli (yıldız kırpışması yavaş); ekran neredeyse karardığında animasyon tamamen durur.
+        TimelineView(.animation(minimumInterval: 1 / 24, paused: isStatic)) { context in
+            let t = isStatic ? 0 : context.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
                 // Gökyüzü gradyanı
                 ctx.fill(Path(CGRect(origin: .zero, size: size)),

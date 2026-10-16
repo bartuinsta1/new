@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Adanın statik zemini: deniz, dalgalar, 2.5D ada tabanı, kum kıyısı, çimen, patikalar ve süs ağaçları.
 /// Tek bir Canvas'ta çizilir (60 fps için: binlerce view yerine tek çizim). Animasyonlu öğeler ayrı katmandadır.
-struct IslandTerrain: View {
+struct IslandTerrain: View, Equatable {
     var mode: DisplayMode
 
     private static let outline: [CGPoint] = IslandShape.outlinePoints(seed: 11)
@@ -14,7 +14,8 @@ struct IslandTerrain: View {
     }
 
     var body: some View {
-        Canvas { ctx, size in
+        // opaque: deniz tüm alanı kaplar; arka plan karıştırması gerekmez.
+        Canvas(opaque: true) { ctx, size in
             let rect = CGRect(origin: .zero, size: size)
             // Deniz
             ctx.fill(Path(rect), with: .color(mode == .day ? Color(hex: "#8EDCF9") : Color(hex: "#211D55")))

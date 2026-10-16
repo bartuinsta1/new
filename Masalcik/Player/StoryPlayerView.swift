@@ -167,7 +167,7 @@ struct KaraokeSubtitle: View {
         var read = AttributedString(String(text[..<end]))
         read.foregroundColor = Palette.moon
         var rest = AttributedString(String(text[end...]))
-        rest.foregroundColor = Palette.nightInk.opacity(0.45)
+        rest.foregroundColor = Palette.nightInk.opacity(0.6) // 0.45 → 3,7 kontrast; 0.6 → 5,5
         return read + rest
     }
 }

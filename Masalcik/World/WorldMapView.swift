@@ -32,6 +32,7 @@ struct WorldMapView: View {
                 }
             }
             .task {
+                Perf.event("MapAppear")
                 let isFirstLoad = model == nil
                 let m = model ?? WorldViewModel(api: appState.api)
                 model = m
@@ -87,7 +88,8 @@ struct WorldMapView: View {
 
     private func world(model: WorldViewModel, viewport: CGSize) -> some View {
         ZStack(alignment: .topLeading) {
-            IslandTerrain(mode: theme.mode)
+            // Kaydırma/yakınlaştırma her karede gövdeyi yeniden hesaplar; zemin yalnızca mod değişince çizilir.
+            IslandTerrain(mode: theme.mode).equatable()
             ForEach(Region.allCases.filter { $0 != .sleepHouse }) { region in
                 regionMarker(region, model: model, viewport: viewport)
                     .position(WorldLayout.position(of: region))
@@ -158,6 +160,7 @@ struct WorldMapView: View {
             BubbleButton(systemImage: "lock.fill", color: .grape, accessibilityLabel: "Ebeveyn Köşesi") {
                 sheet = .parentGate
             }
+            .accessibilityIdentifier("map.parentZone")
         }
         .padding(.horizontal, Metrics.spacingM)
     }

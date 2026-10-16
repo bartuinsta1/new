@@ -21,7 +21,8 @@ struct Theme: Sendable {
         background: Palette.cream,
         surface: .white,
         ink: Palette.ink,
-        secondaryInk: Palette.ink.opacity(0.65),
+        // 0.65 krem zeminde 4,36 kontrast veriyordu (WCAG AA 4,5 altı); 0.72 → 5,4.
+        secondaryInk: Palette.ink.opacity(0.72),
         outline: Palette.ink,
         primary: .sun,
         glow: Palette.sun)
@@ -33,7 +34,7 @@ struct Theme: Sendable {
         ink: Palette.nightInk,
         secondaryInk: Palette.nightInk.opacity(0.7),
         // Gece dış çizgisi: koyu zeminde kaybolmasın diye lacivertin bir ton koyusu, metin açık renk.
-        outline: Color(hex: "#14112F"),
+        outline: Palette.nightOnAccent,
         primary: .grape,
         glow: Palette.firefly)
 

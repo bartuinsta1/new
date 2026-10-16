@@ -45,6 +45,7 @@ struct OnboardingScaffold<Content: View>: View {
                              action: onPrimary)
                     .disabled(!canContinue)
                     .opacity(canContinue ? 1 : 0.5)
+                    .accessibilityIdentifier("onboarding.primary")
                 if let secondaryTitle {
                     Button(action: onSecondary) {
                         Text(secondaryTitle).masalFont(.bodyBold).underline()
