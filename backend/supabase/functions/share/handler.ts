@@ -3,6 +3,10 @@
 import { type AuthProvider, errorResponse, json, pathAfter, type RateLimiter } from "../_shared/http.ts";
 import type { StoryStore } from "../_shared/engine/store.ts";
 import { newShareToken, SHARE_TTL_DAYS, type ShareStore } from "../_shared/share.ts";
+import type { ReferralStore } from "../_shared/referral.ts";
+
+/** Web önizlemesine giden paragraf sayısı. */
+export const PREVIEW_PARAGRAPHS = 3;
 
 export interface ShareDeps {
   auth: AuthProvider;
@@ -12,6 +16,8 @@ export interface ShareDeps {
   /** Web önizleme sayfasının kökü, ör. https://masalcik.app */
   publicBaseUrl: string;
   appStoreUrl: string;
+  /** Varsa önizlemede paylaşanın davet kodu gösterilir (arkadaş girerse ikisi de 1 hafta Premium). */
+  referrals?: ReferralStore;
   now?: () => Date;
 }
 
@@ -27,14 +33,17 @@ export function createShareHandler(deps: ShareDeps) {
       const stored = await deps.stories.get(entry.userId, entry.storyId);
       if (!stored) return errorResponse(404, "not_found");
       const s = stored.story;
+      const inviteCode = deps.referrals ? await deps.referrals.codeFor(entry.userId) : null;
       // Önizleme: kullanıcı kimliği, masal kimliği ya da diğer kişisel alanlar dönmez.
       return json({
         title: s.title,
         language: stored.language,
         region: s.cover_scene.region,
-        paragraphs: s.paragraphs.map((p) => p.text),
+        // Veri minimizasyonu: önizleme sayfası ilk iki paragrafı (+ soluk bir üçüncü) gösterir; tamamı gönderilmez.
+        paragraphs: s.paragraphs.slice(0, PREVIEW_PARAGRAPHS).map((p) => p.text),
         preview_audio_url: s.paragraphs[0]?.audio_url ?? null,
         app_store_url: deps.appStoreUrl,
+        invite_code: inviteCode,
       }, 200, { "cache-control": "private, max-age=300" });
     }
 

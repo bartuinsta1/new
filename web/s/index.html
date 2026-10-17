@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Paylaşılan masal çocuğun adını içerir: arama motorlarına kapalı, önizleme kartı genel. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Masalcık — çocuğuna özel bir uyku masalı</title>
+<meta property="og:title" content="Çocuğuna özel bir uyku masalı 🌙">
+<meta property="og:description" content="Masalcık'ta her gece yeni bir masal; kahraman senin çocuğun. Dinlemek için dokun.">
+<meta property="og:image" content="https://masalcik.app/og-share.png">
+<meta property="og:type" content="website">
+<meta name="apple-itunes-app" content="app-id=0000000000">
+<!-- Supabase Edge Functions kökü (dağıtımda değiştirilir). -->
+<meta name="masalcik-api" content="https://YOUR-PROJECT.supabase.co/functions/v1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#2B2D42; --cream:#FFF8EC; --sun:#FFC93C; --grape:#6A4BD6; --sky:#5BC8F5; --night:#1E1B4B; --dusk:#3B2F6B; --moon:#FFE8A3; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:Nunito, system-ui, sans-serif; color:var(--ink); background:var(--night);
+         background-image: radial-gradient(circle at 80% 8%, rgba(255,232,163,.25) 0 60px, transparent 61px),
+                           linear-gradient(180deg, var(--night), var(--dusk) 60%, #5A3F7A); min-height:100vh; }
+  .stars { position:fixed; inset:0; pointer-events:none; }
+  main { position:relative; max-width:560px; margin:0 auto; padding:28px 16px 48px; }
+  header { text-align:center; color:#E8E6FF; }
+  .brand { font:800 30px "Baloo 2", system-ui; letter-spacing:.5px; color:var(--moon); }
+  .tag { font-weight:700; opacity:.85; margin-top:2px; }
+  .card { background:var(--cream); border:3px solid #14112F; border-radius:28px; padding:20px; margin-top:20px;
+          box-shadow:0 8px 0 #14112F; }
+  h1 { font:800 28px/1.1 "Baloo 2", system-ui; margin:0 0 6px; }
+  .meta { opacity:.72; font-weight:700; margin-bottom:14px; }
+  .listen { display:flex; align-items:center; gap:12px; width:100%; border:3px solid #14112F; border-radius:24px;
+            background:var(--sun); font:800 20px "Baloo 2", system-ui; color:var(--ink); padding:12px 18px; cursor:pointer;
+            box-shadow:0 6px 0 #c99a1f, 0 6px 0 3px #14112F; min-height:64px; }
+  .listen:active { transform:translateY(4px); box-shadow:0 2px 0 #c99a1f, 0 2px 0 3px #14112F; }
+  .story p { font-size:18px; line-height:1.55; margin:14px 0 0; }
+  .story p.faded { opacity:.35; }
+  .more { margin-top:14px; font-weight:800; color:var(--grape); }
+  .invite { text-align:center; }
+  .code { display:inline-block; font:800 32px ui-monospace, Menlo, monospace; letter-spacing:6px; background:#fff;
+          border:3px dashed var(--grape); border-radius:16px; padding:8px 16px; margin:10px 0; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:56px; padding:0 22px;
+         border-radius:18px; font:800 18px Nunito, system-ui; text-decoration:none; border:3px solid #14112F; cursor:pointer; }
+  .btn.store { background:#000; color:#fff; border-color:#000; width:100%; margin-top:12px; }
+  .btn.copy { background:#fff; color:var(--ink); }
+  .note { font-size:14px; opacity:.75; margin-top:12px; }
+  .safe { color:#E8E6FF; text-align:center; font-weight:700; font-size:14px; margin-top:22px; opacity:.85; }
+  .state { color:#E8E6FF; text-align:center; font-weight:700; margin-top:40px; }
+</style>
+</head>
+<body>
+<canvas class="stars" aria-hidden="true"></canvas>
+<main>
+  <header><div class="brand">Masalcık</div><div class="tag" data-t="tag"></div></header>
+  <div id="content"><p class="state" data-t="loading"></p></div>
+  <p class="safe" data-t="safe"></p>
+</main>
+<script>
+const T = {
+  tr: { tag: "Kahramanı senin çocuğun olan uyku masalları", loading: "Masal yükleniyor…",
+        listen: "Dinle", stop: "Durdur", minutes: "dk", by: "Bir Masalcık masalı",
+        more: "Masalın devamı uygulamada 🌙", inviteTitle: "Senin çocuğun için de dinleyelim mi?",
+        inviteText: "Uygulamayı indir, Ebeveyn Köşesi › Hesap bölümüne bu kodu yaz: ikiniz de 1 hafta Premium kazanırsınız.",
+        copy: "Kodu kopyala", copied: "Kopyalandı ✓", store: " App Store'dan indir",
+        safe: "Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer. Reklam yok.",
+        expired: "Bu masal bağlantısının süresi dolmuş. Paylaşan kişiden yeni bir bağlantı isteyebilirsin.",
+        missing: "Bu masal bulunamadı." },
+  en: { tag: "Bedtime stories starring your child", loading: "Loading the story…",
+        listen: "Listen", stop: "Stop", minutes: "min", by: "A Masalcık story",
+        more: "The rest of the story is in the app 🌙", inviteTitle: "Shall we make one for your child too?",
+        inviteText: "Download the app and enter this code under Parent Corner › Account: you both get 1 week of Premium.",
+        copy: "Copy code", copied: "Copied ✓", store: " Download on the App Store",
+        safe: "Stories are created with AI and pass through safety filters. No ads.",
+        expired: "This story link has expired. Ask the person who shared it for a new one.",
+        missing: "We couldn't find this story." },
+};
+// Örnek veri: ?demo=1 (tasarım önizlemesi ve ekran görüntüsü için).
+const DEMO = {
+  title: "Zeynep ve Kayıp Fener", language: "tr", region: "whisper_forest", preview_audio_url: null,
+  app_store_url: "https://apps.apple.com/tr/app/masalcik/id0000000000", invite_code: "PMK7QX",
+  paragraphs: [
+    "Bir varmış bir yokmuş, Fısıltı Ormanı'nda Zeynep adında meraklı bir çocuk yaşarmış. En yakın arkadaşı Fındık her akşam onun penceresine gelirmiş.",
+    "Bir akşam Fındık heyecanla gelmiş: \"Zeynep, ağaçların arasında küçük bir fener kaybolmuş! Onu bulursak bütün orman ışıl ışıl olacak.\"",
+    "Zeynep ile Fındık el ele vermişler. Yaprakların altına, çiçeklerin arkasına bakmışlar.",
+    "Fenerin sahibi küçük bir tavşanmış.",
+  ],
+};
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = T[lang][el.dataset.t]; });
+}
+
+function render(data) {
+  const lang = data.language === "en" ? "en" : "tr";
+  const t = T[lang];
+  applyLang(lang);
+  // Önizlemede yalnızca ilk iki paragraf: masalın tamamı uygulamada (paylaşılan içerik en az tutulur).
+  const shown = data.paragraphs.slice(0, 2), faded = data.paragraphs.slice(2, 3);
+  const store = esc(data.app_store_url);
+  document.getElementById("content").innerHTML = `
+    <section class="card">
+      <h1>${esc(data.title)}</h1>
+      <div class="meta">${t.by}</div>
+      <button class="listen" id="listen" aria-live="polite">🔊 <span id="listenLabel">${t.listen}</span></button>
+      <div class="story">${shown.map((p) => `<p>${esc(p)}</p>`).join("")}${faded.map((p) => `<p class="faded" aria-hidden="true">${esc(p)}</p>`).join("")}</div>
+      <div class="more">${t.more}</div>
+    </section>
+    <section class="card invite">
+      <h1 style="font-size:24px">${t.inviteTitle}</h1>
+      ${data.invite_code ? `<p>${t.inviteText}</p><div class="code" id="code">${esc(data.invite_code)}</div><br>
+      <button class="btn copy" id="copy">${t.copy}</button>` : ""}
+      <a class="btn store" href="${store}"><svg width="18" height="22" viewBox="0 0 17 21" aria-hidden="true"><path fill="#fff" d="M14 11.2c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9C3.5 5.4 1.9 6.4 1 8c-1.8 3.2-.5 7.9 1.3 10.5.9 1.3 1.9 2.7 3.2 2.6 1.3 0 1.8-.8 3.3-.8 1.5 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.6 1-1.4 1.4-2.9 1.4-2.9s-2.7-1-2.7-4.4zM11.5 3.6c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3-1.5z"/></svg>${t.store}</a>
+    </section>`;
+
+  let audio = null, speaking = false;
+  const label = document.getElementById("listenLabel");
+  const stop = () => { speaking = false; label.textContent = t.listen; audio?.pause(); speechSynthesis?.cancel(); };
+  document.getElementById("listen").onclick = () => {
+    if (speaking) return stop();
+    speaking = true; label.textContent = t.stop;
+    if (data.preview_audio_url) {
+      audio = audio ?? new Audio(data.preview_audio_url);
+      audio.onended = stop; audio.currentTime = 0; audio.play().catch(stop);
+    } else if ("speechSynthesis" in window) {
+      // Sunucu sesi yoksa tarayıcının sesi (uygulamadaki gibi yavaş ve sakin).
+      const u = new SpeechSynthesisUtterance(shown.join(" "));
+      u.lang = lang === "tr" ? "tr-TR" : "en-GB"; u.rate = 0.85; u.onend = stop;
+      speechSynthesis.speak(u);
+    } else stop();
+  };
+  const copy = document.getElementById("copy");
+  if (copy) copy.onclick = async () => {
+    try { await navigator.clipboard.writeText(data.invite_code); copy.textContent = t.copied; } catch {}
+  };
+}
+
+function showState(key) {
+  const lang = navigator.language?.startsWith("en") ? "en" : "tr";
+  applyLang(lang);
+  document.getElementById("content").innerHTML = `<p class="state">${T[lang][key]}</p>`;
+}
+
+async function main() {
+  const params = new URLSearchParams(location.search);
+  if (params.has("demo")) return render({ ...DEMO, language: params.get("lang") === "en" ? "en" : "tr" });
+  const token = location.pathname.split("/").filter(Boolean).pop();
+  if (!token || !/^[\w-]{10,40}$/.test(token)) return showState("missing");
+  applyLang(navigator.language?.startsWith("en") ? "en" : "tr");
+  const api = document.querySelector('meta[name="masalcik-api"]').content;
+  try {
+    const res = await fetch(`${api}/share/${encodeURIComponent(token)}`);
+    if (res.status === 410) return showState("expired");
+    if (!res.ok) return showState("missing");
+    render(await res.json());
+  } catch { showState("missing"); }
+}
+
+// Yıldızlar (hareketi azalt açıksa durağan).
+(function stars() {
+  const cv = document.querySelector(".stars"), ctx = cv.getContext("2d");
+  const pts = Array.from({ length: 60 }, (_, i) => ({ x: (i * 97 % 100) / 100, y: (i * 61 % 70) / 100, r: 0.8 + (i % 4) * 0.5, p: i }));
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function draw(t) {
+    cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    for (const s of pts) {
+      ctx.globalAlpha = still ? 0.8 : 0.5 + 0.5 * Math.sin(t / 900 + s.p);
+      ctx.fillStyle = "#FFE8A3"; ctx.beginPath(); ctx.arc(s.x * innerWidth, s.y * innerHeight, s.r, 0, 7); ctx.fill();
+    }
+    if (!still) setTimeout(() => requestAnimationFrame(draw), 120);
+  }
+  requestAnimationFrame(draw);
+})();
+main();
+</script>
+</body>
+</html>

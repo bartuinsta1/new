@@ -63,6 +63,15 @@ supabase secrets set APPLE_BUNDLE_ID=com.masalcik.app
 supabase secrets set APPSTORE_ENVIRONMENTS=Production,Sandbox   # App Review sandbox'ta satın alır
 ```
 
+## Davet ve paylaşım (Adım 12)
+
+- **`GET /referral`** kendi davet kodu; **`POST /referral/redeem`** `{ code }` → davet eden + edilen 7 gün Premium
+  (`_shared/referral.ts`: hesap başına bir kez, kendi kodu/karşılıklı davet yok, davet eden yılda en çok 12 ödül).
+  Ödül `bonus_until` olarak App Store aboneliğinden ayrı tutulur; `/entitlements/verify` `product_id:
+  "masalcik.referral.week"` döner.
+- **`GET /share/:token`** artık paylaşanın `invite_code`'unu da döner ve masalın yalnızca ilk 3 paragrafını verir
+  (web önizlemesi: `web/s/index.html`).
+
 ### Gerçek API ile deneme
 
 ```bash

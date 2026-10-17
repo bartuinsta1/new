@@ -77,6 +77,16 @@ struct LiveStoryAPI: StoryAPI {
         return try APICoding.decoder.decode(EntitlementDTO.self, from: data)
     }
 
+    func referral() async throws -> ReferralDTO { try await get("referral") }
+
+    func redeemReferral(code: String) async throws -> ReferralRedeemDTO {
+        var req = try await makeRequest("referral/redeem", method: "POST")
+        req.httpBody = try APICoding.encoder.encode(["code": code])
+        let (data, response) = try await session.data(for: req)
+        try Self.check(response)
+        return try APICoding.decoder.decode(ReferralRedeemDTO.self, from: data)
+    }
+
     func shareStory(id: String) async throws -> URL {
         var req = try await makeRequest("share", method: "POST")
         req.httpBody = try APICoding.encoder.encode(["story_id": id])
@@ -123,6 +133,12 @@ struct LiveStoryAPI: StoryAPI {
         case 402: throw APIError.dailyLimitReached
         case 403 where http.value(forHTTPHeaderField: "X-Error-Code") == "weekly_limit_reached":
             throw APIError.weeklyLimitReached
+        case 400, 404, 409:
+            if let code = http.value(forHTTPHeaderField: "X-Error-Code"),
+               ["invalid_code", "own_code", "already_redeemed"].contains(code) {
+                throw APIError.referralRejected(code)
+            }
+            throw APIError.server(status: http.statusCode)
         case 429: throw APIError.rateLimited
         default: throw APIError.server(status: http.statusCode)
         }

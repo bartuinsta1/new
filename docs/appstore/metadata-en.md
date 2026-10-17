@@ -1,0 +1,63 @@
+# App Store metadata — English (UK/US)
+
+## Name (30)
+Masalcık: Bedtime Stories
+
+## Subtitle (30)
+Stories starring your child
+
+## Keywords (100)
+<!-- Words in the name and subtitle (bedtime, stories, child) are already indexed. -->
+sleep,story,audio,kids,lullaby,personalized,toddler,preschool,read aloud,calm,night,fairy tale
+
+## Promotional text (170)
+A brand-new bedtime story every night, starring your child. Warm narration, a screen that dims as they drift off, and no ads, ever.
+
+## Description
+
+Masalcık tells children aged 3–9 a brand-new bedtime story every night, made just for them. Your child is the hero: their name, favourite animals, the things they wonder about and their cuddly companion are all part of the story.
+
+STORY ISLAND
+Pamuk, Fındık, Lodos, Wise Owl Nur, Yıldız and Captain Mussel are waiting on Story Island. From Whisper Forest to Lighthouse Cove, every region means new stories. Every instruction is spoken aloud for children who can't read yet.
+
+TONIGHT
+Three taps and the story is ready: who's in it, where it happens, what kind of story. Or let Pamuk choose. The story starts in seconds.
+
+IN A FAMILIAR VOICE
+A warm, slow voice reads like a mum, dad or grandparent. With Premium you can add your own voice (with separate, explicit consent; your sample can be deleted at any time).
+
+THE SCREEN FALLS ASLEEP TOO
+Night Mode softens every colour and the screen slowly dims as the story goes on. Sleep timer, lullaby or white noise after the story, lock-screen controls.
+
+A CALM REWARD SYSTEM
+A sticker for every story and new outfits for regular bedtimes. Celebrations wait until morning — no excitement at night.
+
+PARENT CORNER
+Behind a parental gate: up to 4 child profiles, a weekly sleep summary, content filters, story history and text, voice and bedtime settings.
+
+SAFE AND PRIVATE
+• Stories are created with AI and pass through safety filters. Every story is checked again before it reaches your child.
+• No ads. No third-party advertising or tracking code.
+• For your child we only keep their name, age and interests.
+• Delete all your data with a single tap.
+• Purchases and external links are behind the parental gate.
+
+FREE AND PREMIUM
+Free: 1 personal story every day and 3 library stories a week. No credits, no tokens.
+Masalcık Premium: up to 10 personal stories a day, the full library and stories in your own voice. Monthly or yearly, with a 7-day free trial.
+
+Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in iPhone Settings › Apple Account › Subscriptions.
+
+Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://masalcik.app/en/privacy
+
+## Screenshot captions (6)
+1. Stories where your child is the hero
+2. New every night, made just for them
+3. In mum's, dad's or grandad's voice
+4. Classic tales, gently retold
+5. The screen falls asleep too
+6. No ads, safe, parent-controlled
+
+## What's new (1.0)
+The first version of Masalcık: Story Island, new personal stories every night, the Night Mode player and Parent Corner.

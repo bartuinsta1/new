@@ -65,6 +65,14 @@ struct MockStoryAPI: StoryAPI {
 
     func deleteAccount() async throws {}
 
+    func referral() async throws -> ReferralDTO { ReferralDTO(code: "PMK7QX", rewardsThisYear: 0, rewardDays: 7) }
+
+    func redeemReferral(code: String) async throws -> ReferralRedeemDTO {
+        guard code.count == 6 else { throw APIError.referralRejected("invalid_code") }
+        if code == "PMK7QX" { throw APIError.referralRejected("own_code") }
+        return ReferralRedeemDTO(premiumUntil: .now.addingTimeInterval(7 * 86_400), inviterRewarded: true)
+    }
+
     func shareStory(id: String) async throws -> URL { URL(string: "https://masalcik.app/s/mock-\(id.prefix(8))")! }
 
     // MARK: - Örnek içerik

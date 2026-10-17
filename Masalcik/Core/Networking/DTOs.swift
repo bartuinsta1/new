@@ -87,6 +87,19 @@ struct EntitlementDTO: Codable, Hashable, Sendable {
     var libraryStoriesRemainingThisWeek: Int?
 }
 
+/// `GET /referral`
+struct ReferralDTO: Codable, Hashable, Sendable {
+    var code: String
+    var rewardsThisYear: Int
+    var rewardDays: Int
+}
+
+/// `POST /referral/redeem`
+struct ReferralRedeemDTO: Codable, Hashable, Sendable {
+    var premiumUntil: Date
+    var inviterRewarded: Bool
+}
+
 struct VoiceCloneResponseDTO: Codable, Hashable, Sendable {
     var voiceId: String
     var status: String // "processing" | "ready"
@@ -98,6 +111,8 @@ enum APIError: Error, Equatable, Sendable {
     case weeklyLimitReached
     /// Bu kitaplık masalı yalnızca Premium'da.
     case premiumRequired
+    /// Davet kodu kullanılamadı: invalid_code | own_code | already_redeemed
+    case referralRejected(String)
     /// Ad ya da telaffuz güvenlik filtresine takıldı: ebeveyn düzeltmeli (çocuğa gösterilmez).
     case unsafeInput
     case rateLimited

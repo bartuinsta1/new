@@ -23,6 +23,10 @@ protocol StoryAPI: Sendable {
     func deleteAccount() async throws
     /// `POST /share` — masal için paylaşım bağlantısı (web önizleme + uygulama daveti).
     func shareStory(id: String) async throws -> URL
+    /// `GET /referral` — kendi davet kodu.
+    func referral() async throws -> ReferralDTO
+    /// `POST /referral/redeem` — arkadaşın davet kodu: ikimize de 1 hafta Premium.
+    func redeemReferral(code: String) async throws -> ReferralRedeemDTO
 }
 
 extension StoryAPI {
@@ -37,6 +41,10 @@ extension StoryAPI {
     func restoreEntitlements(signedTransactions: [String]) async throws -> EntitlementDTO {
         try await verifyEntitlement(signedTransaction: signedTransactions.last)
     }
+
+    /// Varsayılan (test sahteleri): davet programı yok.
+    func referral() async throws -> ReferralDTO { throw APIError.server(status: 501) }
+    func redeemReferral(code: String) async throws -> ReferralRedeemDTO { throw APIError.server(status: 501) }
 
     /// Varsayılan: paylaşım desteklenmiyor (test sahteleri).
     func shareStory(id: String) async throws -> URL { throw APIError.server(status: 501) }

@@ -16,7 +16,7 @@ CATALOG = SRC / "Resources" / "Localizable.xcstrings"
 # Tam eşleşme: interpolasyondaki ifade bunlardan biriyse tamsayıdır.
 INT_EXPRS = {"minutes", "durationMinutes", "filled", "total", "count", "current", "i + 1", "n", "age", "week", "toGo", "f.appearances", "child.age", "child.stories.count",
              "family.expectedChildCount", "AppConfig.maxChildProfiles", "AppConfig.maxInterests", "story.durationMinutes",
-             "d.rawValue", "m", "days"}
+             "d.rawValue", "m", "days", "referral.rewardsThisYear"}
 
 def to_key(lit: str) -> str:
     def repl(m):

@@ -61,6 +61,13 @@
   .key { height: 58px; border-radius: 24px; border: 3px solid var(--outline); display: flex; align-items: center; justify-content: center; font: 800 28px "Baloo 2"; color: var(--ink); }
   .digits { display: flex; gap: 8px; justify-content: center; margin-top: 18px; }
   .digit { width: 56px; height: 64px; border-radius: 16px; border: 3px solid var(--outline); background: #fff; font: 800 28px "Baloo 2"; display:flex; align-items:center; justify-content:center; }
+  .as-frame { width:430px; height:932px; position:relative; overflow:hidden; border-radius:0; }
+  .as-title { position:absolute; left:28px; right:28px; top:64px; text-align:center; color:#fff; font:800 40px/1.08 "Baloo 2";
+              -webkit-text-stroke: 7px #2B2D42; paint-order: stroke fill; word-spacing: 6px; letter-spacing: .3px; text-shadow: 0 5px 0 #2B2D42; }
+  .as-phone { position:absolute; left:50%; top:262px; transform:translateX(-50%) scale(.86); transform-origin:top center;
+              filter: drop-shadow(0 18px 30px rgba(0,0,0,.28)); }
+  .as-phone .phone { border:10px solid #14112F; }
+  .as-char { position:absolute; filter: drop-shadow(0 10px 14px rgba(0,0,0,.3)); z-index:3; }
 </style>
 </head>
 <body>
@@ -576,6 +583,23 @@ function paywallDone(){return `<div class="phone day" style="--outline:${P.ink};
 function libraryLimit(){return tnShell(`<div style="flex:1"></div>${charSVG('yildiz','sleepy',170,'night')}${speakerRow('yildiz','Bu masal bu hafta uyuyor. Bu hafta dinlediğin masalları istediğin kadar yeniden dinleyebilirsin!','night',56)}
   ${bubble('','🏠','sky','night',{large:true,circle:true})}<div style="flex:1"></div><div style="font:700 14px Nunito;color:#b9b5e0">🔒 Ebeveynler için</div>`);}
 
+// ---------- App Store ekran görüntüleri (§8) — 1290×2796 (6,7"), 430×932 css × 3 ----------
+function voiceScreen(){return ios('Ayarlar',[
+  ['Ses',[`Anlatıcı${val('Anne')}${chev}`,`<span style="color:${P.grape}">▶︎ Örnek dinle</span>`,`<span style="color:${P.grape}">🎙 Kendi sesimle anlat</span>`],'Masalı annenin, babanın ya da dedenin sesine yakın sıcak bir ses okur. Premium ile kendi sesinizi de ekleyebilirsiniz.'],
+  ['Anlatıcı seç',['👩 Anne <span style="margin-left:auto;color:'+P.grape+'">✓</span>','👨 Baba','👴 Dede','👵 Nine','🎙 Kendi sesim <span style="margin-left:auto;font-size:13px;color:#8e8e93">Premium</span>']]],{tab:1});}
+const AS=[
+  {title:'Kahramanı senin çocuğun olan masallar',bg:`linear-gradient(180deg,${P.sky},#3BA9DD)`,phone:()=>mapScreen('day','tr'),char:['pamuk','happy',300],pos:'right:-46px;top:205px',flip:false},
+  {title:'Her gece yeni, her gece ona özel',bg:`linear-gradient(180deg,${P.grape},#6A4BD6)`,phone:()=>tnChars('tr'),char:['findik','happy',250],pos:'left:-40px;bottom:120px'},
+  {title:'Annenin, babanın, dedenin sesiyle',bg:`linear-gradient(180deg,${P.berry},#E2557A)`,phone:()=>voiceScreen(),char:['nur','happy',230],pos:'right:-46px;bottom:18px'},
+  {title:"Keloğlan'dan Nasreddin Hoca'ya, sevdiğimiz masallar",bg:`linear-gradient(180deg,${P.orange},#F08A2C)`,phone:()=>mapScreen('day','tr',{focus:'storyteller_plane'}),char:['lodos','happy',260],pos:'left:-50px;bottom:110px'},
+  {title:'Uykuya dalarken ekran da uyur',bg:`linear-gradient(180deg,${P.nightSky},${P.dusk})`,phone:()=>playerScreen('tr',{progress:.78}),char:['yildiz','sleepy',240],pos:'right:-34px;top:230px'},
+  {title:'Reklamsız, güvenli, ebeveyn kontrolünde',bg:`linear-gradient(180deg,${P.grass},#5DBE3A)`,phone:()=>parentChildren(),char:['kaptan_midye','happy',240],pos:'right:-40px;bottom:12px'},
+];
+function appStoreFrames(){return AS.map((a,i)=>`<div class="as-frame" style="background:${a.bg}">
+  <div class="as-title" style="${a.title.length>40?'font-size:34px':''}">${a.title}</div>
+  <div class="as-phone">${a.phone()}</div>
+  <div class="as-char" style="${a.pos}">${charSVG(...a.char,i===4?'night':'day')}</div></div>`).join('');}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -590,10 +614,11 @@ const screens={
     +playerScreen('en',{progress:.35,timer:'30 min',lullaby:true})
     +playerScreen('tr',{progress:.78})
     +playerScreen('en',{finished:true}),
+  appstore:()=>appStoreFrames(),
   paywall:()=>paywallScreen('tr')+paywallScreen('en')+paywallDone()+libraryLimit(),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={paywall:['Paywall — yıllık seçili, deneme bitişi açık (TR)','Paywall (EN)','Satın alma sonrası (TR)','Kitaplık hakkı doldu: çocuğa uykulu mesaj, ebeveyne kapılı bağlantı (TR)'],day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const caps={appstore:['1 Masal Adası','2 Bu Gece','3 Ses seçimi','4 Masalcı Çınarı','5 Gece oynatıcı','6 Ebeveyn Köşesi'],paywall:['Paywall — yıllık seçili, deneme bitişi açık (TR)','Paywall (EN)','Satın alma sonrası (TR)','Kitaplık hakkı doldu: çocuğa uykulu mesaj, ebeveyne kapılı bağlantı (TR)'],day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
 const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure','parent','paywall']:[mode];
 if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();

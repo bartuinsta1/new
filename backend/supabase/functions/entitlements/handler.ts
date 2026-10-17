@@ -21,6 +21,8 @@ export interface EntitlementsDeps {
 }
 
 const MAX_TRANSACTIONS = 10;
+/** Davet ödülüyle gelen Premium (App Store ürünü değil; iOS "Aboneliği yönet" göstermez). */
+export const REFERRAL_PRODUCT_ID = "masalcik.referral.week";
 
 export function createEntitlementsHandler(deps: EntitlementsDeps) {
   const now = deps.now ?? (() => new Date());
@@ -76,6 +78,10 @@ export async function entitlementFor(
   if (sub) {
     return { tier: "premium", product_id: sub.productId, is_in_trial: sub.isInTrial,
              expires_at: sub.expiresAt.toISOString() };
+  }
+  const bonus = await deps.entitlements.bonusUntil(userId);
+  if (bonus) {
+    return { tier: "premium", product_id: REFERRAL_PRODUCT_ID, is_in_trial: false, expires_at: bonus.toISOString() };
   }
   const used = await deps.usage.personalStoriesOn(userId, istanbulDay(now));
   const library = await deps.usage.libraryStoriesInWeek(userId, istanbulWeek(now));

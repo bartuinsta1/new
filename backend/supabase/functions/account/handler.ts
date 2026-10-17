@@ -6,6 +6,7 @@ import { type AuthProvider, type EntitlementStore, errorResponse, type UsageStor
 import type { StoryStore } from "../_shared/engine/store.ts";
 import type { CloneVoiceStore } from "../_shared/tts/voice.ts";
 import type { ShareStore } from "../_shared/share.ts";
+import type { ReferralStore } from "../_shared/referral.ts";
 
 export interface AccountDeps {
   auth: AuthProvider;
@@ -15,6 +16,7 @@ export interface AccountDeps {
   stories?: StoryStore;
   cloneVoices?: CloneVoiceStore;
   shares?: ShareStore;
+  referrals?: ReferralStore;
 }
 
 export function createAccountHandler(deps: AccountDeps) {
@@ -28,6 +30,7 @@ export function createAccountHandler(deps: AccountDeps) {
       deps.stories?.deleteUser(userId),
       deps.cloneVoices?.delete(userId),
       deps.shares?.deleteUser(userId),
+      deps.referrals?.deleteUser(userId),
     ]);
     return new Response(null, { status: 204 });
   };

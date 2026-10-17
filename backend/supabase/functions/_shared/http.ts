@@ -90,6 +90,12 @@ export interface EntitlementStore {
   userForOriginalTransaction(originalTransactionId: string): Promise<string | null>;
   /** İade / iptal: aboneliği kapatır. */
   revoke(originalTransactionId: string): Promise<void>;
+  /**
+   * Davet ödülü (§9): App Store aboneliğinden bağımsız, süreli Premium. Mevcut ödül süresinin ya da bugünün
+   * üstüne eklenir. Apple aboneliği varsa ikisi birlikte geçerlidir (hangisi uzunsa).
+   */
+  grantBonusDays(userId: string, days: number, now: Date): Promise<Date>;
+  bonusUntil(userId: string): Promise<Date | null>;
   /** Yalnızca testler ve yerel geliştirme: belirli bir tarihe kadar (null = süresiz) premium. */
   setPremium(userId: string, expiresAt: Date | null): Promise<void>;
   deleteUser(userId: string): Promise<void>;
@@ -110,6 +116,7 @@ export class MemoryStores implements UsageStore, EntitlementStore {
   private library = new Map<string, Set<string>>();
   private subs = new Map<string, Subscription>();
   private owners = new Map<string, string>();
+  private bonus = new Map<string, Date>();
   private now: () => Date;
   constructor(now: () => Date = () => new Date()) {
     this.now = now;
@@ -126,7 +133,20 @@ export class MemoryStores implements UsageStore, EntitlementStore {
     this.library.set(k, (this.library.get(k) ?? new Set()).add(storyId));
   }
 
-  async isPremium(userId: string) { return (await this.subscription(userId)) !== null; }
+  async isPremium(userId: string) {
+    return (await this.subscription(userId)) !== null || (await this.bonusUntil(userId)) !== null;
+  }
+  async grantBonusDays(userId: string, days: number, now: Date) {
+    const current = this.bonus.get(userId);
+    const base = current && current > now ? current : now;
+    const until = new Date(base.getTime() + days * 86_400_000);
+    this.bonus.set(userId, until);
+    return until;
+  }
+  async bonusUntil(userId: string) {
+    const b = this.bonus.get(userId);
+    return b && b > this.now() ? b : null;
+  }
   async subscription(userId: string) {
     const s = this.subs.get(userId);
     return s && s.expiresAt > this.now() ? s : null;
@@ -150,6 +170,7 @@ export class MemoryStores implements UsageStore, EntitlementStore {
   }
   async deleteUser(userId: string) {
     this.subs.delete(userId);
+    this.bonus.delete(userId);
     for (const [k, v] of [...this.owners]) if (v === userId) this.owners.delete(k);
     for (const k of [...this.usage.keys()]) if (k.startsWith(`${userId}:`)) this.usage.delete(k);
     for (const k of [...this.library.keys()]) if (k.startsWith(`${userId}:`)) this.library.delete(k);

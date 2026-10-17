@@ -267,6 +267,9 @@ final class Entitlement {
         self.lastVerifiedAt = lastVerifiedAt
     }
 
+    /// Davet ödülüyle gelen Premium (App Store aboneliği değil). Sunucudaki REFERRAL_PRODUCT_ID ile aynı.
+    static let referralProductID = "masalcik.referral.week"
+
     var isPremium: Bool {
         guard tier == .premium else { return false }
         guard let expiresAt else { return true }

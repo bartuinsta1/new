@@ -141,6 +141,34 @@
         }
       }
     },
+    "%lld hafta": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hafta"
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld week"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weeks"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld masalda": {
       "localizations": {
         "tr": {
@@ -181,6 +209,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Age %1$lld · Stories: %2$lld"
+          }
+        }
+      }
+    },
+    "1 hafta Premium açıldı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 hafta Premium açıldı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 week of Premium is on"
           }
         }
       }
@@ -565,6 +609,54 @@
         }
       }
     },
+    "Arkadaşını davet et": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaşını davet et"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite a friend"
+          }
+        }
+      }
+    },
+    "Arkadaşınız uygulamayı indirip kodunuzu girerse ikiniz de 1 hafta Premium kazanırsınız. Her hesap bir kez kod kullanabilir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaşınız uygulamayı indirip kodunuzu girerse ikiniz de 1 hafta Premium kazanırsınız. Her hesap bir kez kod kullanabilir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If your friend downloads the app and enters your code, you both get 1 week of Premium. Each account can use a code once."
+          }
+        }
+      }
+    },
+    "Arkadaşınızın kodu": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaşınızın kodu"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your friend's code"
+          }
+        }
+      }
+    },
     "Avatar ve yol arkadaşı": {
       "localizations": {
         "tr": {
@@ -801,6 +893,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wise Owl Nur"
+          }
+        }
+      }
+    },
+    "Bir arkadaşınızın kodunu girin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir arkadaşınızın kodunu girin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a friend's code."
           }
         }
       }
@@ -1137,6 +1245,22 @@
         }
       }
     },
+    "Bu sizin kodunuz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu sizin kodunuz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's your own code"
+          }
+        }
+      }
+    },
     "Bu tarihten önce iptal ederseniz hiçbir ücret alınmaz. Sonra ayda %@ ödenir ve her ay otomatik yenilenir.": {
       "localizations": {
         "tr": {
@@ -1165,6 +1289,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancel before then and you won't be charged. After that it's %@ per year, renewing automatically every year."
+          }
+        }
+      }
+    },
+    "Bu yıl kazanılan": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu yıl kazanılan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earned this year"
           }
         }
       }
@@ -1261,6 +1401,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "Courage"
+          }
+        }
+      }
+    },
+    "Davet kodu zaten kullanıldı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davet kodu zaten kullanıldı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite code already used"
+          }
+        }
+      }
+    },
+    "Davet kodunu paylaş": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davet kodunu paylaş"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share invite code"
+          }
+        }
+      }
+    },
+    "Davet kodunuz": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davet kodunuz"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your invite code"
+          }
+        }
+      }
+    },
+    "Davet ödülü: 1 hafta Premium": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Davet ödülü: 1 hafta Premium"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invite reward: 1 week of Premium"
           }
         }
       }
@@ -2257,6 +2461,22 @@
         }
       }
     },
+    "Her hesap yalnızca bir kez davet kodu kullanabilir.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her hesap yalnızca bir kez davet kodu kullanabilir."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each account can use an invite code only once."
+          }
+        }
+      }
+    },
     "Hesabınız, çocuk profilleri, masallar, ses dosyaları ve ses örneğiniz sunucudan ve bu cihazdan kalıcı olarak silinir. Etkin bir aboneliği App Store'dan ayrıca iptal etmeniz gerekir.": {
       "localizations": {
         "tr": {
@@ -2769,6 +2989,54 @@
         }
       }
     },
+    "Kod bulunamadı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kod bulunamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code not found"
+          }
+        }
+      }
+    },
+    "Kod şu an kullanılamadı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kod şu an kullanılamadı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The code couldn't be used right now"
+          }
+        }
+      }
+    },
+    "Kodu kontrol edip tekrar deneyin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kodu kontrol edip tekrar deneyin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the code and try again."
+          }
+        }
+      }
+    },
     "Komik": {
       "localizations": {
         "tr": {
@@ -2797,6 +3065,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starting nursery / school"
+          }
+        }
+      }
+    },
+    "Kullan": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullan"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redeem"
           }
         }
       }
@@ -3117,6 +3401,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Storyteller Tree"
+          }
+        }
+      }
+    },
+    "Masalcık'ta çocuğumuz her gece kendi masalının kahramanı oluyor. Uygulamayı indirip Ebeveyn Köşesi › Hesap bölümüne %@ kodunu yazarsan ikimiz de 1 hafta Premium kazanırız: %@": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masalcık'ta çocuğumuz her gece kendi masalının kahramanı oluyor. Uygulamayı indirip Ebeveyn Köşesi › Hesap bölümüne %@ kodunu yazarsan ikimiz de 1 hafta Premium kazanırız: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "With Masalcık our child becomes the hero of their own bedtime story every night. Download the app and enter the code %1$@ under Parent Corner › Account, and we both get 1 week of Premium: %2$@"
           }
         }
       }
@@ -3737,6 +4037,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Premium is on"
+          }
+        }
+      }
+    },
+    "Premium bitişi: %@. Arkadaşınız da 1 hafta kazandı.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium bitişi: %@. Arkadaşınız da 1 hafta kazandı."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium until: %@. Your friend got 1 week too."
           }
         }
       }

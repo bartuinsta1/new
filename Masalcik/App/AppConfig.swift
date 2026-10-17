@@ -30,6 +30,9 @@ enum AppConfig {
         URL(string: lang == .tr ? "https://masalcik.app/gizlilik" : "https://masalcik.app/en/privacy")!
     }
 
+    /// VARSAYIM: App Store kimliği yayından sonra belli olur; o zamana kadar uygulama adıyla arama bağlantısı.
+    static let appStoreURL = URL(string: "https://apps.apple.com/tr/app/masalcik/id0000000000")!
+
     /// Abonelik kullanım koşulları: Apple'ın standart son kullanıcı sözleşmesi (App Store Connect'te özel EULA yok).
     static let termsOfUseURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 

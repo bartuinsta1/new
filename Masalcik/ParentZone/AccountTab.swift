@@ -37,7 +37,9 @@ struct AccountTab: View {
                         e.isInTrial ? Text("Deneme bitişi") : Text("Yenileme")
                     }
                 }
-                if entitlement?.isPremium == true {
+                if entitlement?.productID == Entitlement.referralProductID {
+                    Label("Davet ödülü: 1 hafta Premium", systemImage: "gift.fill")
+                } else if entitlement?.isPremium == true {
                     Button { showsManageSubscriptions = true } label: {
                         Label("Aboneliği yönet ya da iptal et", systemImage: "creditcard")
                     }
@@ -54,6 +56,8 @@ struct AccountTab: View {
             } footer: {
                 Text("Ücretsiz sürümde her gün 1 kişisel masal ve kitaplıktan haftada 3 masal. Kredi ya da jeton yok.")
             }
+
+            ReferralSection(family: family)
 
             Section {
                 Label("Masallar yapay zekâyla üretilir ve güvenlik filtrelerinden geçer.", systemImage: "sparkles")

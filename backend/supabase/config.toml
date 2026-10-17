@@ -30,3 +30,5 @@ verify_jwt = false
 [functions.appstore-notifications]
 # App Store Server Notifications V2: Apple çağırır, oturum yok. Güven JWS imzası + Apple sertifika zincirinde.
 verify_jwt = false
+[functions.referral]
+verify_jwt = true

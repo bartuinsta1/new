@@ -37,7 +37,7 @@ test("paylaşım: bağlantı oluşur, önizleme kişisel alan içermez", async (
   const token = url.split("/").pop();
   const preview = await (await h(new Request(`${BASE}/share/${token}`))).json();
   assert.equal(preview.title, "Ayşe ve Kayıp Fener");
-  assert.ok(preview.paragraphs.length > 3);
+  assert.equal(preview.paragraphs.length, 3, "önizlemeye masalın yalnızca başı gider");
   assert.equal(preview.app_store_url, "https://apps.apple.com/app/masalcik");
   const raw = JSON.stringify(preview);
   assert.ok(!raw.includes("user-1") && !raw.includes("story-1"), "önizleme kimlik sızdırıyor");

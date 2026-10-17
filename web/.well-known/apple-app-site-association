@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.com.masalcik.app"],
+        "components": [{ "/": "/s/*", "comment": "Paylaşılan masal: uygulama yüklüyse uygulamada açılır" }]
+      }
+    ]
+  }
+}
