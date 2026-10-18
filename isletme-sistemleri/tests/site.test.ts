@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { SISTEMLER } from "../src/sistemler.ts";
 import { DEPARTMANLAR } from "../src/ekip.ts";
-import { ENTEGRASYONLAR, aylikMaliyet, eksikler, gerekenler } from "../src/entegrasyonlar.ts";
+import { ENTEGRASYONLAR, aylikMaliyet, eksikler, gerekenler, plandakiler } from "../src/entegrasyonlar.ts";
 import { derle } from "../scripts/site.ts";
 
 test("entegrasyonlar yalnızca var olan sistem ve departmanlara bağlanır", () => {
@@ -32,5 +32,16 @@ test("hazır olma ve maliyet hesabı", () => {
 test("site/ derlemesi güncel", () => {
   for (const [yol, icerik] of derle()) {
     assert.equal(readFileSync(new URL(`../${yol}`, import.meta.url), "utf8"), icerik, `${yol} eski — npm run site çalıştırın`);
+  }
+});
+
+test("ekonomik plan 30 müşteriye kadar ayda $100'ın altında kalır", () => {
+  for (const n of [1, 10, 25, 30]) {
+    const t = aylikMaliyet(plandakiler("ekonomik"), n, "ekonomik");
+    assert.ok(t <= 100, `${n} müşteri: $${t}`);
+  }
+  // Ekonomik planda atlanan yuvalar hazır olmayı engellemez
+  for (const id of [...SISTEMLER.map((s) => s.id), ...DEPARTMANLAR.map((d) => d.id)]) {
+    assert.ok(gerekenler(id, "ekonomik").length > 0, `${id} ekonomik planda araçsız kaldı`);
   }
 });

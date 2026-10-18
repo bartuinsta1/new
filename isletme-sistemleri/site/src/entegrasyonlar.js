@@ -3,6 +3,8 @@
 // `baglantiUrl` tek tıkla bağlanma adresidir (OAuth / Zapier / Composio vb.); boşsa site yuvayı
 // "adres bekleniyor" olarak gösterir. Bir sistem veya departman, onu listeleyen tüm yuvalar
 // bağlandığında canlıya hazır sayılır. Maliyetler aylık USD tahminidir: sabit + müşteri başı.
+// İki plan vardır: "standart" önerilen ücretli araçlarla, "ekonomik" ücretsiz katmanlar ve kendi sunucunda
+// çalışan açık kaynak araçlarla kurar. Ekonomik planda `atla` işaretli yuvalar ilk aşamada gerekmez.
 
                               
              
@@ -13,8 +15,16 @@
                       
                          
                                                   
+                                                                                                   
                       
  
+
+                                           
+
+export const PLANLAR = {
+  ekonomik: { ad: "Ekonomik", aciklama: "Ücretsiz katmanlar ve kendi sunucunda açık kaynak araçlar. Başlangıç ve 30 müşteriye kadar." },
+  standart: { ad: "Standart", aciklama: "Önerilen ücretli araçlar: daha az sınır, daha az bakım, sesli asistan dahil." },
+}         ;
 
 export const GRUPLAR = {
   satis: "Satış ve müşteri",
@@ -34,6 +44,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["satis-crm", "satis-panosu", "onboarding-akisi", "musteri-saglik-skoru", "gelmeyene-yeniden-randevu", "yz-randevu-ayarlayici", "yz-takip-mesajlari"],
     departmanlar: ["lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme"],
     maliyet: { sabit: 197, musteriBasi: 0 },
+    ekonomik: { saglayici: "HubSpot Ücretsiz CRM", sabit: 0, musteriBasi: 0, not: "Otomatik e-posta dizisi yok; takip mesajlarını n8n gönderir." },
     baglantiUrl: "",
   },
   {
@@ -45,6 +56,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["gorusme-oncesi-arastirma", "kendini-kuran-sunum", "satis-gorusmesi-puanlayici", "yz-randevu-ayarlayici", "yz-takip-mesajlari", "yz-musteri-ozetleri", "yz-genel-mudur-yardimcisi"],
     departmanlar: ["pazar-istihbarati", "reklam", "icerik-studyosu", "yayin", "lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme", "itibar"],
     maliyet: { sabit: 30, musteriBasi: 10 },
+    ekonomik: { saglayici: "Claude Haiku 5.5 + Sonnet 5.5", sabit: 0, musteriBasi: 1.5, not: "DM, triyaj ve özetler Haiku 5.5 ile; içerik metni Sonnet 5.5 ile. Önbellek ve toplu işleme açık." },
     baglantiUrl: "",
   },
   {
@@ -56,6 +68,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["sonuc-takibi"],
     departmanlar: ["yayin", "satis-yaniti", "pazar-istihbarati"],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "Meta Business (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -67,6 +80,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["sonuc-takibi"],
     departmanlar: ["yayin"],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "Platform API'leri (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -78,6 +92,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["satis-panosu"],
     departmanlar: ["reklam", "besleme-yeniden-hedefleme", "lead-yakalama"],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "Reklam hesapları (ücretsiz)", sabit: 0, musteriBasi: 0, not: "Reklam bütçesi müşteriden." },
     baglantiUrl: "",
   },
   {
@@ -89,6 +104,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["yz-randevu-ayarlayici"],
     departmanlar: ["satis-yaniti", "lead-yakalama"],
     maliyet: { sabit: 15, musteriBasi: 10 },
+    ekonomik: { saglayici: "ManyChat Ücretsiz", sabit: 0, musteriBasi: 0, not: "1.000 kişiye kadar. Aşan müşteride Pro'ya geç ve ücretini pakete ekle." },
     baglantiUrl: "",
   },
   {
@@ -100,6 +116,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["gelmeyene-yeniden-randevu"],
     departmanlar: ["satis-yaniti", "icerik-studyosu"],
     maliyet: { sabit: 40, musteriBasi: 3 },
+    ekonomik: { saglayici: "İlk aşamada kapalı", sabit: 0, musteriBasi: 0, not: "Aramalar yerine DM ve WhatsApp. Gerekince ElevenLabs Starter eklenir.", atla: true },
     baglantiUrl: "",
   },
   {
@@ -111,6 +128,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["sessiz-musteri-uyarisi", "gelmeyene-yeniden-randevu"],
     departmanlar: [],
     maliyet: { sabit: 10, musteriBasi: 1.5 },
+    ekonomik: { saglayici: "WhatsApp Cloud API", sabit: 0, musteriBasi: 0.5, not: "Müşterinin başlattığı konuşmalar ücretsiz; hatırlatmalar mesaj başı ücretli." },
     baglantiUrl: "",
   },
   {
@@ -122,6 +140,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-gorusmesi-48s", "yz-randevu-ayarlayici", "gelmeyene-yeniden-randevu"],
     departmanlar: ["satis-yaniti"],
     maliyet: { sabit: 15, musteriBasi: 0 },
+    ekonomik: { saglayici: "Cal.com Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -133,6 +152,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-akisi", "ceo-panosu"],
     departmanlar: [],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "iyzico / Stripe", sabit: 0, musteriBasi: 0, not: "Aylık ücret yok, işlem başına komisyon." },
     baglantiUrl: "",
   },
   {
@@ -144,6 +164,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: [],
     departmanlar: ["besleme-yeniden-hedefleme"],
     maliyet: { sabit: 20, musteriBasi: 3 },
+    ekonomik: { saglayici: "Brevo Ücretsiz", sabit: 0, musteriBasi: 0, not: "Günde 300 e-posta." },
     baglantiUrl: "",
   },
   {
@@ -155,6 +176,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: [],
     departmanlar: ["itibar"],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "Google İşletme Profili (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -166,6 +188,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["sonuc-takibi", "proje-panosu"],
     departmanlar: ["yayin"],
     maliyet: { sabit: 20, musteriBasi: 4 },
+    ekonomik: { saglayici: "Postiz (açık kaynak, kendi sunucunda)", sabit: 0, musteriBasi: 0, not: "n8n ile aynı sunucuda çalışır." },
     baglantiUrl: "",
   },
   {
@@ -177,6 +200,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: [],
     departmanlar: ["icerik-studyosu"],
     maliyet: { sabit: 30, musteriBasi: 1 },
+    ekonomik: { saglayici: "Canva Ücretsiz + CapCut Ücretsiz", sabit: 0, musteriBasi: 0, not: "Marka kiti gerekince Canva Pro." },
     baglantiUrl: "",
   },
   {
@@ -188,6 +212,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["musteri-portali", "musteri-yol-haritasi", "proje-panosu", "sop-kutuphanesi"],
     departmanlar: ["icerik-studyosu"],
     maliyet: { sabit: 40, musteriBasi: 0 },
+    ekonomik: { saglayici: "Notion Ücretsiz", sabit: 0, musteriBasi: 0, not: "Misafir sayısı sınırlı; müşteri portalı için yeterli." },
     baglantiUrl: "",
   },
   {
@@ -199,6 +224,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["gun-sonu-raporlari", "sessiz-musteri-uyarisi", "yz-genel-mudur-yardimcisi"],
     departmanlar: [],
     maliyet: { sabit: 45, musteriBasi: 0 },
+    ekonomik: { saglayici: "Slack Ücretsiz veya Telegram", sabit: 0, musteriBasi: 0, not: "Slack ücretsizde 90 günlük mesaj geçmişi." },
     baglantiUrl: "",
   },
   {
@@ -210,6 +236,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-akisi", "onboarding-gorusmesi-48s", "sessiz-musteri-uyarisi"],
     departmanlar: [],
     maliyet: { sabit: 50, musteriBasi: 0 },
+    ekonomik: { saglayici: "Gmail + Google Takvim (ücretsiz)", sabit: 0, musteriBasi: 0, not: "Kendi alan adınla e-posta istersen Workspace gerekir." },
     baglantiUrl: "",
   },
   {
@@ -221,6 +248,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-akisi", "gun-sonu-raporlari", "sessiz-musteri-uyarisi", "aylik-nps-anketi"],
     departmanlar: [],
     maliyet: { sabit: 25, musteriBasi: 0 },
+    ekonomik: { saglayici: "n8n, kendi sunucunda (VPS)", sabit: 8, musteriBasi: 0, not: "Tek küçük sunucu: n8n + Postiz." },
     baglantiUrl: "",
   },
   {
@@ -232,6 +260,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-akisi", "aylik-nps-anketi", "gun-sonu-raporlari"],
     departmanlar: [],
     maliyet: { sabit: 29, musteriBasi: 0 },
+    ekonomik: { saglayici: "Tally Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -243,6 +272,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-gorusmesi-48s", "satis-gorusmesi-puanlayici", "yz-musteri-ozetleri"],
     departmanlar: [],
     maliyet: { sabit: 40, musteriBasi: 0 },
+    ekonomik: { saglayici: "tl;dv Ücretsiz", sabit: 0, musteriBasi: 0, not: "Döküm Claude'a gider, özeti Claude çıkarır." },
     baglantiUrl: "",
   },
   {
@@ -254,6 +284,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["gorusme-oncesi-arastirma"],
     departmanlar: ["pazar-istihbarati"],
     maliyet: { sabit: 49, musteriBasi: 0 },
+    ekonomik: { saglayici: "Apify (aylık ücretsiz kredi)", sabit: 0, musteriBasi: 0.5, not: "" },
     baglantiUrl: "",
   },
   {
@@ -265,6 +296,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["kendini-kuran-sunum"],
     departmanlar: [],
     maliyet: { sabit: 20, musteriBasi: 0 },
+    ekonomik: { saglayici: "Google Slides", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -276,6 +308,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["musteri-portali", "sonuc-takibi", "musteri-saglik-skoru", "ceo-panosu"],
     departmanlar: [],
     maliyet: { sabit: 25, musteriBasi: 0 },
+    ekonomik: { saglayici: "Supabase Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
   {
@@ -287,20 +320,33 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["ceo-panosu", "satis-panosu"],
     departmanlar: [],
     maliyet: { sabit: 0, musteriBasi: 0 },
+    ekonomik: { saglayici: "Looker Studio", sabit: 0, musteriBasi: 0, not: "" },
     baglantiUrl: "",
   },
 ];
 
-/** Bir sistem ya da departman için gereken yuvalar. */
-export function gerekenler(hedefId        )                {
-  return ENTEGRASYONLAR.filter((e) => e.sistemler.includes(hedefId) || e.departmanlar.includes(hedefId));
+/** Bu planda kurulması gereken yuvalar. */
+export function plandakiler(plan       = "standart")                {
+  return ENTEGRASYONLAR.filter((e) => plan === "standart" || !e.ekonomik.atla);
+}
+
+/** Bir sistem ya da departman için bu planda gereken yuvalar. */
+export function gerekenler(hedefId        , plan       = "standart")                {
+  return plandakiler(plan).filter((e) => e.sistemler.includes(hedefId) || e.departmanlar.includes(hedefId));
 }
 
 /** Bağlı yuvalara göre hazır olma: eksik yuvaların listesi; boşsa canlıya hazır. */
-export function eksikler(hedefId        , bagli                     )                {
-  return gerekenler(hedefId).filter((e) => !bagli.has(e.id));
+export function eksikler(hedefId        , bagli                     , plan       = "standart")                {
+  return gerekenler(hedefId, plan).filter((e) => !bagli.has(e.id));
 }
 
-export function aylikMaliyet(entegrasyonlar               , musteriSayisi        )         {
-  return entegrasyonlar.reduce((t, e) => t + e.maliyet.sabit + e.maliyet.musteriBasi * musteriSayisi, 0);
+export function fiyat(e             , plan       = "standart")                                                            {
+  return plan === "ekonomik" ? e.ekonomik : { saglayici: e.saglayicilar.join(", "), ...e.maliyet };
+}
+
+export function aylikMaliyet(entegrasyonlar               , musteriSayisi        , plan       = "standart")         {
+  return entegrasyonlar.reduce((t, e) => {
+    const f = fiyat(e, plan);
+    return t + f.sabit + f.musteriBasi * musteriSayisi;
+  }, 0);
 }

@@ -4,7 +4,7 @@ import { KATEGORILER } from "./src/tipler.js";
 import { bul } from "./src/kayit.js";
 import { SINYALLER, DEPARTMANLAR, BEYIN } from "./src/ekip.js";
 import { triyaj, KESINTILER } from "./src/beyin.js";
-import { ENTEGRASYONLAR, eksikler, gerekenler, aylikMaliyet } from "./src/entegrasyonlar.js";
+import { ENTEGRASYONLAR, PLANLAR, eksikler, gerekenler, aylikMaliyet, plandakiler, fiyat } from "./src/entegrasyonlar.js";
 
 const icerik = document.getElementById("icerik");
 const OTOMASYON = { manuel: "Manuel", yari: "Yarı otomatik", tam: "Tam otomatik" };
@@ -13,7 +13,7 @@ const HEDEFLER = [...SISTEMLER.map((s) => s.id), ...DEPARTMANLAR.map((d) => d.id
 
 // ---- Kişisel durum (yalnızca bu tarayıcıda) ----
 const ANAHTAR = "ajans-os:v1";
-const durum = Object.assign({ bagli: [], musteri: 10, paket: 3000, kapsam: "tam" }, (() => {
+const durum = Object.assign({ bagli: [], musteri: 10, paket: 1500, kapsam: "tam", plan: "ekonomik" }, (() => {
   try { return JSON.parse(localStorage.getItem(ANAHTAR)) ?? {}; } catch { return {}; }
 })());
 const ui = { kategori: "hepsi", ara: "", senaryo: 0, olay: null, acik: null };
@@ -25,7 +25,7 @@ const bagliSet = () => new Set(durum.bagli);
 // ---- Yardımcılar ----
 const kac = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const para = (n) => "$" + Math.round(n).toLocaleString("tr-TR");
-const hazirMi = (id, set = bagliSet()) => eksikler(id, set).length === 0;
+const hazirMi = (id, set = bagliSet()) => eksikler(id, set, durum.plan).length === 0;
 const hazirSayisi = (set) => HEDEFLER.filter((h) => hazirMi(h, set)).length;
 const sistemAdi = (id) => bul(SISTEMLER, id)?.ad ?? DEPARTMANLAR.find((d) => d.id === id)?.ad ?? id;
 const harf = (ad) => ad.trim()[0].toLocaleUpperCase("tr-TR");
@@ -42,11 +42,13 @@ const avatar = (e, on) => `<div class="avatar ${on ? "on" : "off"}" aria-hidden=
 
 // Kurulum yolu: boş kümeden başlayıp her adımda en çok hedefi canlıya alan yuvayı seçer (eşitlikte en çok
 // hedefe dokunanı). Sıra sabittir; kullanıcı istediği sırada bağlayabilir.
-const YOL = (() => {
-  const set = new Set(), yol = [];
-  while (yol.length < ENTEGRASYONLAR.length) {
+const YOLLAR = {};
+function yol() {
+  if (YOLLAR[durum.plan]) return YOLLAR[durum.plan];
+  const set = new Set(), yol = [], yuvalar = plandakiler(durum.plan);
+  while (yol.length < yuvalar.length) {
     let enIyi = null;
-    for (const e of ENTEGRASYONLAR.filter((e) => !set.has(e.id))) {
+    for (const e of yuvalar.filter((e) => !set.has(e.id))) {
       const sonra = new Set(set).add(e.id);
       const acar = HEDEFLER.filter((h) => !hazirMi(h, set) && hazirMi(h, sonra));
       const puan = [acar.length, e.sistemler.length + e.departmanlar.length];
@@ -55,8 +57,8 @@ const YOL = (() => {
     set.add(enIyi.e.id);
     yol.push(enIyi);
   }
-  return yol;
-})();
+  return (YOLLAR[durum.plan] = yol);
+}
 
 let toastZaman;
 function bildir(metin) {
@@ -100,8 +102,10 @@ function ozet() {
 function basla() {
   const set = bagliSet();
   const sHazir = SISTEMLER.filter((s) => hazirMi(s.id, set)).length;
+  const YOL = yol();
   const sonraki = YOL.find((a) => !set.has(a.e.id));
   const bitti = YOL.filter((a) => set.has(a.e.id)).length;
+  const atlanan = ENTEGRASYONLAR.filter((e) => !YOL.some((a) => a.e === e));
   const acarMetni = (a) => {
     const liste = a.acar.length ? a.acar : [...a.e.sistemler, ...a.e.departmanlar];
     const ilk = liste.slice(0, 3).map((id) => `<span class="chip ${a.acar.length ? "ok" : ""}">${kac(sistemAdi(id))}</span>`).join("");
@@ -112,7 +116,7 @@ function basla() {
   <section class="panel hero">
     <div class="big-ring">${halka(sHazir / 22, 132, 12, `<b>%${Math.round((sHazir / 22) * 100)}</b><small>canlı</small>`)}</div>
     <div class="hero-text">
-      <span class="tag">Sosyal medya ajansı · aylık $100K hedefi</span>
+      <span class="tag">Kişisel marka ve sosyal medya ajansı · ${PLANLAR[durum.plan].ad} plan · ayda ${para(aylikMaliyet(plandakiler(durum.plan), durum.musteri, durum.plan))}</span>
       <h1>${sonraki ? (bitti === 0 ? "Ajansını adım adım kur" : `${sHazir} sistem hazır. Devam edelim.`) : "Her şey bağlı. Ajansın canlıda."}</h1>
       <p class="lead">${sonraki
         ? `Sıradaki adım: <b>${kac(sonraki.e.ad)}</b>. ${kac(sonraki.e.aciklama)}`
@@ -120,6 +124,7 @@ function basla() {
       ${sonraki ? `<div class="next">${baglaDugmesi(sonraki.e)}<span class="muted small">${bitti} / ${YOL.length} adım tamam</span></div>` : ""}
     </div>
   </section>
+  ${planSecici()}
 
   <section class="stack">
     <div><h2>Kurulum yolu</h2><p class="muted small">Sıra, her adım en çok sistemi açacak şekilde hesaplandı. İstediğin sırada da bağlayabilirsin.</p></div>
@@ -130,13 +135,21 @@ function basla() {
           <span class="step">${String(i + 1).padStart(2, "0")}</span>
           ${avatar(a.e, on)}
           <div class="step-body">
-            <h3>${kac(a.e.ad)} <span class="muted small" style="font-weight:400">· ${kac(a.e.saglayicilar.join(", "))}</span></h3>
+            <h3>${kac(a.e.ad)} <span class="muted small" style="font-weight:400">· ${kac(fiyat(a.e, durum.plan).saglayici)}</span></h3>
             <div class="chips">${on ? `<span class="chip ok dot">Bağlı${a.e.baglantiUrl ? "" : " (deneme)"}</span>` : acarMetni(a)}</div>
           </div>
           ${baglaDugmesi(a.e)}
         </li>`;
       }).join("")}
     </ol>
+    ${atlanan.length ? `<p class="muted small">Bu planda ilk aşamada gerekmiyor: ${atlanan.map((e) => `${kac(e.ad)} (${kac(e.ekonomik.not)})`).join(" ")}</p>` : ""}
+  </section>`;
+}
+
+function planSecici() {
+  return `<section class="panel plan">
+    <div><span class="tag">Kurulum planı</span><p class="small muted">${kac(PLANLAR[durum.plan].aciklama)}</p></div>
+    <div class="seg" role="group" aria-label="Plan">${Object.entries(PLANLAR).map(([k, p]) => `<button data-plan="${k}" aria-pressed="${durum.plan === k}">${p.ad} · ${para(aylikMaliyet(plandakiler(k), durum.musteri, k))}/ay</button>`).join("")}</div>
   </section>`;
 }
 
@@ -172,7 +185,7 @@ function sistemListesi() {
   if (!liste.length) return `<p class="empty">${q ? `“${kac(ui.ara)}” için sistem bulunamadı.` : "Bu süzgece uyan sistem yok."}</p>`;
   const tetik = (t) => (t.tur === "olay" ? `Şu olunca: ${t.olay}` : t.tur === "zamanlama" ? `Zamanlı: ${t.ne_zaman}` : `Elle: ${t.kim}`);
   return liste.map((s) => {
-    const eks = eksikler(s.id, set);
+    const eks = eksikler(s.id, set, durum.plan);
     return `
     <details class="sys" id="s-${s.id}" ${ui.acik === s.id ? "open" : ""}>
       <summary>
@@ -193,7 +206,7 @@ function sistemListesi() {
           <div><h4>Girdi</h4><ul>${s.girdiler.map((x) => `<li>${kac(x)}</li>`).join("")}</ul><h4 style="margin-top:14px">Çıktı</h4><ul>${s.ciktilar.map((x) => `<li>${kac(x)}</li>`).join("")}</ul></div>
         </div>
         <div class="cols">
-          <div><h4>Kullandığı araçlar</h4><div class="chips">${gerekenler(s.id).map((e) => `<span class="chip ${set.has(e.id) ? "ok" : ""}">${kac(e.ad)}</span>`).join("")}</div></div>
+          <div><h4>Kullandığı araçlar</h4><div class="chips">${gerekenler(s.id, durum.plan).map((e) => `<span class="chip ${set.has(e.id) ? "ok" : ""}">${kac(e.ad)}</span>`).join("")}</div></div>
           <div><h4>Önce kurulmalı</h4><div class="chips">${s.bagimliliklar.map((b) => `<span class="chip">${bul(SISTEMLER, b).no}. ${kac(bul(SISTEMLER, b).ad)}</span>`).join("") || `<span class="muted small">Yok, ilk kurulacaklardan</span>`}</div></div>
         </div>
       </div>
@@ -241,7 +254,7 @@ function ekip() {
     <h2>Departmanlar</h2>
     <div class="grid">
       ${DEPARTMANLAR.map((d) => {
-        const eks = eksikler(d.id, set);
+        const eks = eksikler(d.id, set, durum.plan);
         return `<div class="panel dep"><h3>${kac(d.ad)}</h3><p class="muted small">${kac(d.gorev)}</p>
         <div class="chips">${eks.length ? `<span class="chip warn dot">${eks.length} bağlantı eksik</span>` : `<span class="chip ok dot">Hazır</span>`}${d.insanOnayi ? `<span class="chip">Onayınla çalışır</span>` : ""}</div></div>`;
       }).join("")}
@@ -316,11 +329,14 @@ function simOku(sinyalDegisti) {
 // ---- Maliyet ----
 function maliyet() {
   const set = bagliSet();
-  const kume = durum.kapsam === "tam" ? ENTEGRASYONLAR : ENTEGRASYONLAR.filter((e) => set.has(e.id));
-  const toplam = aylikMaliyet(kume, durum.musteri);
+  const p = durum.plan;
+  const kume = plandakiler(p).filter((e) => durum.kapsam === "tam" || set.has(e.id));
+  const toplam = aylikMaliyet(kume, durum.musteri, p);
   const gelir = durum.musteri * durum.paket;
-  const satirlar = kume.map((e) => ({ e, t: aylikMaliyet([e], durum.musteri) })).filter((x) => x.t > 0).sort((a, b) => b.t - a.t);
-  const ucretsiz = kume.filter((e) => aylikMaliyet([e], durum.musteri) === 0);
+  const satirlar = kume.map((e) => ({ e, t: aylikMaliyet([e], durum.musteri, p) })).filter((x) => x.t > 0).sort((a, b) => b.t - a.t);
+  const ucretsiz = kume.filter((e) => aylikMaliyet([e], durum.musteri, p) === 0);
+  const diger = p === "ekonomik" ? "standart" : "ekonomik";
+  const fark = aylikMaliyet(plandakiler(diger), durum.musteri, diger) - aylikMaliyet(plandakiler(p), durum.musteri, p);
   const enCok = satirlar[0]?.t || 1;
   return `
   <section class="stack">
@@ -328,6 +344,7 @@ function maliyet() {
     <h1>Aylık ne kadar tutar?</h1>
     <p class="lead">Müşteri sayını ve paket fiyatını gir; yazılım ve yapay zekâ maliyetini gör. Fiyatlar yaklaşıktır.</p>
   </section>
+  ${planSecici()}
   <div class="panel controls">
     <label class="f">Müşteri sayısı: <b style="color:var(--ink)">${durum.musteri}</b><input type="range" id="musteri" min="1" max="60" value="${durum.musteri}"></label>
     <label class="f">Ortalama aylık paket ($)<input type="number" id="paket" min="0" step="100" value="${durum.paket}"></label>
@@ -336,18 +353,21 @@ function maliyet() {
       <button data-kapsam="bagli" aria-pressed="${durum.kapsam === "bagli"}">Sadece bağlılar</button></div></div>
   </div>
   <div class="figures">
-    <div class="panel figure hl"><span class="tag">Aylık araç maliyeti</span><b>${para(toplam)}</b><span class="muted small">Müşteri başına ${para(toplam / durum.musteri)}</span></div>
+    <div class="panel figure hl"><span class="tag">Aylık araç maliyeti</span><b>${para(toplam)}</b><span class="muted small">Müşteri başına ${para(toplam / durum.musteri)}${fark > 0 ? ` · Standarda göre ${para(fark)} tasarruf` : ""}</span></div>
     <div class="panel figure"><span class="tag">Aylık gelir</span><b>${para(gelir)}</b><span class="muted small">${durum.musteri} müşteri × ${para(durum.paket)}</span></div>
     <div class="panel figure"><span class="tag">Gelirin yüzde kaçı</span><b>%${gelir ? ((toplam / gelir) * 100).toFixed(1) : "—"}</b><span class="muted small">Asıl gider ekip maaşlarıdır</span></div>
   </div>
   <section class="panel">
     <div style="padding:20px 22px 6px"><h2>Nereye gidiyor?</h2></div>
     <div class="bars">
-      ${satirlar.map(({ e, t }) => `<div class="bar-row"><span>${kac(e.ad)} <span class="muted small">${kac(e.saglayicilar[0])}</span></span><div class="track"><span style="width:${(t / enCok) * 100}%"></span></div><span class="v">${para(t)}</span></div>`).join("")
+      ${satirlar.map(({ e, t }) => `<div class="bar-row"><span>${kac(e.ad)} <span class="muted small">${kac(fiyat(e, p).saglayici)}</span></span><div class="track"><span style="width:${(t / enCok) * 100}%"></span></div><span class="v">${para(t)}</span></div>`).join("")
         || `<p class="muted">Henüz bağlı araç yok. “Tüm araçlar”ı seç ya da Başla sayfasından bağla.</p>`}
       ${ucretsiz.length ? `<p class="muted small">Ücretsiz: ${ucretsiz.map((e) => kac(e.ad)).join(", ")}</p>` : ""}
     </div>
-  </section>`;
+  </section>
+  ${p === "ekonomik" ? `<section class="stack"><h2>Ücretsiz katmanların sınırları</h2><div class="panel stops">
+    ${plandakiler("ekonomik").filter((e) => e.ekonomik.not).map((e) => `<div class="stop-row"><div><b>${kac(e.ekonomik.saglayici)}</b><p class="muted small">${kac(e.ekonomik.not)}</p></div><span class="chip">${kac(e.ad)}</span></div>`).join("")}
+  </div></section>` : ""}`;
 }
 
 // ---- Yönlendirme ve olaylar ----
@@ -373,13 +393,14 @@ function ciz(basaDon = true) {
 window.addEventListener("hashchange", () => ciz(true));
 
 document.addEventListener("click", (ev) => {
-  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],#sifirla");
+  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],[data-plan],#sifirla");
   if (!t) return;
   if (t.id === "sifirla") { durum.bagli = []; kaydet(); bildir("Tüm bağlantılar sıfırlandı"); ciz(false); }
   else if (t.dataset.bagla) bagla(t.dataset.bagla); // adresi olan yuvada bağlantı ayrıca yeni sekmede açılır
   else if (t.dataset.kopar) kopar(t.dataset.kopar);
   else if (t.dataset.senaryo) { ui.senaryo = Number(t.dataset.senaryo); ui.olay = null; ciz(false); }
   else if (t.dataset.kapsam) { durum.kapsam = t.dataset.kapsam; kaydet(); ciz(false); }
+  else if (t.dataset.plan) { durum.plan = t.dataset.plan; kaydet(); bildir(`${PLANLAR[durum.plan].ad} plana geçildi`); ciz(false); }
 });
 
 // Açık sistem kartı yeniden çizimde açık kalsın

@@ -28,6 +28,10 @@ bağlanma adresini (OAuth, Zapier, Composio vb.) yazın, sonra `npm run site`. A
 bu adresi yeni sekmede açar; adresi olmayanlarda deneme amaçlı işaretler. Bağlantı durumu şimdilik
 tarayıcıda saklanır; gerçek durum için bağlantı servisinizin geri dönüşünü (callback) buraya bağlayın.
 
+**Planlar:** Her entegrasyon yuvasının bir de `ekonomik` karşılığı vardır (ücretsiz katmanlar, kendi
+sunucunda n8n + Postiz, Claude Haiku 5.5 ağırlıklı yapay zekâ). Ekonomik plan 10 müşteride ayda ~$33,
+30 müşteride ~$83 tutar; sesli asistan ilk aşamada kapalıdır. Sınırlar sitenin Maliyet sayfasında listelenir.
+
 ## Kullanım (Node 22+, bağımlılık yok)
 
 ```bash
