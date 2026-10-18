@@ -23,6 +23,11 @@ derlenen modülleri kullanır; veri ve karar kodu komut satırıyla birebir ayn�
 npm run sunucu              # derler ve http://localhost:8080 adresinde açar
 ```
 
+**Netlify'da yayınlamak (ücretsiz, alan adı gerekmez):** Depo kökündeki `netlify.toml` ayarları içerir.
+Netlify'da *Add new site → Import an existing project → GitHub* ile bu depoyu ve `claude/isletme-sistemleri`
+dalını seç; başka ayar gerekmez. Her push'ta site kendiliğinden güncellenir. Site arama motorlarına
+kapalıdır (`noindex`). Netlify'da Markalar sayfası yerel modda çalışır: liste o tarayıcıda saklanır.
+
 **Entegrasyonları bağlamak:** `src/entegrasyonlar.ts` içindeki her yuvanın `baglantiUrl` alanına tek tıkla
 bağlanma adresini (OAuth, Zapier, Composio vb.) yazın, sonra `npm run site`. Adresi olan yuvalarda **Bağla**
 bu adresi yeni sekmede açar; adresi olmayanlarda deneme amaçlı işaretler. Bağlantı durumu şimdilik

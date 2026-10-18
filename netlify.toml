@@ -1,0 +1,16 @@
+# Netlify: Ajans OS sitesini yayınlar (isletme-sistemleri/site). Depodaki iOS uygulaması derlenmez.
+[build]
+  base = "isletme-sistemleri"
+  publish = "site"
+  command = "npm run site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Kişisel araç: arama motorlarında görünmesin, başka sitelere gömülemesin
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
