@@ -370,8 +370,191 @@ function maliyet() {
   </div></section>` : ""}`;
 }
 
+// ---- Markalar: ekip üyesi görünümü ----
+// claude.ai'de paylaşıldığında markalar ortak veritabanında ("markalar" koleksiyonu) durur ve her üye
+// kendi hesabıyla tanınır. Sayfa başka yerde açılırsa (kendi sunucunda) bu tarayıcıda yerel modda çalışır.
+const DURUMLAR = { iyi: ["ok", "Yolunda"], dikkat: ["warn", "Dikkat"], risk: ["risk", "Risk altında"] };
+const depo = { mod: "yukleniyor", db: null, user: null, benId: null, yazabilir: true, liste: [] };
+Object.assign(ui, { gorunum: "benim", form: null, silOnay: null, kisiSonuc: [] });
+
+async function depoBaslat() {
+  const [db, user] = await Promise.all([window.claude?.use?.("db"), window.claude?.use?.("user")]);
+  if (!db) {
+    Object.assign(depo, { mod: "yerel" });
+    depo.liste = durum.markalar ?? [];
+    return markalarYenile();
+  }
+  Object.assign(depo, { mod: "ortak", db, user, benId: user ? await user.id() : null });
+  if ((await user?.can("data.write")) === false) depo.yazabilir = false;
+  db.collection("markalar").onSnapshot(
+    (snap) => { depo.liste = snap.docs.map((d) => ({ id: d.id, ...d.data() })); markalarYenile(); },
+    () => { depo.mod = "hata"; markalarYenile(); },
+  );
+}
+function markalarYenile() {
+  // Form açıkken yeniden çizme: yazılanlar kaybolmasın; kayıt ya da vazgeçince güncel liste çizilir
+  if (sekme() === "markalar" && !ui.form) ciz(false);
+}
+const benimMi = (m) => (depo.mod === "ortak" ? m.sorumlu === depo.benId : m.sorumlu === durum.benimAdim);
+
+function markalar() {
+  if (depo.mod === "yukleniyor") return `<p class="muted">Markalar yükleniyor…</p>`;
+  const tum = [...depo.liste].sort((a, b) => a.ad.localeCompare(b.ad, "tr"));
+  const kimlikYok = depo.mod === "ortak" && !depo.benId;
+  const benim = kimlikYok ? tum : tum.filter(benimMi);
+  const gruplar = new Map();
+  for (const m of tum) gruplar.set(m.sorumlu || "", [...(gruplar.get(m.sorumlu || "") ?? []), m]);
+  const riskli = (l) => l.filter((m) => m.durum === "risk").length;
+
+  return `
+  <section class="stack">
+    <span class="tag">Ekip görünümü · ${tum.length} marka</span>
+    <h1>${ui.gorunum === "benim" ? "Benim markalarım" : "Tüm ekip"}</h1>
+    <p class="lead">${ui.gorunum === "benim"
+      ? "Sorumlusu olduğun kişisel markalar. Sıradaki işi ve durumu buradan güncelle."
+      : "Kimin hangi markaya baktığı ve hangi markaların risk altında olduğu."}</p>
+  </section>
+  ${depo.mod === "yerel" ? `<p class="note">Bu sayfa şu an <b>yerel modda</b>: markalar yalnızca bu tarayıcıda saklanır. Sayfayı claude.ai'de ekibinle paylaştığında herkes aynı listeyi görür ve kendi hesabıyla kendi markalarını açar.</p>` : ""}
+  ${depo.mod === "hata" ? `<p class="note">Ortak marka listesine şu an ulaşılamıyor. Sayfayı yenile.</p>` : ""}
+  ${!depo.yazabilir ? `<p class="note">Bu sayfayı yalnızca görüntüleyebiliyorsun. Marka ekleyip düzenlemek için sayfa sahibinden Katkıda bulunan yetkisi iste.</p>` : ""}
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Görünüm">
+      <button data-gorunum="benim" aria-pressed="${ui.gorunum === "benim"}">Benim markalarım · ${benim.length}</button>
+      <button data-gorunum="ekip" aria-pressed="${ui.gorunum === "ekip"}">Tüm ekip</button>
+    </div>
+    ${depo.mod === "yerel" ? `<label class="f" style="flex:1 1 200px">Adın<input id="m-benim" value="${kac(durum.benimAdim ?? "")}" placeholder="Örn: Deniz"></label>` : ""}
+    ${depo.yazabilir && depo.mod !== "hata" && !ui.form ? `<button class="primary" data-marka-yeni>Marka ekle</button>` : ""}
+  </div>
+  ${ui.form ? markaFormu() : ""}
+  ${ui.gorunum === "benim"
+    ? (benim.length ? `<div class="brands">${benim.map(markaKarti).join("")}</div>`
+      : `<div class="panel empty">${tum.length ? "Sana atanmış marka yok. “Tüm ekip” görünümünden bir markayı düzenleyip kendini sorumlu yapabilirsin." : "Henüz marka yok. “Marka ekle” ile ilk kişisel markayı ekle ve bir ekip üyesine ata."}</div>`)
+    : (tum.length ? [...gruplar].map(([kisi, l]) => `
+      <section class="stack">
+        <div class="group-head">${kisi ? kisiEtiketi(kisi) : `<b>Atanmamış</b>`}<span class="muted small">${l.length} marka${riskli(l) ? ` · <span class="chip risk dot">${riskli(l)} risk</span>` : ""}</span></div>
+        <div class="brands">${l.map(markaKarti).join("")}</div>
+      </section>`).join("") : `<div class="panel empty">Henüz marka yok.</div>`)}`;
+}
+
+function kisiEtiketi(kisi) {
+  // Ortak modda kişi bir hesap kimliğidir; ad ve fotoğraf çizimden sonra profiles() ile doldurulur
+  if (depo.mod !== "ortak") return `<span class="person"><span class="pav">${kac(harf(kisi))}</span><b>${kac(kisi)}</b></span>`;
+  return `<span class="person" data-kisi="${kac(kisi)}"><img class="pav" alt=""><b>…</b></span>`;
+}
+
+function markaKarti(m) {
+  const [sinif, etiket] = DURUMLAR[m.durum] ?? DURUMLAR.iyi;
+  const sil = ui.silOnay === m.id;
+  return `<article class="panel brand">
+    <div class="row"><h3>${kac(m.ad)}</h3><span class="chip ${sinif} dot">${etiket}</span></div>
+    ${m.platformlar?.length ? `<div class="chips">${m.platformlar.map((p) => `<span class="chip">${kac(p)}</span>`).join("")}</div>` : ""}
+    <p class="small"><span class="muted">Sıradaki:</span> ${kac(m.siradaki || "—")}</p>
+    <div class="brand-foot">
+      ${m.sorumlu ? kisiEtiketi(m.sorumlu) : `<span class="muted small">Sorumlu yok</span>`}
+      <span class="muted small">${m.paket ? `${para(m.paket)}/ay` : ""}</span>
+    </div>
+    ${depo.yazabilir ? `<div class="brand-actions">${sil
+      ? `<span class="small">Silinsin mi?</span><button class="ghost" data-sil-vazgec>Vazgeç</button><button class="primary" data-marka-sil="${m.id}">Sil</button>`
+      : `<button class="ghost" data-marka-duzenle="${m.id}">Düzenle</button><button class="ghost" data-sil-sor="${m.id}">Sil</button>`}</div>` : ""}
+  </article>`;
+}
+
+function markaFormu() {
+  const m = ui.form;
+  return `<form class="panel fields mform" id="marka-form">
+    <h2 class="full">${m.id ? "Markayı düzenle" : "Yeni kişisel marka"}</h2>
+    <label class="f">Marka / kişi adı<input id="m-ad" required value="${kac(m.ad ?? "")}" placeholder="Örn: Dr. Elif Kaya"></label>
+    <label class="f">Platformlar<input id="m-platform" value="${kac((m.platformlar ?? []).join(", "))}" placeholder="Instagram, LinkedIn"></label>
+    <label class="f">Aylık paket ($)<input id="m-paket" type="number" min="0" step="50" value="${m.paket ?? ""}"></label>
+    <label class="f">Durum<select id="m-durum">${Object.entries(DURUMLAR).map(([k, [, ad]]) => `<option value="${k}" ${m.durum === k ? "selected" : ""}>${ad}</option>`).join("")}</select></label>
+    <label class="f full">Sıradaki iş<input id="m-siradaki" value="${kac(m.siradaki ?? "")}" placeholder="Örn: Perşembe çekim günü, 6 Reels"></label>
+    ${depo.mod === "ortak" ? `
+    <div class="f full">Sorumlu ekip üyesi
+      <div class="picker">
+        <div id="m-secili">${m.sorumlu ? kisiEtiketi(m.sorumlu) : `<span class="muted small">Seçilmedi</span>`}</div>
+        <input id="m-kisi-ara" placeholder="İsimle ara" autocomplete="off" aria-label="Ekip üyesi ara">
+        <div id="kisi-sonuc" class="chips"></div>
+      </div>
+    </div>` : `<label class="f full">Sorumlu ekip üyesi<input id="m-sorumlu" value="${kac(m.sorumlu ?? durum.benimAdim ?? "")}" placeholder="Örn: Deniz"></label>`}
+    <div class="full next"><button class="primary" type="submit">Kaydet</button><button class="ghost" type="button" data-marka-iptal>Vazgeç</button></div>
+  </form>`;
+}
+
+async function kisileriDoldur() {
+  if (depo.mod !== "ortak" || !depo.user) return;
+  const els = [...document.querySelectorAll("[data-kisi]")];
+  if (!els.length) return;
+  const ps = await depo.user.profiles([...new Set(els.map((e) => e.dataset.kisi))]);
+  for (const e of els) {
+    const p = ps[e.dataset.kisi];
+    if (!p) continue;
+    e.querySelector("b").textContent = p.isMe ? `${p.name || "Sen"} (sen)` : p.name || "Ekip üyesi";
+    e.querySelector("img").src = p.avatarUrl;
+  }
+}
+
+async function kisiAra(q) {
+  const kutu = document.getElementById("kisi-sonuc");
+  if (!depo.user || !kutu) return;
+  const sonuc = await depo.user.search(q);
+  kutu.replaceChildren(...sonuc.map((p) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.dataset.kisiSec = p.id;
+    b.textContent = p.isMe ? `${p.name} (sen)` : p.name;
+    return b;
+  }));
+  if (!sonuc.length && q) kutu.innerHTML = `<span class="muted small">Eşleşen ekip üyesi yok.</span>`;
+}
+
+async function markaKaydet() {
+  const v = (id) => document.getElementById(id)?.value.trim() ?? "";
+  const veri = {
+    ad: v("m-ad"),
+    platformlar: v("m-platform").split(",").map((x) => x.trim()).filter(Boolean),
+    paket: Number(v("m-paket")) || 0,
+    durum: v("m-durum") || "iyi",
+    siradaki: v("m-siradaki"),
+    sorumlu: depo.mod === "ortak" ? ui.form.sorumlu ?? null : v("m-sorumlu") || null,
+    guncellendi: new Date().toISOString(),
+  };
+  if (!veri.ad) return bildir("Marka adını yaz");
+  const id = ui.form.id;
+  try {
+    if (depo.mod === "ortak") {
+      if (id) await depo.db.collection("markalar").doc(id).set(veri);
+      else await depo.db.collection("markalar").add(veri);
+    } else {
+      const liste = (durum.markalar ?? []).filter((m) => m.id !== id);
+      durum.markalar = [...liste, { id: id ?? `m${Date.now()}`, ...veri }];
+      depo.liste = durum.markalar;
+      kaydet();
+    }
+    ui.form = null;
+    bildir(id ? "Marka güncellendi" : `${veri.ad} eklendi`);
+    ciz(false);
+  } catch (e) {
+    if (e?.code === "invalid_argument") { depo.yazabilir = false; ui.form = null; bildir("Bu sayfada düzenleme yetkin yok"); ciz(false); }
+    else if (e?.code === "quota_exceeded") bildir("Marka listesi dolu. Kullanılmayan markaları sil.");
+    else bildir("Kaydedilemedi, tekrar dene");
+  }
+}
+
+async function markaSil(id) {
+  try {
+    if (depo.mod === "ortak") await depo.db.collection("markalar").doc(id).delete();
+    else { durum.markalar = (durum.markalar ?? []).filter((m) => m.id !== id); depo.liste = durum.markalar; kaydet(); }
+    ui.silOnay = null;
+    bildir("Marka silindi");
+    ciz(false);
+  } catch {
+    bildir("Silinemedi, tekrar dene");
+  }
+}
+
 // ---- Yönlendirme ve olaylar ----
-const SAYFALAR = { basla, sistemler, ekip, maliyet };
+const SAYFALAR = { basla, markalar, sistemler, ekip, maliyet };
 const ESKI = { panel: "basla", entegrasyonlar: "basla" };
 
 function sekme() {
@@ -387,14 +570,30 @@ function ciz(basaDon = true) {
   const y = scrollY;
   icerik.innerHTML = SAYFALAR[s]();
   ozet();
+  kisileriDoldur();
   scrollTo(0, basaDon ? 0 : y);
 }
 
 window.addEventListener("hashchange", () => ciz(true));
 
 document.addEventListener("click", (ev) => {
-  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],[data-plan],#sifirla");
+  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],[data-plan],#sifirla,[data-gorunum],[data-marka-yeni],[data-marka-duzenle],[data-marka-iptal],[data-sil-sor],[data-sil-vazgec],[data-marka-sil],[data-kisi-sec]");
   if (!t) return;
+  const d = t.dataset;
+  if (d.gorunum) { ui.gorunum = d.gorunum; return ciz(false); }
+  if ("markaYeni" in d) { ui.form = { durum: "iyi", sorumlu: depo.mod === "ortak" ? depo.benId : undefined }; ciz(false); return document.getElementById("m-ad")?.focus(); }
+  if (d.markaDuzenle) { ui.form = { ...depo.liste.find((m) => m.id === d.markaDuzenle) }; ciz(false); return document.getElementById("m-ad")?.focus(); }
+  if ("markaIptal" in d) { ui.form = null; return ciz(false); }
+  if (d.silSor) { ui.silOnay = d.silSor; return ciz(false); }
+  if ("silVazgec" in d) { ui.silOnay = null; return ciz(false); }
+  if (d.markaSil) return markaSil(d.markaSil);
+  if (d.kisiSec) {
+    ui.form.sorumlu = d.kisiSec;
+    document.getElementById("m-secili").innerHTML = kisiEtiketi(d.kisiSec);
+    document.getElementById("kisi-sonuc").replaceChildren();
+    document.getElementById("m-kisi-ara").value = "";
+    return kisileriDoldur();
+  }
   if (t.id === "sifirla") { durum.bagli = []; kaydet(); bildir("Tüm bağlantılar sıfırlandı"); ciz(false); }
   else if (t.dataset.bagla) bagla(t.dataset.bagla); // adresi olan yuvada bağlantı ayrıca yeni sekmede açılır
   else if (t.dataset.kopar) kopar(t.dataset.kopar);
@@ -411,6 +610,8 @@ document.addEventListener("toggle", (ev) => {
 document.addEventListener("input", (ev) => {
   const id = ev.target.id;
   if (ev.target.closest("#sim")) return simOku(id === "f-sinyal");
+  if (id === "m-kisi-ara") return kisiAra(ev.target.value);
+  if (id === "m-benim") { durum.benimAdim = ev.target.value.trim(); kaydet(); return; }
   if (id === "ara") { ui.ara = ev.target.value; document.getElementById("sys-list").innerHTML = sistemListesi(); }
   else if (id === "kategori") { ui.kategori = ev.target.value; document.getElementById("sys-list").innerHTML = sistemListesi(); }
   else if (id === "musteri") { durum.musteri = Number(ev.target.value); kaydet(); ciz(false); document.getElementById("musteri").focus(); }
@@ -418,6 +619,13 @@ document.addEventListener("input", (ev) => {
 document.addEventListener("change", (ev) => {
   if (ev.target.id === "paket") { durum.paket = Math.max(0, Number(ev.target.value) || 0); kaydet(); ciz(false); }
 });
-document.addEventListener("submit", (ev) => ev.preventDefault());
+document.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  if (ev.target.id === "marka-form") markaKaydet();
+});
+document.addEventListener("focusin", (ev) => { if (ev.target.id === "m-kisi-ara") kisiAra(ev.target.value); });
+// Yerel modda adını yazınca liste güncellensin (yazarken değil, alandan çıkınca)
+document.addEventListener("change", (ev) => { if (ev.target.id === "m-benim") ciz(false); });
 
 ciz(false);
+depoBaslat();

@@ -1,0 +1,42 @@
+# Ajans OS sunucusu: yalnızca n8n (iş akışları) + Caddy (otomatik HTTPS).
+# Kurulum ve bakım: BAKIM.md
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:${N8N_SURUM:-latest}
+    restart: unless-stopped
+    environment:
+      N8N_HOST: ${ALAN_ADI}
+      N8N_PROTOCOL: https
+      N8N_PORT: 5678
+      WEBHOOK_URL: https://${ALAN_ADI}/
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      GENERIC_TIMEZONE: Europe/Istanbul
+      TZ: Europe/Istanbul
+      # Eski çalıştırma kayıtlarını sil ki disk dolmasın (14 gün)
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: "336"
+    volumes:
+      - n8n_veri:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ALAN_ADI: ${ALAN_ADI}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_veri:/data
+    depends_on:
+      - n8n
+
+volumes:
+  n8n_veri:
+  caddy_veri:

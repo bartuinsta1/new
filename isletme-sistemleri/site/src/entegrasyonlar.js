@@ -116,7 +116,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["gelmeyene-yeniden-randevu"],
     departmanlar: ["satis-yaniti", "icerik-studyosu"],
     maliyet: { sabit: 40, musteriBasi: 3 },
-    ekonomik: { saglayici: "İlk aşamada kapalı", sabit: 0, musteriBasi: 0, not: "Aramalar yerine DM ve WhatsApp. Gerekince ElevenLabs Starter eklenir.", atla: true },
+    ekonomik: { saglayici: "ElevenLabs Starter (seslendirme)", sabit: 5, musteriBasi: 0, not: "Ayda ~30 dk seslendirme, Flash modelle ~60 dk: Reels dış sesi ve DM/WhatsApp sesli notları. Canlı telefon asistanı yok (dakika başı ücretli); Creator planı $22." },
     baglantiUrl: "",
   },
   {
@@ -188,7 +188,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["sonuc-takibi", "proje-panosu"],
     departmanlar: ["yayin"],
     maliyet: { sabit: 20, musteriBasi: 4 },
-    ekonomik: { saglayici: "Postiz (açık kaynak, kendi sunucunda)", sabit: 0, musteriBasi: 0, not: "n8n ile aynı sunucuda çalışır." },
+    ekonomik: { saglayici: "Meta Business Suite + platformların kendi planlayıcıları", sabit: 0, musteriBasi: 0, not: "Her markayı kendi panelinden planlarsın. Tek panel istersen Metricool (marka başına ücretli) ya da Postiz (en az 4 GB RAM sunucu, daha çok bakım)." },
     baglantiUrl: "",
   },
   {
@@ -248,7 +248,7 @@ export const ENTEGRASYONLAR                = [
     sistemler: ["onboarding-akisi", "gun-sonu-raporlari", "sessiz-musteri-uyarisi", "aylik-nps-anketi"],
     departmanlar: [],
     maliyet: { sabit: 25, musteriBasi: 0 },
-    ekonomik: { saglayici: "n8n, kendi sunucunda (VPS)", sabit: 8, musteriBasi: 0, not: "Tek küçük sunucu: n8n + Postiz." },
+    ekonomik: { saglayici: "n8n, kendi sunucunda (VPS)", sabit: 6, musteriBasi: 0, not: "Tek küçük sunucuda yalnızca n8n çalışır; bakım ayda ~30 dk (sunucu/BAKIM.md). Bakım istemezsen n8n Cloud." },
     baglantiUrl: "",
   },
   {

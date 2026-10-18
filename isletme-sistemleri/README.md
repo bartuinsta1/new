@@ -29,8 +29,16 @@ bu adresi yeni sekmede açar; adresi olmayanlarda deneme amaçlı işaretler. Ba
 tarayıcıda saklanır; gerçek durum için bağlantı servisinizin geri dönüşünü (callback) buraya bağlayın.
 
 **Planlar:** Her entegrasyon yuvasının bir de `ekonomik` karşılığı vardır (ücretsiz katmanlar, kendi
-sunucunda n8n + Postiz, Claude Haiku 5.5 ağırlıklı yapay zekâ). Ekonomik plan 10 müşteride ayda ~$33,
-30 müşteride ~$83 tutar; sesli asistan ilk aşamada kapalıdır. Sınırlar sitenin Maliyet sayfasında listelenir.
+sunucunda yalnızca n8n, Claude Haiku 5.5 ağırlıklı yapay zekâ, ElevenLabs Starter ile seslendirme).
+Ekonomik plan 10 markada ayda ~$36, 30 markada ~$86 tutar. Sınırlar sitenin Maliyet sayfasında listelenir.
+
+**Markalar (ekip üyesi görünümü):** Her kişisel marka bir sorumlu ekip üyesine atanır; herkes
+"Benim markalarım"da yalnızca kendi markalarını, "Tüm ekip"te kimin neye baktığını görür. claude.ai'de
+paylaşılan sayfada liste ortak veritabanındadır ve kişiler hesaplarıyla tanınır; kendi sunucunda açılan
+sitede liste o tarayıcıda (yerel modda) tutulur.
+
+**Sunucu:** [`sunucu/`](sunucu/) klasörü n8n'i tek komutla kurar, her gün yedekler ve ayda bir
+güncellemeyi tek komuta indirir. Ne kadar bakım gerektiği: [`sunucu/BAKIM.md`](sunucu/BAKIM.md).
 
 ## Kullanım (Node 22+, bağımlılık yok)
 
