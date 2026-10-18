@@ -8,6 +8,7 @@
     "kurulum": "node --experimental-strip-types --no-warnings src/cli.ts kurulum",
     "etki": "node --experimental-strip-types --no-warnings src/cli.ts etki",
     "katalog": "node --experimental-strip-types --no-warnings src/cli.ts katalog",
+    "triyaj": "node --experimental-strip-types --no-warnings src/cli.ts triyaj",
     "test": "node --experimental-strip-types --no-warnings --test tests/*.test.ts"
   }
 }

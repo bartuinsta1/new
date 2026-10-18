@@ -2,10 +2,12 @@ import { writeFileSync } from "node:fs";
 import { SISTEMLER } from "./sistemler.ts";
 import { KATEGORILER } from "./tipler.ts";
 import { bagimlilar, bul, dogrula, katalogMarkdown, kurulumSirasi, sistemMarkdown } from "./kayit.ts";
+import { dogrulaEkip, ekipMarkdown } from "./ekip-katalog.ts";
+import { triyaj } from "./beyin.ts";
 
 const [komut = "liste", arg] = process.argv.slice(2);
 
-const hatalar = dogrula(SISTEMLER);
+const hatalar = [...dogrula(SISTEMLER), ...dogrulaEkip(SISTEMLER)];
 if (hatalar.length > 0) {
   console.error("Sistem tanımlarında hata var:\n" + hatalar.map((h) => `  - ${h}`).join("\n"));
   process.exit(1);
@@ -61,10 +63,19 @@ switch (komut) {
   case "katalog": {
     const yol = new URL("../KATALOG.md", import.meta.url);
     writeFileSync(yol, katalogMarkdown(SISTEMLER));
-    console.log(`KATALOG.md yazıldı (${SISTEMLER.length} sistem)`);
+    writeFileSync(new URL("../EKIP.md", import.meta.url), ekipMarkdown(SISTEMLER));
+    console.log(`KATALOG.md ve EKIP.md yazıldı (${SISTEMLER.length} sistem)`);
+    break;
+  }
+  case "triyaj": {
+    if (!arg) {
+      console.error(`Kullanım: npm run triyaj -- '{"sinyal":"yorum-ve-dm","metin":"Fiyat nedir?"}'`);
+      process.exit(1);
+    }
+    console.log(JSON.stringify(triyaj(JSON.parse(arg)), null, 2));
     break;
   }
   default:
-    console.error("Komutlar: liste | goster <no|id> | kurulum | etki <no|id> | katalog");
+    console.error("Komutlar: liste | goster <no|id> | kurulum | etki <no|id> | katalog | triyaj <json>");
     process.exit(1);
 }
