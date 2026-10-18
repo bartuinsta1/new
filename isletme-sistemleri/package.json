@@ -1,0 +1,13 @@
+{
+  "name": "isletme-sistemleri",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "liste": "node --experimental-strip-types --no-warnings src/cli.ts liste",
+    "goster": "node --experimental-strip-types --no-warnings src/cli.ts goster",
+    "kurulum": "node --experimental-strip-types --no-warnings src/cli.ts kurulum",
+    "etki": "node --experimental-strip-types --no-warnings src/cli.ts etki",
+    "katalog": "node --experimental-strip-types --no-warnings src/cli.ts katalog",
+    "test": "node --experimental-strip-types --no-warnings --test tests/*.test.ts"
+  }
+}
