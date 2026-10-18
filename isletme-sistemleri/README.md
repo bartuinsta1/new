@@ -13,6 +13,21 @@ veri ve gözlem → insana devir. Ajanların okuduğu marka sesi, ideal müşter
 [`bilgi/`](bilgi/) klasöründe doldurulacak şablonlar olarak durur. Bütçe dolması, lead maliyetinin
 sıçraması, düşük puanlı yorum, insan isteyen arayan gibi durumlarda otomatik akış durur ve iş insana geçer.
 
+## Site: Ajans OS
+
+`site/` klasörü tüm sistemi bir kontrol paneline çevirir: canlıya hazır olma durumu, 22 sistem, yapay zekâ
+ekibi ve triyaj simülatörü, entegrasyon yuvaları ve maliyet hesaplayıcı. Site, `src/*.ts` dosyalarından
+derlenen modülleri kullanır; veri ve karar kodu komut satırıyla birebir aynıdır.
+
+```bash
+npm run sunucu              # derler ve http://localhost:8080 adresinde açar
+```
+
+**Entegrasyonları bağlamak:** `src/entegrasyonlar.ts` içindeki her yuvanın `baglantiUrl` alanına tek tıkla
+bağlanma adresini (OAuth, Zapier, Composio vb.) yazın, sonra `npm run site`. Adresi olan yuvalarda **Bağla**
+bu adresi yeni sekmede açar; adresi olmayanlarda deneme amaçlı işaretler. Bağlantı durumu şimdilik
+tarayıcıda saklanır; gerçek durum için bağlantı servisinizin geri dönüşünü (callback) buraya bağlayın.
+
 ## Kullanım (Node 22+, bağımlılık yok)
 
 ```bash

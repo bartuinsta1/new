@@ -1,0 +1,306 @@
+// Otomatik üretildi: src/entegrasyonlar.ts — elle düzenlemeyin, npm run site çalıştırın.
+// Entegrasyon yuvaları: her yuva bir yeteneği temsil eder (ör. "CRM") ve önerilen sağlayıcıları listeler.
+// `baglantiUrl` tek tıkla bağlanma adresidir (OAuth / Zapier / Composio vb.); boşsa site yuvayı
+// "adres bekleniyor" olarak gösterir. Bir sistem veya departman, onu listeleyen tüm yuvalar
+// bağlandığında canlıya hazır sayılır. Maliyetler aylık USD tahminidir: sabit + müşteri başı.
+
+                              
+             
+             
+                         
+                                                                
+                   
+                      
+                         
+                                                  
+                      
+ 
+
+export const GRUPLAR = {
+  satis: "Satış ve müşteri",
+  sosyal: "Sosyal medya ve reklam",
+  yapayZeka: "Yapay zekâ ve ses",
+  operasyon: "Operasyon ve ekip",
+  veri: "Veri ve raporlama",
+}         ;
+
+export const ENTEGRASYONLAR                = [
+  {
+    id: "crm",
+    ad: "CRM",
+    saglayicilar: ["GoHighLevel", "HubSpot"],
+    grup: "satis",
+    aciklama: "Lead'ler, fırsatlar ve satış hattı. Satış tarafının temeli.",
+    sistemler: ["satis-crm", "satis-panosu", "onboarding-akisi", "musteri-saglik-skoru", "gelmeyene-yeniden-randevu", "yz-randevu-ayarlayici", "yz-takip-mesajlari"],
+    departmanlar: ["lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme"],
+    maliyet: { sabit: 197, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "claude",
+    ad: "Claude API",
+    saglayicilar: ["Anthropic"],
+    grup: "yapayZeka",
+    aciklama: "Beynin yazan ve kontrol eden kısmı: içerik, DM yanıtı, özet, puanlama.",
+    sistemler: ["gorusme-oncesi-arastirma", "kendini-kuran-sunum", "satis-gorusmesi-puanlayici", "yz-randevu-ayarlayici", "yz-takip-mesajlari", "yz-musteri-ozetleri", "yz-genel-mudur-yardimcisi"],
+    departmanlar: ["pazar-istihbarati", "reklam", "icerik-studyosu", "yayin", "lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme", "itibar"],
+    maliyet: { sabit: 30, musteriBasi: 10 },
+    baglantiUrl: "",
+  },
+  {
+    id: "meta",
+    ad: "Instagram ve Facebook",
+    saglayicilar: ["Meta Business"],
+    grup: "sosyal",
+    aciklama: "Hesap istatistikleri, yorumlar, DM'ler ve yayın.",
+    sistemler: ["sonuc-takibi"],
+    departmanlar: ["yayin", "satis-yaniti", "pazar-istihbarati"],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "diger-platformlar",
+    ad: "TikTok, LinkedIn, YouTube",
+    saglayicilar: ["TikTok", "LinkedIn", "YouTube"],
+    grup: "sosyal",
+    aciklama: "Diğer platformlarda yayın ve istatistik.",
+    sistemler: ["sonuc-takibi"],
+    departmanlar: ["yayin"],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "reklam-hesaplari",
+    ad: "Reklam hesapları",
+    saglayicilar: ["Meta Ads", "TikTok Ads", "Google Ads"],
+    grup: "sosyal",
+    aciklama: "Kampanya yönetimi, bütçe ve lead başı maliyet verisi.",
+    sistemler: ["satis-panosu"],
+    departmanlar: ["reklam", "besleme-yeniden-hedefleme", "lead-yakalama"],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "dm-otomasyonu",
+    ad: "DM otomasyonu",
+    saglayicilar: ["ManyChat"],
+    grup: "sosyal",
+    aciklama: "Anahtar kelimeli yorum ve DM'leri yakalayıp yapay zekâya iletir.",
+    sistemler: ["yz-randevu-ayarlayici"],
+    departmanlar: ["satis-yaniti", "lead-yakalama"],
+    maliyet: { sabit: 15, musteriBasi: 10 },
+    baglantiUrl: "",
+  },
+  {
+    id: "ses",
+    ad: "Ses ve telefon",
+    saglayicilar: ["ElevenLabs", "Twilio"],
+    grup: "yapayZeka",
+    aciklama: "Gelen aramayı sesli karşılama, seslendirme, SMS.",
+    sistemler: ["gelmeyene-yeniden-randevu"],
+    departmanlar: ["satis-yaniti", "icerik-studyosu"],
+    maliyet: { sabit: 40, musteriBasi: 3 },
+    baglantiUrl: "",
+  },
+  {
+    id: "whatsapp",
+    ad: "WhatsApp Business",
+    saglayicilar: ["WhatsApp Cloud API"],
+    grup: "satis",
+    aciklama: "Müşteri ve aday iletişimi, hatırlatmalar.",
+    sistemler: ["sessiz-musteri-uyarisi", "gelmeyene-yeniden-randevu"],
+    departmanlar: [],
+    maliyet: { sabit: 10, musteriBasi: 1.5 },
+    baglantiUrl: "",
+  },
+  {
+    id: "takvim",
+    ad: "Randevu takvimi",
+    saglayicilar: ["Cal.com", "Calendly"],
+    grup: "satis",
+    aciklama: "Satış ve onboarding görüşmesi randevuları.",
+    sistemler: ["onboarding-gorusmesi-48s", "yz-randevu-ayarlayici", "gelmeyene-yeniden-randevu"],
+    departmanlar: ["satis-yaniti"],
+    maliyet: { sabit: 15, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "odeme",
+    ad: "Ödeme",
+    saglayicilar: ["Stripe", "iyzico"],
+    grup: "satis",
+    aciklama: "Abonelik tahsilatı; ödeme gelince onboarding başlar.",
+    sistemler: ["onboarding-akisi", "ceo-panosu"],
+    departmanlar: [],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "eposta",
+    ad: "E-posta pazarlama",
+    saglayicilar: ["Mailchimp", "Klaviyo"],
+    grup: "satis",
+    aciklama: "Besleme dizileri ve bülten.",
+    sistemler: [],
+    departmanlar: ["besleme-yeniden-hedefleme"],
+    maliyet: { sabit: 20, musteriBasi: 3 },
+    baglantiUrl: "",
+  },
+  {
+    id: "itibar",
+    ad: "Değerlendirmeler",
+    saglayicilar: ["Google İşletme Profili"],
+    grup: "sosyal",
+    aciklama: "Yorumları okuma ve yanıtlama.",
+    sistemler: [],
+    departmanlar: ["itibar"],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "planlama",
+    ad: "Yayın planlama",
+    saglayicilar: ["Metricool", "Later"],
+    grup: "sosyal",
+    aciklama: "Çoklu platform zamanlama ve analiz.",
+    sistemler: ["sonuc-takibi", "proje-panosu"],
+    departmanlar: ["yayin"],
+    maliyet: { sabit: 20, musteriBasi: 4 },
+    baglantiUrl: "",
+  },
+  {
+    id: "tasarim",
+    ad: "Tasarım ve kurgu",
+    saglayicilar: ["Canva", "CapCut"],
+    grup: "operasyon",
+    aciklama: "Carousel, kapak, kısa video.",
+    sistemler: [],
+    departmanlar: ["icerik-studyosu"],
+    maliyet: { sabit: 30, musteriBasi: 1 },
+    baglantiUrl: "",
+  },
+  {
+    id: "calisma-alani",
+    ad: "Çalışma alanı",
+    saglayicilar: ["Notion"],
+    grup: "operasyon",
+    aciklama: "Portal, yol haritaları, SOP'lar ve içerik panosu.",
+    sistemler: ["musteri-portali", "musteri-yol-haritasi", "proje-panosu", "sop-kutuphanesi"],
+    departmanlar: ["icerik-studyosu"],
+    maliyet: { sabit: 40, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "ekip-iletisimi",
+    ad: "Ekip iletişimi",
+    saglayicilar: ["Slack"],
+    grup: "operasyon",
+    aciklama: "Uyarılar, gün sonu raporları, sabah brifingi ve onaylar.",
+    sistemler: ["gun-sonu-raporlari", "sessiz-musteri-uyarisi", "yz-genel-mudur-yardimcisi"],
+    departmanlar: [],
+    maliyet: { sabit: 45, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "google",
+    ad: "Google Workspace",
+    saglayicilar: ["Gmail", "Drive", "Takvim"],
+    grup: "operasyon",
+    aciklama: "E-posta, dosya paylaşımı ve takvim.",
+    sistemler: ["onboarding-akisi", "onboarding-gorusmesi-48s", "sessiz-musteri-uyarisi"],
+    departmanlar: [],
+    maliyet: { sabit: 50, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "is-akislari",
+    ad: "İş akışları",
+    saglayicilar: ["n8n", "Make"],
+    grup: "operasyon",
+    aciklama: "Sistemleri birbirine bağlayan otomasyonlar.",
+    sistemler: ["onboarding-akisi", "gun-sonu-raporlari", "sessiz-musteri-uyarisi", "aylik-nps-anketi"],
+    departmanlar: [],
+    maliyet: { sabit: 25, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "formlar",
+    ad: "Formlar ve anketler",
+    saglayicilar: ["Tally", "Typeform"],
+    grup: "operasyon",
+    aciklama: "Marka formu, NPS anketi, gün sonu formu.",
+    sistemler: ["onboarding-akisi", "aylik-nps-anketi", "gun-sonu-raporlari"],
+    departmanlar: [],
+    maliyet: { sabit: 29, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "gorusme-kaydi",
+    ad: "Görüşme kaydı",
+    saglayicilar: ["Fireflies", "tl;dv"],
+    grup: "yapayZeka",
+    aciklama: "Görüşme kaydı ve dökümü.",
+    sistemler: ["onboarding-gorusmesi-48s", "satis-gorusmesi-puanlayici", "yz-musteri-ozetleri"],
+    departmanlar: [],
+    maliyet: { sabit: 40, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "web-verisi",
+    ad: "Profil ve rakip verisi",
+    saglayicilar: ["Apify"],
+    grup: "veri",
+    aciklama: "Aday ve rakip profillerinden istatistik çekme.",
+    sistemler: ["gorusme-oncesi-arastirma"],
+    departmanlar: ["pazar-istihbarati"],
+    maliyet: { sabit: 49, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "sunum",
+    ad: "Sunum",
+    saglayicilar: ["Gamma", "Google Slides"],
+    grup: "veri",
+    aciklama: "Otomatik teklif sunumu.",
+    sistemler: ["kendini-kuran-sunum"],
+    departmanlar: [],
+    maliyet: { sabit: 20, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "veritabani",
+    ad: "Veritabanı",
+    saglayicilar: ["Supabase"],
+    grup: "veri",
+    aciklama: "Sağlık skoru, sonuçlar ve portal verisi.",
+    sistemler: ["musteri-portali", "sonuc-takibi", "musteri-saglik-skoru", "ceo-panosu"],
+    departmanlar: [],
+    maliyet: { sabit: 25, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+  {
+    id: "raporlama",
+    ad: "Raporlama",
+    saglayicilar: ["Looker Studio"],
+    grup: "veri",
+    aciklama: "CEO ve satış panoları.",
+    sistemler: ["ceo-panosu", "satis-panosu"],
+    departmanlar: [],
+    maliyet: { sabit: 0, musteriBasi: 0 },
+    baglantiUrl: "",
+  },
+];
+
+/** Bir sistem ya da departman için gereken yuvalar. */
+export function gerekenler(hedefId        )                {
+  return ENTEGRASYONLAR.filter((e) => e.sistemler.includes(hedefId) || e.departmanlar.includes(hedefId));
+}
+
+/** Bağlı yuvalara göre hazır olma: eksik yuvaların listesi; boşsa canlıya hazır. */
+export function eksikler(hedefId        , bagli                     )                {
+  return gerekenler(hedefId).filter((e) => !bagli.has(e.id));
+}
+
+export function aylikMaliyet(entegrasyonlar               , musteriSayisi        )         {
+  return entegrasyonlar.reduce((t, e) => t + e.maliyet.sabit + e.maliyet.musteriBasi * musteriSayisi, 0);
+}
