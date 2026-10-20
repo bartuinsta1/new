@@ -27,7 +27,12 @@ export async function voiceStory(
   story: Story,
   request: Pick<StoryRequest, "language" | "voice" | "duration_minutes">,
   deps: VoiceDeps,
-  opts: { cloneVoiceId?: string | null; onParagraph?: (p: Paragraph) => void | Promise<void> } = {},
+  opts: {
+    cloneVoiceId?: string | null;
+    /** Klon sesin sahibi: klon sesle üretilen dosyalar `clone/<sahip>/` altına yazılır (silinebilsin diye). */
+    cloneOwner?: string;
+    onParagraph?: (p: Paragraph) => void | Promise<void>;
+  } = {},
 ): Promise<VoiceResult> {
   const useClone = request.voice === "parent_clone" && !!opts.cloneVoiceId && !!deps.cloneTts;
   const provider = useClone ? deps.cloneTts! : deps.tts;
@@ -42,7 +47,8 @@ export async function voiceStory(
     };
     let audioUrl: string | null = null;
     try {
-      const key = `tts/${await sha256Hex(`${provider.voiceKey(input)}|${p.text}`)}.mp3`;
+      const hash = await sha256Hex(`${provider.voiceKey(input)}|${p.text}`);
+      const key = useClone && opts.cloneOwner ? `${cloneAudioPrefix(opts.cloneOwner)}${hash}.mp3` : `tts/${hash}.mp3`;
       audioUrl = await deps.audio.find(key);
       if (audioUrl) {
         cachedParagraphs++;
@@ -74,13 +80,36 @@ export async function voiceStory(
 /** Ailenin klon ses kimliği (ElevenLabs). Üretimde voice_clones tablosu. */
 export interface CloneVoiceStore {
   get(userId: string): Promise<string | null>;
-  set(userId: string, voiceId: string): Promise<void>;
+  /** `consentedAt`: ebeveynin ayrı açık rızasının anı (KVKK kanıtı). */
+  set(userId: string, voiceId: string, consentedAt?: Date): Promise<void>;
   delete(userId: string): Promise<void>;
 }
 
 export class MemoryCloneVoiceStore implements CloneVoiceStore {
   private ids = new Map<string, string>();
   async get(userId: string) { return this.ids.get(userId) ?? null; }
-  async set(userId: string, voiceId: string) { this.ids.set(userId, voiceId); }
+  async set(userId: string, voiceId: string, _consentedAt?: Date) { this.ids.set(userId, voiceId); }
   async delete(userId: string) { this.ids.delete(userId); }
+}
+
+export const cloneAudioPrefix = (userId: string) => `clone/${userId}/`;
+
+/** Sağlayıcıda (ElevenLabs) anlık ses klonu oluşturma/silme. */
+export interface VoiceCloner {
+  create(sample: Uint8Array, contentType: string): Promise<string>;
+  delete(voiceId: string): Promise<void>;
+}
+
+/**
+ * Ebeveyn klon sesini her yerden siler (rıza geri alındığında ve hesap silmede): sağlayıcıdaki ses modeli,
+ * kayıt ve bu sesle üretilmiş tüm masal sesleri. Sağlayıcı silmesi başarısız olursa hata fırlatılır ve kayıt
+ * silinmez (yeniden denenebilsin; "silindi" denip modelin sağlayıcıda kalması olmasın).
+ */
+export async function deleteCloneVoice(userId: string, deps: {
+  cloneVoices?: CloneVoiceStore; cloner?: VoiceCloner; audio?: AudioStore;
+}) {
+  const voiceId = await deps.cloneVoices?.get(userId);
+  if (voiceId && deps.cloner && !voiceId.startsWith("mock-")) await deps.cloner.delete(voiceId);
+  await deps.cloneVoices?.delete(userId);
+  await deps.audio?.deletePrefix(cloneAudioPrefix(userId));
 }

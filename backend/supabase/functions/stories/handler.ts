@@ -112,7 +112,7 @@ export function createStoriesHandler(deps: StoriesDeps) {
         return story;
       }
       const cloneVoiceId = request.voice === "parent_clone" ? await deps.cloneVoices?.get(userId) ?? null : null;
-      const result = await voiceStory(story, request, voice, { cloneVoiceId, onParagraph: emit });
+      const result = await voiceStory(story, request, voice, { cloneVoiceId, cloneOwner: userId, onParagraph: emit });
       const voiced = { ...story, paragraphs: result.paragraphs };
       await deps.engine?.stories.save({ userId, story: voiced, language: request.language, idempotencyKey, createdAt: now() });
       return voiced;

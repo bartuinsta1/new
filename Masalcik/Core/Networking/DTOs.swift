@@ -87,6 +87,31 @@ struct EntitlementDTO: Codable, Hashable, Sendable {
     var libraryStoriesRemainingThisWeek: Int?
 }
 
+/// `POST /events` öğesi: olay adı + kaba boyutlar (kimlik yok).
+struct AnalyticsEventDTO: Codable, Hashable, Sendable {
+    enum Value: Codable, Hashable, Sendable {
+        case string(String), int(Int), bool(Bool)
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.singleValueContainer()
+            if let b = try? c.decode(Bool.self) { self = .bool(b) }
+            else if let i = try? c.decode(Int.self) { self = .int(i) }
+            else { self = .string(try c.decode(String.self)) }
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.singleValueContainer()
+            switch self {
+            case .string(let s): try c.encode(s)
+            case .int(let i): try c.encode(i)
+            case .bool(let b): try c.encode(b)
+            }
+        }
+    }
+    var name: String
+    var dims: [String: Value]
+}
+
 /// `GET /referral`
 struct ReferralDTO: Codable, Hashable, Sendable {
     var code: String

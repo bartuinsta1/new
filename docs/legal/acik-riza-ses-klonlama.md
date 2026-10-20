@@ -15,12 +15,9 @@ Ses kaydı kişiyi tanımlayabilen bir veridir; bu nedenle bu işlemi yalnızca 
 gerektiğinde m.6). Rıza vermemeniz hiçbir özelliği kısıtlamaz: masallar hazır seslerden biriyle okunmaya devam eder.
 
 **Rızanızı istediğiniz an geri alabilirsiniz:** Ebeveyn Köşesi › Ayarlar › Ses › Kendi sesimle anlat ›
-"Ses örneğimi ve klon sesimi sil". Silindiğinde ses örneğiniz ve ses modeliniz Masalcık'tan ve ElevenLabs'ten kalıcı
-olarak silinir. Hesabınızı silmeniz de aynı sonucu doğurur.
-
-<!-- GELİŞTİRME NOTU: klon sesle üretilmiş önbellekteki ses dosyalarının da silinmesi henüz uygulanmadı
-(voice-clone DELETE yalnızca klon kaydını siler); ElevenLabs yükleme/silme çağrıları da henüz gerçek değil. Yayından önce eklenmeli ve bu metne "daha önce sizin sesinizle
-seslendirilmiş masal dosyaları da silinir" cümlesi eklenmeli. -->
+"Ses örneğimi ve klon sesimi sil". Silindiğinde ses modeliniz ElevenLabs'ten, kaydı Masalcık'tan kalıcı olarak silinir;
+daha önce sizin sesinizle seslendirilmiş masal dosyaları da silinir. Ses örneğinizi Masalcık saklamaz: yalnızca ses
+modelini oluşturmak için ElevenLabs'e iletilir. Hesabınızı silmeniz de aynı sonucu doğurur.
 
 Ses örneğini **yalnızca kendi sesinizle** kaydedin; başka birinin (özellikle çocuğunuzun) sesini kaydetmeyin.
 

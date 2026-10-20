@@ -32,7 +32,8 @@ export interface ReferralStore {
   ownerOf(code: string): Promise<string | null>;
   redemptionBy(invitee: string): Promise<Redemption | null>;
   rewardsSince(inviter: string, since: Date): Promise<number>;
-  record(r: Redemption): Promise<void>;
+  /** `inviterRewarded`: davet edenin yıllık sınırı dolmuşsa false (kayıt yine tutulur). */
+  record(r: Redemption, inviterRewarded: boolean): Promise<void>;
   deleteUser(userId: string): Promise<void>;
 }
 
@@ -53,7 +54,7 @@ export class MemoryReferralStore implements ReferralStore {
   async rewardsSince(inviter: string, since: Date) {
     return this.redemptions.filter((r) => r.inviter === inviter && r.at >= since).length;
   }
-  async record(r: Redemption) { this.redemptions.push(r); }
+  async record(r: Redemption, _inviterRewarded: boolean) { this.redemptions.push(r); }
   async deleteUser(userId: string) {
     const code = this.codes.get(userId);
     if (code) this.owners.delete(code);

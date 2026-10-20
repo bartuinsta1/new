@@ -139,14 +139,15 @@ test("POST /entitlements/verify: ücretsiz durum ve deneme başlatma", async () 
 test("POST /voice-clone: premium ve ayrı rıza zorunlu", async () => {
   const stores = new MemoryStores();
   const h = createVoiceCloneHandler({ auth: mockAuth, entitlements: stores });
-  const sample = new Uint8Array([1, 2, 3]);
+  const sample = new Uint8Array(30 * 1024);
   const req = (headers: Record<string, string> = {}) => new Request(`${BASE}/voice-clone`, {
     method: "POST", headers: { authorization: "Bearer user-1", ...headers }, body: sample,
   });
   assert.equal((await h(req({ "x-consent-at": new Date().toISOString() }))).status, 402);
   await stores.setPremium("user-1", null);
   assert.equal((await h(req())).status, 400);
-  assert.equal((await h(req({ "x-consent-at": new Date().toISOString() }))).status, 202);
+  assert.equal((await h(req({ "x-consent-at": "2001-01-01T00:00:00Z" }))).status, 400, "eski/uydurma rıza zamanı");
+  assert.equal((await h(req({ "x-consent-at": new Date().toISOString() }))).status, 201);
   const del = await h(new Request(`${BASE}/voice-clone`, { method: "DELETE", headers: { authorization: "Bearer user-1" } }));
   assert.equal(del.status, 204);
 });

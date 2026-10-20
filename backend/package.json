@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.129.0",
+    "postgres": "3.4.9",
     "zod": "4.6.5"
   },
   "devDependencies": {

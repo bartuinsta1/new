@@ -21,6 +21,10 @@ struct RootView: View {
         }
         .task { startPurchases() }
         // Her öne gelişte abonelik durumu sunucudan tazelenir (yenileme/iade/süre bitişi; istemci önbelleğine güvenilmez).
+        .onChange(of: scenePhase) { _, phase in
+            // Arka plana geçerken biriken anonim olaylar gönderilir.
+            if phase == .background { Task { await Analytics.shared.flush() } }
+        }
         .task(id: scenePhase) {
             guard scenePhase == .active, let family = families.first, family.hasCompletedOnboarding else { return }
             if let dto = try? await appState.api.verifyEntitlement(signedTransaction: nil) {
@@ -36,6 +40,7 @@ struct RootView: View {
 extension RootView {
     /// Uygulama dışında tamamlanan işlemler (yenileme, onaylanan "Satın Almadan Önce Sor") burada yakalanır.
     private func startPurchases() {
+        Analytics.shared.api = appState.api
         guard let store = appState.purchases as? StoreKitPurchaseService else { return }
         store.onEntitlementChange = { [context] dto in
             if let family = try? context.fetch(FetchDescriptor<Family>()).first { EntitlementSync.apply(dto, to: family) }

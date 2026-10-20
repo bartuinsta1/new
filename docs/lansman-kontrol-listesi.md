@@ -11,8 +11,10 @@ Kod 12 adımda tamamlandı; aşağıdakiler **yayından önce** yapılmalı. (�
 ## Hesaplar ve anahtarlar
 - ✗ Supabase projesi, migrasyonlar, `supabase secrets` (ANTHROPIC_API_KEY, AZURE_TTS_*, ELEVENLABS_API_KEY,
   ADMIN_TOKEN, APPLE_BUNDLE_ID, PUBLIC_BASE_URL, APP_STORE_URL)
-- ✗ Bellek içi depolar → Postgres (StoryStore, FlagLog, CostLog, kullanım, abonelik, paylaşım, davet) — şu an
-  her fonksiyon kendi belleğinde; üretimde **zorunlu**
+- ✓ Postgres depoları (`_shared/pg/stores.ts`; Supabase'de `SUPABASE_DB_URL` ile kendiliğinden açılır) —
+  gerçek Postgres 16'da test edildi: `backend/scripts/test-pg.sh`
+- ✗ Supabase Storage'da **özel** `audio` kovasını oluştur (ses dosyaları imzalı URL ile)
+- ✗ Hız sınırlayıcı hâlâ bellek içi (isolate başına); trafik artınca Postgres/Redis'e taşınmalı
 - ✗ Apple Root CA G3 parmak izini apple.com'dan teyit et (`APPLE_ROOT_CA_G3_SHA256`)
 - ✗ App Store Connect: ürünler (`masalcik.premium.monthly/yearly`, 7 gün deneme), Server Notifications V2 URL,
   Kids kategorisi, gizlilik etiketi (`docs/appstore/gizlilik-etiketi.md`)
@@ -21,7 +23,9 @@ Kod 12 adımda tamamlandı; aşağıdakiler **yayından önce** yapılmalı. (�
 ## İçerik ve ses
 - ✗ Gerçek ninni / beyaz gürültü / ortam sesleri, karakter seslendirmeleri (vp_* kayıtları), kitaplık masallarının
   insan editörden geçmiş metinleri (şu an sahte)
-- ✗ ElevenLabs ses klonu yükleme/silme çağrıları (şu an yer tutucu) ve klon sesle üretilmiş dosyaların silinmesi
+- ✓ ElevenLabs anlık ses klonu oluşturma/silme ve klon sesle üretilmiş dosyaların silinmesi (gerçek anahtarla
+  bir kez elle denenmeli)
+- ✓ Anonim analitik gönderimi (`POST /events`, cihazda biriktirip toplu gönderim)
 - ✗ Gerçek illüstrasyonlar (şu an kod ile çizilmiş yer tutucu karakterler ve ada)
 
 ## Hukuk

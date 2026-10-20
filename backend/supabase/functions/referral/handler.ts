@@ -52,7 +52,7 @@ export function createReferralHandler(deps: ReferralDeps) {
     const inviterRewards = await deps.referrals.rewardsSince(inviter, new Date(t.getTime() - YEAR_MS));
     const inviterRewarded = inviterRewards < REFERRAL_MAX_REWARDS_PER_YEAR;
     if (inviterRewarded) await deps.entitlements.grantBonusDays(inviter, REFERRAL_REWARD_DAYS, t);
-    await deps.referrals.record({ inviter, invitee: userId, at: t });
+    await deps.referrals.record({ inviter, invitee: userId, at: t }, inviterRewarded);
 
     return json({ premium_until: inviteeUntil.toISOString(), inviter_rewarded: inviterRewarded });
   };

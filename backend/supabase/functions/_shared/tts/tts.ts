@@ -148,16 +148,57 @@ export interface AudioStore {
   /** Aynı anahtar daha önce üretildiyse URL'si (önbellek isabeti). */
   find(key: string): Promise<string | null>;
   put(key: string, bytes: Uint8Array, contentType: string): Promise<string>;
+  /** Bir klasördeki tüm dosyaları siler (ör. `clone/<userId>/`): klon sesle üretilmiş masal sesleri. */
+  deletePrefix(prefix: string): Promise<void>;
 }
 
 export class MemoryAudioStore implements AudioStore {
   files = new Map<string, Uint8Array>();
   async find(key: string) { return this.files.has(key) ? this.urlFor(key) : null; }
-  async put(key: string, bytes: Uint8Array) { this.files.set(key, bytes); return this.urlFor(key); }
+  async put(key: string, bytes: Uint8Array, _contentType?: string) { this.files.set(key, bytes); return this.urlFor(key); }
+  async deletePrefix(prefix: string) { for (const k of [...this.files.keys()]) if (k.startsWith(prefix)) this.files.delete(k); }
   private urlFor(key: string) { return `https://cdn.masalcik.test/${key}`; }
 }
 
 export async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ---------- ElevenLabs anlık ses klonu (Instant Voice Cloning) ----------
+
+/**
+ * Ebeveynin ~1 dk'lık ses örneğinden klon ses oluşturur. Ses adı kişisel veri içermez (rastgele).
+ * Örneği biz saklamayız: yalnızca sağlayıcıya iletilir; ses silinince sağlayıcıdaki örnekler de silinir.
+ */
+export class ElevenLabsVoiceCloner {
+  private key: string;
+  private fetchFn: typeof fetch;
+  constructor(opts: { key: string; fetchFn?: typeof fetch }) {
+    this.key = opts.key;
+    this.fetchFn = opts.fetchFn ?? fetch;
+  }
+
+  async create(sample: Uint8Array, contentType: string): Promise<string> {
+    const form = new FormData();
+    form.append("name", `masalcik-${crypto.randomUUID().slice(0, 8)}`);
+    form.append("description", "Masalcık ebeveyn anlatıcı sesi (yalnızca bu aile).");
+    form.append("remove_background_noise", "true");
+    form.append("files", new Blob([new Uint8Array(sample)], { type: contentType }), "sample.m4a");
+    const res = await this.fetchFn("https://api.elevenlabs.io/v1/voices/add", {
+      method: "POST", headers: { "xi-api-key": this.key }, body: form,
+    });
+    if (!res.ok) throw new TtsError(`elevenlabs_clone_${res.status}`);
+    const body = await res.json() as { voice_id?: string };
+    if (!body.voice_id) throw new TtsError("elevenlabs_clone_no_id");
+    return body.voice_id;
+  }
+
+  async delete(voiceId: string): Promise<void> {
+    const res = await this.fetchFn(`https://api.elevenlabs.io/v1/voices/${encodeURIComponent(voiceId)}`, {
+      method: "DELETE", headers: { "xi-api-key": this.key },
+    });
+    // 404: zaten silinmiş — amaç gerçekleşmiş sayılır.
+    if (!res.ok && res.status !== 404) throw new TtsError(`elevenlabs_delete_${res.status}`);
+  }
 }

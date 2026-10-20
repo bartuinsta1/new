@@ -63,6 +63,28 @@ supabase secrets set APPLE_BUNDLE_ID=com.masalcik.app
 supabase secrets set APPSTORE_ENVIRONMENTS=Production,Sandbox   # App Review sandbox'ta satın alır
 ```
 
+## Kalıcılık (Postgres)
+
+`SUPABASE_DB_URL` tanımlıysa (Supabase Edge Functions bunu kendiliğinden verir) tüm depolar Postgres'tedir
+(`_shared/pg/stores.ts`); yoksa bellek içi (yalnızca yerel geliştirme — veriler fonksiyonlar arasında paylaşılmaz).
+`USE_MEMORY_STORES=1` bellek içini zorlar. Sunucu yalnızca anonim kullanıcı kimliğiyle çalışır (aile ve çocuk
+profilleri cihazda); hesap silmede `auth.users` satırı silinir, her şey cascade ile gider.
+Not: Postgres'te kullanıcı kimlikleri UUID'dir; `MOCK_AUTH=1` ile ("Bearer user-1") yalnızca bellek içi depolar çalışır.
+
+```bash
+# Gerçek Postgres'te depo testleri (yerel Postgres 15+; masalcik_test veritabanını sıfırdan kurar)
+PGHOST=localhost PGPORT=5432 PGUSER=postgres ./scripts/test-pg.sh
+```
+
+Ses dosyaları: `SUPABASE_SERVICE_ROLE_KEY` varsa Supabase Storage'ın özel `audio` kovası (`AUDIO_BUCKET` ile
+değiştirilebilir), imzalı URL 180 gün. Ebeveyn klon sesiyle üretilenler `clone/<user_id>/` altında; klon ya da hesap
+silinince bu klasör silinir. Klon ses: `ELEVENLABS_API_KEY` ile ElevenLabs anlık klon (örnek saklanmaz).
+
+## Anonim analitik
+
+`POST /events` `{ events: [{ name, dims }] }` — yalnızca `_shared/analytics.ts`'deki izinli olay/boyutlar;
+`analytics_daily` tablosunda gün + olay + boyut başına sayaç. Kullanıcı kimliği, IP, zaman damgası saklanmaz.
+
 ## Davet ve paylaşım (Adım 12)
 
 - **`GET /referral`** kendi davet kodu; **`POST /referral/redeem`** `{ code }` → davet eden + edilen 7 gün Premium

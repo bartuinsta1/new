@@ -79,6 +79,13 @@ struct LiveStoryAPI: StoryAPI {
 
     func referral() async throws -> ReferralDTO { try await get("referral") }
 
+    func sendEvents(_ events: [AnalyticsEventDTO]) async throws {
+        var req = try await makeRequest("events", method: "POST")
+        req.httpBody = try JSONEncoder().encode(["events": events])
+        let (_, response) = try await session.data(for: req)
+        try Self.check(response)
+    }
+
     func redeemReferral(code: String) async throws -> ReferralRedeemDTO {
         var req = try await makeRequest("referral/redeem", method: "POST")
         req.httpBody = try APICoding.encoder.encode(["code": code])

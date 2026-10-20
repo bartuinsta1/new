@@ -20,7 +20,7 @@ Apple kuralı: bizim adımıza işleyen hizmet sağlayıcılarına (Anthropic, A
 | **Kullanıcı İçeriği › Ses Verisi** | Ebeveynin 1 dakikalık ses örneği (yalnızca Premium + ayrı açık rıza) | Uygulama İşlevselliği | Evet | **ElevenLabs** (ses klonu); örnek ve klon istenince silinir |
 | **Kimlik Bilgileri › Kullanıcı Kimliği** | Cihaza bağlı anonim Supabase kullanıcı kimliği (UUID); StoreKit `appAccountToken` | Uygulama İşlevselliği | Evet | Supabase, Apple |
 | **Satın Almalar › Satın Alma Geçmişi** | Abonelik ürünü, deneme durumu, bitiş tarihi, App Store işlem kimliği | Uygulama İşlevselliği | Evet | Supabase (sunucu doğrulaması), Apple |
-| **Kullanım Verileri › Ürün Etkileşimi** | Anonim olaylar: onboarding adımı, masal başladı/bitti (bölge, ruh hali, süre), paywall gösterildi/kapandı/satın alındı (yalnızca plan türü) | Analitik | **Hayır** (kimliksiz, toplu) | Kendi backend'imiz |
+| **Kullanım Verileri › Ürün Etkileşimi** | Anonim olaylar: onboarding adımı, masal başladı/bitti (bölge, ruh hali, süre yalnızca 5'er dakikalık aralık), paywall gösterildi/kapandı/satın alındı (yalnızca plan türü). Sunucuda yalnızca gün + olay + boyut başına sayaç tutulur | Analitik | **Hayır** (kimliksiz, toplu) | Kendi backend'imiz (`POST /events`) |
 
 **Toplanmayanlar:** konum, kişiler, fotoğraflar, e-posta, telefon, ad-soyad (ebeveyn), sağlık, tarayıcı geçmişi,
 arama geçmişi, reklam verisi, cihaz kimliği (IDFA/IDFV), çökme verisi (üçüncü taraf çökme SDK'sı yok; Apple'ın kendi
