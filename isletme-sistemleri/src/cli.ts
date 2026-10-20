@@ -3,6 +3,7 @@ import { SISTEMLER } from "./sistemler.ts";
 import { KATEGORILER } from "./tipler.ts";
 import { bagimlilar, bul, dogrula, katalogMarkdown, kurulumSirasi, sistemMarkdown } from "./kayit.ts";
 import { dogrulaEkip, ekipMarkdown } from "./ekip-katalog.ts";
+import { araclarMarkdown } from "./araclar-katalog.ts";
 import { triyaj } from "./beyin.ts";
 
 const [komut = "liste", arg] = process.argv.slice(2);
@@ -64,7 +65,8 @@ switch (komut) {
     const yol = new URL("../KATALOG.md", import.meta.url);
     writeFileSync(yol, katalogMarkdown(SISTEMLER));
     writeFileSync(new URL("../EKIP.md", import.meta.url), ekipMarkdown(SISTEMLER));
-    console.log(`KATALOG.md ve EKIP.md yazıldı (${SISTEMLER.length} sistem)`);
+    writeFileSync(new URL("../ARACLAR.md", import.meta.url), araclarMarkdown());
+    console.log(`KATALOG.md, EKIP.md ve ARACLAR.md yazıldı (${SISTEMLER.length} sistem)`);
     break;
   }
   case "triyaj": {

@@ -60,6 +60,8 @@ h2 { font: 700 19px/1.25 var(--display); letter-spacing: -0.02em; }
 h3 { font: 600 17px/1.3 var(--body); }
 p { margin: 0; }
 .muted { color: var(--muted); }
+main a:not(.btn) { color: var(--accent); font-weight: 600; text-decoration: none; }
+main a:not(.btn):hover { text-decoration: underline; }
 .small { font-size: 14px; }
 .lead { color: var(--muted); max-width: 62ch; font-size: 17px; }
 .tag { font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
@@ -191,6 +193,20 @@ label.chk input { width: 20px; height: 20px; min-height: 0; accent-color: var(--
 .picker { display: grid; gap: 8px; }
 .picker .chip { cursor: pointer; border: 1px solid var(--line); min-height: 36px; padding: 8px 12px; }
 
+/* Araçlar */
+.tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 12px; }
+.tool { padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.tool .row { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.tool .int-head { display: flex; gap: 12px; align-items: start; min-width: 0; }
+.tool .avatar { width: 40px; height: 40px; }
+.price { font: 700 16px var(--display); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chip.need { background: transparent; border: 1px solid var(--line); }
+.options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.option { display: grid; gap: 4px; justify-items: start; text-align: left; white-space: normal; border-radius: 12px; padding: 10px 12px; min-height: 0; font-weight: 400; }
+.option b { font-weight: 600; font-size: 14px; line-height: 1.3; }
+.option .tag { font-size: 10px; }
+.option[aria-checked="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); background: var(--accent-soft); }
+
 /* Maliyet */
 .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 22px; align-items: end; }
 .seg { display: inline-flex; background: var(--bg); border-radius: 999px; padding: 4px; gap: 4px; }
@@ -241,6 +257,7 @@ label.chk input { width: 20px; height: 20px; min-height: 0; accent-color: var(--
   details.sys summary .chev { grid-column: 3; grid-row: 1; }
   .sys-body { padding: 0 16px 20px; }
   form.fields { grid-template-columns: 1fr; }
+  .options { grid-template-columns: 1fr; }
   .scenarios { grid-auto-flow: column; grid-auto-columns: 72%; grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
   .scenario { scroll-snap-align: start; }
   .convo { padding: 18px; }
@@ -259,7 +276,7 @@ label.chk input { width: 20px; height: 20px; min-height: 0; accent-color: var(--
       <a href="#markalar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.8c1.6.8 2.6 2.5 3 5.2"/></svg>Markalar</a>
       <a href="#sistemler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>Sistemler</a>
       <a href="#ekip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.8 2.2L22 20l-2.2.8L19 23"/></svg>YZ Ekibi</a>
-      <a href="#maliyet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.6c0 2.4-5 1-5 3.4 0 1 1 1.5 2.5 1.5s2.5-.5 2.5-1.5"/></svg>Maliyet</a>
+      <a href="#araclar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>Araçlar</a>
     </nav>
     <div class="side-foot">
       <span>Bağlantı durumu bu tarayıcıda saklanır.</span>

@@ -5,6 +5,7 @@ import { SISTEMLER } from "../src/sistemler.ts";
 import { DEPARTMANLAR } from "../src/ekip.ts";
 import { ENTEGRASYONLAR, aylikMaliyet, eksikler, gerekenler, plandakiler } from "../src/entegrasyonlar.ts";
 import { derle } from "../scripts/site.ts";
+import { araclarMarkdown } from "../src/araclar-katalog.ts";
 
 test("entegrasyonlar yalnızca var olan sistem ve departmanlara bağlanır", () => {
   const sistemIdleri = new Set(SISTEMLER.map((s) => s.id));
@@ -44,4 +45,20 @@ test("ekonomik plan 30 müşteriye kadar ayda $100'ın altında kalır", () => {
   for (const id of [...SISTEMLER.map((s) => s.id), ...DEPARTMANLAR.map((d) => d.id)]) {
     assert.ok(gerekenler(id, "ekonomik").length > 0, `${id} ekonomik planda araçsız kaldı`);
   }
+});
+
+test("her yuvanın gereksinimleri ve üç farklı seçeneği var", () => {
+  for (const e of ENTEGRASYONLAR) {
+    assert.ok(e.gereksinimler.length > 0, `${e.id} gereksinim yok`);
+    const adlar = [e.saglayicilar.join(", "), e.ekonomik.saglayici, e.alternatif.saglayici];
+    assert.equal(new Set(adlar).size, 3, `${e.id} seçenekleri aynı: ${adlar.join(" | ")}`);
+    assert.ok(e.alternatif.not.length > 0, `${e.id} alternatifin notu yok`);
+  }
+  // Yuva başına seçim plana baskın gelir
+  const crm = ENTEGRASYONLAR.filter((e) => e.id === "crm");
+  assert.equal(aylikMaliyet(crm, 10, "standart", { crm: "ekonomik" }), 0);
+});
+
+test("ARACLAR.md güncel", () => {
+  assert.equal(readFileSync(new URL("../ARACLAR.md", import.meta.url), "utf8"), araclarMarkdown(), "npm run katalog çalıştırın");
 });

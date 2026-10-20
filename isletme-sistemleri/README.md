@@ -7,6 +7,8 @@ bağımlılıklar.
 
 Okumak için: **[KATALOG.md](KATALOG.md)** (özet tablo, kurulum sırası, bağımlılık haritası, 22 sistemin detayı).
 
+Her aracın gereklilikleri ve üç seçeneği (standart / ekonomik / alternatif): **[ARACLAR.md](ARACLAR.md)**.
+
 Bu 22 sistemin üstünde pazarlamayı yürüten **yapay zekâ ekibi**: **[EKIP.md](EKIP.md)**.
 Sinyaller → kayıt sistemi + işletme girdileri → beyin (triyaj, yazar, konuşur, kontrol) → 8 departman →
 veri ve gözlem → insana devir. Ajanların okuduğu marka sesi, ideal müşteri, teklifler gibi bilgiler

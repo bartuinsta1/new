@@ -14,9 +14,23 @@ export interface Entegrasyon {
   sistemler: string[];
   departmanlar: string[];
   maliyet: { sabit: number; musteriBasi: number };
-  ekonomik: { saglayici: string; sabit: number; musteriBasi: number; not: string; atla?: boolean };
+  ekonomik: Secenek & { atla?: boolean };
+  /** Bu yuvadaki her seçeneğin karşılaması gereken asgari işlevler */
+  gereksinimler: string[];
+  /** Standart ve ekonomik dışında, gereksinimleri karşılayan üçüncü seçenek */
+  alternatif: Secenek;
   baglantiUrl: string;
 }
+
+export interface Secenek {
+  saglayici: string;
+  sabit: number;
+  musteriBasi: number;
+  not: string;
+}
+
+/** Bir yuvada hangi seçeneğin kullanıldığı; plan varsayılanı belirler, kullanıcı yuva başına değiştirebilir. */
+export type Secim = "standart" | "ekonomik" | "alternatif";
 
 export type Plan = "standart" | "ekonomik";
 
@@ -44,6 +58,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme"],
     maliyet: { sabit: 197, musteriBasi: 0 },
     ekonomik: { saglayici: "HubSpot Ücretsiz CRM", sabit: 0, musteriBasi: 0, not: "Otomatik e-posta dizisi yok; takip mesajlarını n8n gönderir." },
+    gereksinimler: ["Kişi ve fırsat kaydı", "Aşamalı satış hattı", "API veya webhook (n8n bağlantısı)"],
+    alternatif: { saglayici: "Attio Ücretsiz", sabit: 0, musteriBasi: 0, not: "3 kullanıcıya kadar ücretsiz, API açık; esnek veri modeli." },
     baglantiUrl: "",
   },
   {
@@ -56,6 +72,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["pazar-istihbarati", "reklam", "icerik-studyosu", "yayin", "lead-yakalama", "satis-yaniti", "besleme-yeniden-hedefleme", "itibar"],
     maliyet: { sabit: 30, musteriBasi: 10 },
     ekonomik: { saglayici: "Claude Haiku 5.5 + Sonnet 5.5", sabit: 0, musteriBasi: 1.5, not: "DM, triyaj ve özetler Haiku 5.5 ile; içerik metni Sonnet 5.5 ile. Önbellek ve toplu işleme açık." },
+    gereksinimler: ["Türkçe doğal metin", "Kısa yanıt süresi (DM için)", "API ile otomasyon"],
+    alternatif: { saglayici: "Claude Batch API + Haiku 5.5", sabit: 0, musteriBasi: 1, not: "Haftalık içerik toplu üretilir (%50 indirim, birkaç saat içinde döner); DM yanıtları Haiku 5.5 ile anında." },
     baglantiUrl: "",
   },
   {
@@ -68,6 +86,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["yayin", "satis-yaniti", "pazar-istihbarati"],
     maliyet: { sabit: 0, musteriBasi: 0 },
     ekonomik: { saglayici: "Meta Business (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Yorum ve DM okuma", "Hesap istatistikleri", "Gönderi yayını"],
+    alternatif: { saglayici: "Instagram API (Instagram ile Giriş)", sabit: 0, musteriBasi: 0, not: "Facebook sayfası gerekmeden profesyonel hesaba doğrudan bağlanır; Meta uygulama incelemesi ister." },
     baglantiUrl: "",
   },
   {
@@ -80,6 +100,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["yayin"],
     maliyet: { sabit: 0, musteriBasi: 0 },
     ekonomik: { saglayici: "Platform API'leri (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Yayın", "Temel istatistik"],
+    alternatif: { saglayici: "Buffer Ücretsiz", sabit: 0, musteriBasi: 0, not: "3 kanala kadar ücretsiz; daha fazlası kanal başına ücretli." },
     baglantiUrl: "",
   },
   {
@@ -92,6 +114,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["reklam", "besleme-yeniden-hedefleme", "lead-yakalama"],
     maliyet: { sabit: 0, musteriBasi: 0 },
     ekonomik: { saglayici: "Reklam hesapları (ücretsiz)", sabit: 0, musteriBasi: 0, not: "Reklam bütçesi müşteriden." },
+    gereksinimler: ["Kampanya yönetimi", "Bütçe ve harcama verisi", "Lead başı maliyet"],
+    alternatif: { saglayici: "LinkedIn Ads", sabit: 0, musteriBasi: 0, not: "Kurucu ve uzman kitlesi için; lead maliyeti daha yüksek ama nitelik daha iyi. Bütçe müşteriden." },
     baglantiUrl: "",
   },
   {
@@ -104,6 +128,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["satis-yaniti", "lead-yakalama"],
     maliyet: { sabit: 15, musteriBasi: 10 },
     ekonomik: { saglayici: "ManyChat Ücretsiz", sabit: 0, musteriBasi: 0, not: "1.000 kişiye kadar. Aşan müşteride Pro'ya geç ve ücretini pakete ekle." },
+    gereksinimler: ["Anahtar kelimeli yorum yakalama", "DM'den otomatik yanıt", "Yapay zekâya aktarım"],
+    alternatif: { saglayici: "n8n + Instagram mesajlaşma webhook'u", sabit: 0, musteriBasi: 0, not: "Ücretsiz ve sınırsız kişi; kurulumu teknik, Meta uygulama incelemesi ister." },
     baglantiUrl: "",
   },
   {
@@ -116,18 +142,22 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["satis-yaniti", "icerik-studyosu"],
     maliyet: { sabit: 40, musteriBasi: 3 },
     ekonomik: { saglayici: "ElevenLabs Starter (seslendirme)", sabit: 5, musteriBasi: 0, not: "Ayda ~30 dk seslendirme, Flash modelle ~60 dk: Reels dış sesi ve DM/WhatsApp sesli notları. Canlı telefon asistanı yok (dakika başı ücretli); Creator planı $22." },
+    gereksinimler: ["Türkçe doğal ses", "Seslendirme dosyası üretme"],
+    alternatif: { saglayici: "Azure Konuşma Hizmeti (Türkçe nöral ses)", sabit: 0, musteriBasi: 0, not: "Ayda 500 bin karaktere kadar ücretsiz katman; ses klonlama yok." },
     baglantiUrl: "",
   },
   {
     id: "whatsapp",
     ad: "WhatsApp Business",
-    saglayicilar: ["WhatsApp Cloud API"],
+    saglayicilar: ["WATI (hazır WhatsApp paneli)"],
     grup: "satis",
     aciklama: "Müşteri ve aday iletişimi, hatırlatmalar.",
     sistemler: ["sessiz-musteri-uyarisi", "gelmeyene-yeniden-randevu"],
     departmanlar: [],
-    maliyet: { sabit: 10, musteriBasi: 1.5 },
+    maliyet: { sabit: 49, musteriBasi: 1.5 },
     ekonomik: { saglayici: "WhatsApp Cloud API", sabit: 0, musteriBasi: 0.5, not: "Müşterinin başlattığı konuşmalar ücretsiz; hatırlatmalar mesaj başı ücretli." },
+    gereksinimler: ["Müşteriye mesaj ve hatırlatma", "API ile otomasyon"],
+    alternatif: { saglayici: "Twilio WhatsApp", sabit: 0, musteriBasi: 1, not: "Kurulumu kolay; Meta ücretine ek mesaj başı küçük bir ücret." },
     baglantiUrl: "",
   },
   {
@@ -140,6 +170,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["satis-yaniti"],
     maliyet: { sabit: 15, musteriBasi: 0 },
     ekonomik: { saglayici: "Cal.com Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Herkese açık randevu sayfası", "Takvim eşitleme", "Hatırlatma"],
+    alternatif: { saglayici: "Google Takvim randevu planlama", sabit: 0, musteriBasi: 0, not: "Ücretsiz Gmail hesabında temel randevu sayfası; ödeme ve gelişmiş formlar için Workspace gerekir." },
     baglantiUrl: "",
   },
   {
@@ -152,6 +184,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 0, musteriBasi: 0 },
     ekonomik: { saglayici: "iyzico / Stripe", sabit: 0, musteriBasi: 0, not: "Aylık ücret yok, işlem başına komisyon." },
+    gereksinimler: ["Kartla tahsilat", "Abonelik / tekrarlayan ödeme"],
+    alternatif: { saglayici: "PayTR", sabit: 0, musteriBasi: 0, not: "Türkiye'de yaygın; aylık ücret yok, işlem başına komisyon. Şirket gerekir." },
     baglantiUrl: "",
   },
   {
@@ -164,6 +198,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["besleme-yeniden-hedefleme"],
     maliyet: { sabit: 20, musteriBasi: 3 },
     ekonomik: { saglayici: "Brevo Ücretsiz", sabit: 0, musteriBasi: 0, not: "Günde 300 e-posta." },
+    gereksinimler: ["Liste ve otomatik dizi", "API"],
+    alternatif: { saglayici: "MailerLite Ücretsiz", sabit: 0, musteriBasi: 0, not: "1.000 aboneye kadar ücretsiz, otomasyon dahil." },
     baglantiUrl: "",
   },
   {
@@ -176,6 +212,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["itibar"],
     maliyet: { sabit: 0, musteriBasi: 0 },
     ekonomik: { saglayici: "Google İşletme Profili (ücretsiz)", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Değerlendirme okuma", "Yanıt verme"],
+    alternatif: { saglayici: "Trustpilot Ücretsiz", sabit: 0, musteriBasi: 0, not: "Ücretsiz işletme profili; Google'dan sonra ikinci kaynak." },
     baglantiUrl: "",
   },
   {
@@ -188,6 +226,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["yayin"],
     maliyet: { sabit: 20, musteriBasi: 4 },
     ekonomik: { saglayici: "Meta Business Suite + platformların kendi planlayıcıları", sabit: 0, musteriBasi: 0, not: "Her markayı kendi panelinden planlarsın. Tek panel istersen Metricool (marka başına ücretli) ya da Postiz (en az 4 GB RAM sunucu, daha çok bakım)." },
+    gereksinimler: ["Çoklu platform zamanlama", "Müşteri başına ayrı hesap"],
+    alternatif: { saglayici: "Buffer Essentials", sabit: 0, musteriBasi: 6, not: "Kanal başına ~$6; marka başına bir kanal hesabıyla." },
     baglantiUrl: "",
   },
   {
@@ -200,6 +240,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["icerik-studyosu"],
     maliyet: { sabit: 30, musteriBasi: 1 },
     ekonomik: { saglayici: "Canva Ücretsiz + CapCut Ücretsiz", sabit: 0, musteriBasi: 0, not: "Marka kiti gerekince Canva Pro." },
+    gereksinimler: ["Carousel ve kapak tasarımı", "Kısa video kurgusu", "Marka şablonu"],
+    alternatif: { saglayici: "Adobe Express Ücretsiz + DaVinci Resolve", sabit: 0, musteriBasi: 0, not: "İkisi de ücretsiz; DaVinci profesyonel kurgu için, öğrenmesi daha uzun." },
     baglantiUrl: "",
   },
   {
@@ -212,6 +254,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["icerik-studyosu"],
     maliyet: { sabit: 40, musteriBasi: 0 },
     ekonomik: { saglayici: "Notion Ücretsiz", sabit: 0, musteriBasi: 0, not: "Misafir sayısı sınırlı; müşteri portalı için yeterli." },
+    gereksinimler: ["Müşteri portalı", "SOP ve yol haritası belgeleri", "Görev panosu"],
+    alternatif: { saglayici: "Google Drive + Dokümanlar + E-Tablolar", sabit: 0, musteriBasi: 0, not: "Ücretsiz, herkes bilir; pano görünümü zayıf." },
     baglantiUrl: "",
   },
   {
@@ -224,6 +268,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 45, musteriBasi: 0 },
     ekonomik: { saglayici: "Slack Ücretsiz veya Telegram", sabit: 0, musteriBasi: 0, not: "Slack ücretsizde 90 günlük mesaj geçmişi." },
+    gereksinimler: ["Uyarı ve rapor kanalı", "Bot / webhook desteği"],
+    alternatif: { saglayici: "Discord", sabit: 0, musteriBasi: 0, not: "Ücretsiz, sınırsız mesaj geçmişi, webhook desteği." },
     baglantiUrl: "",
   },
   {
@@ -236,6 +282,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 50, musteriBasi: 0 },
     ekonomik: { saglayici: "Gmail + Google Takvim (ücretsiz)", sabit: 0, musteriBasi: 0, not: "Kendi alan adınla e-posta istersen Workspace gerekir." },
+    gereksinimler: ["Kurumsal e-posta", "Takvim", "Dosya paylaşımı"],
+    alternatif: { saglayici: "Zoho Mail Ücretsiz", sabit: 0, musteriBasi: 0, not: "Kendi alan adınla 5 kullanıcıya kadar ücretsiz plan (koşulları değişebilir)." },
     baglantiUrl: "",
   },
   {
@@ -248,6 +296,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 25, musteriBasi: 0 },
     ekonomik: { saglayici: "n8n, kendi sunucunda (VPS)", sabit: 6, musteriBasi: 0, not: "Tek küçük sunucuda yalnızca n8n çalışır; bakım ayda ~30 dk (sunucu/BAKIM.md). Bakım istemezsen n8n Cloud." },
+    gereksinimler: ["Sistemleri bağlama", "Zamanlanmış görevler", "Webhook"],
+    alternatif: { saglayici: "Make Ücretsiz", sabit: 0, musteriBasi: 0, not: "Ayda 1.000 işleme kadar ücretsiz; sunucu bakımı yok. Büyüdükçe ücretli." },
     baglantiUrl: "",
   },
   {
@@ -260,6 +310,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 29, musteriBasi: 0 },
     ekonomik: { saglayici: "Tally Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Form ve anket", "Otomasyona veri gönderme"],
+    alternatif: { saglayici: "Google Formlar", sabit: 0, musteriBasi: 0, not: "Ücretsiz, sınırsız yanıt; tasarım seçenekleri az." },
     baglantiUrl: "",
   },
   {
@@ -272,6 +324,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 40, musteriBasi: 0 },
     ekonomik: { saglayici: "tl;dv Ücretsiz", sabit: 0, musteriBasi: 0, not: "Döküm Claude'a gider, özeti Claude çıkarır." },
+    gereksinimler: ["Görüşme kaydı", "Türkçe döküm"],
+    alternatif: { saglayici: "Fireflies Ücretsiz", sabit: 0, musteriBasi: 0, not: "Türkçe döküm destekler; ücretsizde depolama sınırlı." },
     baglantiUrl: "",
   },
   {
@@ -284,6 +338,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: ["pazar-istihbarati"],
     maliyet: { sabit: 49, musteriBasi: 0 },
     ekonomik: { saglayici: "Apify (aylık ücretsiz kredi)", sabit: 0, musteriBasi: 0.5, not: "" },
+    gereksinimler: ["Rakip ve aday hesap istatistikleri"],
+    alternatif: { saglayici: "Instagram Business Discovery API", sabit: 0, musteriBasi: 0, not: "Diğer işletme hesaplarının herkese açık istatistikleri ücretsiz; kişisel hesaplarda çalışmaz." },
     baglantiUrl: "",
   },
   {
@@ -296,6 +352,8 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 20, musteriBasi: 0 },
     ekonomik: { saglayici: "Google Slides", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Kişiselleştirilmiş teklif sunumu", "Şablondan otomatik üretim"],
+    alternatif: { saglayici: "Canva sunum şablonları", sabit: 0, musteriBasi: 0, not: "Canva hesabınla ücretsiz; otomatik doldurma Canva Pro ister." },
     baglantiUrl: "",
   },
   {
@@ -308,18 +366,22 @@ export const ENTEGRASYONLAR: Entegrasyon[] = [
     departmanlar: [],
     maliyet: { sabit: 25, musteriBasi: 0 },
     ekonomik: { saglayici: "Supabase Ücretsiz", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Yapılandırılmış veri", "API erişimi"],
+    alternatif: { saglayici: "Airtable Ücretsiz", sabit: 0, musteriBasi: 0, not: "Taban başına 1.000 kayda kadar ücretsiz." },
     baglantiUrl: "",
   },
   {
     id: "raporlama",
     ad: "Raporlama",
-    saglayicilar: ["Looker Studio"],
+    saglayicilar: ["Looker Studio Pro"],
     grup: "veri",
     aciklama: "CEO ve satış panoları.",
     sistemler: ["ceo-panosu", "satis-panosu"],
     departmanlar: [],
-    maliyet: { sabit: 0, musteriBasi: 0 },
+    maliyet: { sabit: 9, musteriBasi: 0 },
     ekonomik: { saglayici: "Looker Studio", sabit: 0, musteriBasi: 0, not: "" },
+    gereksinimler: ["Pano ve grafik", "Veri kaynağı bağlama"],
+    alternatif: { saglayici: "Databox Ücretsiz", sabit: 0, musteriBasi: 0, not: "3 veri kaynağına kadar ücretsiz." },
     baglantiUrl: "",
   },
 ];
@@ -339,13 +401,24 @@ export function eksikler(hedefId: string, bagli: ReadonlySet<string>, plan: Plan
   return gerekenler(hedefId, plan).filter((e) => !bagli.has(e.id));
 }
 
-export function fiyat(e: Entegrasyon, plan: Plan = "standart"): { saglayici: string; sabit: number; musteriBasi: number } {
-  return plan === "ekonomik" ? e.ekonomik : { saglayici: e.saglayicilar.join(", "), ...e.maliyet };
+export function secenek(e: Entegrasyon, secim: Secim = "standart"): Secenek {
+  if (secim === "ekonomik") return e.ekonomik;
+  if (secim === "alternatif") return e.alternatif;
+  return { saglayici: e.saglayicilar.join(", "), ...e.maliyet, not: "" };
 }
 
-export function aylikMaliyet(entegrasyonlar: Entegrasyon[], musteriSayisi: number, plan: Plan = "standart"): number {
+/** Geriye dönük ad: plan, o plandaki varsayılan seçimdir. */
+export const fiyat = secenek;
+
+/** Aylık maliyet. `secimler` yuva başına seçimi değiştirir; verilmeyen yuvada plan geçerlidir. */
+export function aylikMaliyet(
+  entegrasyonlar: Entegrasyon[],
+  musteriSayisi: number,
+  plan: Plan = "standart",
+  secimler: Readonly<Record<string, Secim>> = {},
+): number {
   return entegrasyonlar.reduce((t, e) => {
-    const f = fiyat(e, plan);
+    const f = secenek(e, secimler[e.id] ?? plan);
     return t + f.sabit + f.musteriBasi * musteriSayisi;
   }, 0);
 }

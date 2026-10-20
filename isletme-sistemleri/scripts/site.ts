@@ -17,7 +17,7 @@ export function derle(): Map<string, string> {
   const sayfa = readFileSync(new URL("site/sayfa.html", KOK), "utf8");
   cikti.set(
     "site/index.html",
-    `<!doctype html>\n<html lang="tr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n${sayfa}</body>\n</html>\n`,
+    `<!doctype html>\n<html lang="tr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#0F2A22">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" href="icon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="icon-180.png">\n<meta name="apple-mobile-web-app-title" content="Ajans OS">\n</head>\n<body>\n${sayfa}</body>\n</html>\n`,
   );
   return cikti;
 }

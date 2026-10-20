@@ -4,7 +4,7 @@ import { KATEGORILER } from "./src/tipler.js";
 import { bul } from "./src/kayit.js";
 import { SINYALLER, DEPARTMANLAR, BEYIN } from "./src/ekip.js";
 import { triyaj, KESINTILER } from "./src/beyin.js";
-import { ENTEGRASYONLAR, PLANLAR, eksikler, gerekenler, aylikMaliyet, plandakiler, fiyat } from "./src/entegrasyonlar.js";
+import { ENTEGRASYONLAR, GRUPLAR, PLANLAR, eksikler, gerekenler, aylikMaliyet, plandakiler, secenek } from "./src/entegrasyonlar.js";
 
 const icerik = document.getElementById("icerik");
 const OTOMASYON = { manuel: "Manuel", yari: "Yarı otomatik", tam: "Tam otomatik" };
@@ -13,7 +13,7 @@ const HEDEFLER = [...SISTEMLER.map((s) => s.id), ...DEPARTMANLAR.map((d) => d.id
 
 // ---- Kişisel durum (yalnızca bu tarayıcıda) ----
 const ANAHTAR = "ajans-os:v1";
-const durum = Object.assign({ bagli: [], musteri: 10, paket: 1500, kapsam: "tam", plan: "ekonomik" }, (() => {
+const durum = Object.assign({ bagli: [], musteri: 10, paket: 1500, kapsam: "tam", plan: "ekonomik", secimler: {} }, (() => {
   try { return JSON.parse(localStorage.getItem(ANAHTAR)) ?? {}; } catch { return {}; }
 })());
 const ui = { kategori: "hepsi", ara: "", senaryo: 0, olay: null, acik: null };
@@ -116,7 +116,7 @@ function basla() {
   <section class="panel hero">
     <div class="big-ring">${halka(sHazir / 22, 132, 12, `<b>%${Math.round((sHazir / 22) * 100)}</b><small>canlı</small>`)}</div>
     <div class="hero-text">
-      <span class="tag">Kişisel marka ve sosyal medya ajansı · ${PLANLAR[durum.plan].ad} plan · ayda ${para(aylikMaliyet(plandakiler(durum.plan), durum.musteri, durum.plan))}</span>
+      <span class="tag">Kişisel marka ve sosyal medya ajansı · ${PLANLAR[durum.plan].ad} plan · ayda ${para(toplamMaliyet())}</span>
       <h1>${sonraki ? (bitti === 0 ? "Ajansını adım adım kur" : `${sHazir} sistem hazır. Devam edelim.`) : "Her şey bağlı. Ajansın canlıda."}</h1>
       <p class="lead">${sonraki
         ? `Sıradaki adım: <b>${kac(sonraki.e.ad)}</b>. ${kac(sonraki.e.aciklama)}`
@@ -124,7 +124,7 @@ function basla() {
       ${sonraki ? `<div class="next">${baglaDugmesi(sonraki.e)}<span class="muted small">${bitti} / ${YOL.length} adım tamam</span></div>` : ""}
     </div>
   </section>
-  ${planSecici()}
+  ${bugun()}
 
   <section class="stack">
     <div><h2>Kurulum yolu</h2><p class="muted small">Sıra, her adım en çok sistemi açacak şekilde hesaplandı. İstediğin sırada da bağlayabilirsin.</p></div>
@@ -135,7 +135,7 @@ function basla() {
           <span class="step">${String(i + 1).padStart(2, "0")}</span>
           ${avatar(a.e, on)}
           <div class="step-body">
-            <h3>${kac(a.e.ad)} <span class="muted small" style="font-weight:400">· ${kac(fiyat(a.e, durum.plan).saglayici)}</span></h3>
+            <h3>${kac(a.e.ad)} <span class="muted small" style="font-weight:400">· ${kac(secenek(a.e, secimi(a.e)).saglayici)}</span></h3>
             <div class="chips">${on ? `<span class="chip ok dot">Bağlı${a.e.baglantiUrl ? "" : " (deneme)"}</span>` : acarMetni(a)}</div>
           </div>
           ${baglaDugmesi(a.e)}
@@ -149,9 +149,24 @@ function basla() {
 function planSecici() {
   return `<section class="panel plan">
     <div><span class="tag">Kurulum planı</span><p class="small muted">${kac(PLANLAR[durum.plan].aciklama)}</p></div>
-    <div class="seg" role="group" aria-label="Plan">${Object.entries(PLANLAR).map(([k, p]) => `<button data-plan="${k}" aria-pressed="${durum.plan === k}">${p.ad} · ${para(aylikMaliyet(plandakiler(k), durum.musteri, k))}/ay</button>`).join("")}</div>
+    <div class="seg" role="group" aria-label="Plan">${Object.entries(PLANLAR).map(([k, p]) => `<button data-plan="${k}" aria-pressed="${durum.plan === k}">${p.ad} · ${para(aylikMaliyet(plandakiler(k), durum.musteri, k))}/ay</button>`).join("")}${ozelSecimSayisi() ? `<span class="chip">+ ${ozelSecimSayisi()} özel seçim</span>` : ""}</div>
   </section>`;
 }
+
+// Başla sayfasında: dikkat isteyen markalar (varsa), ardından plan seçici
+function bugun() {
+  const dikkat = depo.liste.filter((m) => m.durum === "risk" || m.durum === "dikkat")
+    .sort((a, b) => (a.durum === "risk" ? -1 : 1) - (b.durum === "risk" ? -1 : 1)).slice(0, 4);
+  if (!depo.liste.length) return planSecici();
+  return `<section class="stack">
+    <div class="group-head"><h2>Bugün</h2><a href="#markalar" class="small">Tüm markalar →</a></div>
+    ${dikkat.length ? `<div class="brands">${dikkat.map(markaKarti).join("")}</div>`
+      : `<p class="panel empty">${depo.liste.length} markanın hepsi yolunda.</p>`}
+  </section>
+  ${planSecici()}`;
+}
+
+
 
 // ---- Sistemler ----
 function sistemler() {
@@ -326,48 +341,98 @@ function simOku(sinyalDegisti) {
   }
 }
 
-// ---- Maliyet ----
-function maliyet() {
+// ---- Araçlar ve maliyet ----
+const SECIM_AD = { standart: "Standart", ekonomik: "Ekonomik", alternatif: "Alternatif" };
+const secimi = (e) => durum.secimler?.[e.id] ?? durum.plan;
+const ozelSecimSayisi = () => Object.keys(durum.secimler ?? {}).length;
+const toplamMaliyet = (liste = plandakiler(durum.plan)) => aylikMaliyet(liste, durum.musteri, durum.plan, durum.secimler ?? {});
+const tutar = (s) => s.sabit + s.musteriBasi * durum.musteri;
+const tutarMetni = (s) => (tutar(s) ? `${para(tutar(s))}/ay` : "Ücretsiz");
+
+function araclar() {
   const set = bagliSet();
-  const p = durum.plan;
-  const kume = plandakiler(p).filter((e) => durum.kapsam === "tam" || set.has(e.id));
-  const toplam = aylikMaliyet(kume, durum.musteri, p);
+  const kume = plandakiler(durum.plan).filter((e) => durum.kapsam === "tam" || set.has(e.id));
+  const toplam = toplamMaliyet(kume);
   const gelir = durum.musteri * durum.paket;
-  const satirlar = kume.map((e) => ({ e, t: aylikMaliyet([e], durum.musteri, p) })).filter((x) => x.t > 0).sort((a, b) => b.t - a.t);
-  const ucretsiz = kume.filter((e) => aylikMaliyet([e], durum.musteri, p) === 0);
-  const diger = p === "ekonomik" ? "standart" : "ekonomik";
-  const fark = aylikMaliyet(plandakiler(diger), durum.musteri, diger) - aylikMaliyet(plandakiler(p), durum.musteri, p);
-  const enCok = satirlar[0]?.t || 1;
+  const enUcuz = plandakiler(durum.plan).reduce((t, e) => t + Math.min(...Object.keys(SECIM_AD).map((k) => tutar(secenek(e, k)))), 0);
+  const ozel = ozelSecimSayisi();
   return `
   <section class="stack">
-    <span class="tag">Tahmin · reklam bütçesi ve maaşlar hariç</span>
-    <h1>Aylık ne kadar tutar?</h1>
-    <p class="lead">Müşteri sayını ve paket fiyatını gir; yazılım ve yapay zekâ maliyetini gör. Fiyatlar yaklaşıktır.</p>
+    <span class="tag">Tahmin · reklam bütçesi ve maaşlar hariç · fiyatlar yaklaşık</span>
+    <h1>Araçların ve maliyetin</h1>
+    <p class="lead">Her araç için üç seçenek var; hepsi o işin gerekliliklerini karşılar. Planı seç, sonra istediğin aracı tek tek değiştir.</p>
   </section>
   ${planSecici()}
   <div class="panel controls">
-    <label class="f">Müşteri sayısı: <b style="color:var(--ink)">${durum.musteri}</b><input type="range" id="musteri" min="1" max="60" value="${durum.musteri}"></label>
+    <label class="f">Marka (müşteri) sayısı: <b style="color:var(--ink)">${durum.musteri}</b><input type="range" id="musteri" min="1" max="60" value="${durum.musteri}"></label>
     <label class="f">Ortalama aylık paket ($)<input type="number" id="paket" min="0" step="100" value="${durum.paket}"></label>
     <div class="f">Hesaba katılanlar<div class="seg" role="group" aria-label="Hesaba katılanlar">
       <button data-kapsam="tam" aria-pressed="${durum.kapsam === "tam"}">Tüm araçlar</button>
       <button data-kapsam="bagli" aria-pressed="${durum.kapsam === "bagli"}">Sadece bağlılar</button></div></div>
   </div>
   <div class="figures">
-    <div class="panel figure hl"><span class="tag">Aylık araç maliyeti</span><b>${para(toplam)}</b><span class="muted small">Müşteri başına ${para(toplam / durum.musteri)}${fark > 0 ? ` · Standarda göre ${para(fark)} tasarruf` : ""}</span></div>
-    <div class="panel figure"><span class="tag">Aylık gelir</span><b>${para(gelir)}</b><span class="muted small">${durum.musteri} müşteri × ${para(durum.paket)}</span></div>
-    <div class="panel figure"><span class="tag">Gelirin yüzde kaçı</span><b>%${gelir ? ((toplam / gelir) * 100).toFixed(1) : "—"}</b><span class="muted small">Asıl gider ekip maaşlarıdır</span></div>
+    <div class="panel figure hl"><span class="tag">Senin kurulumun</span><b>${para(toplam)}</b><span class="muted small">aylık · marka başına ${para(toplam / durum.musteri)}${ozel ? ` · ${ozel} araç elle seçildi` : ""}</span></div>
+    <div class="panel figure"><span class="tag">En ucuz kombinasyon</span><b>${para(enUcuz)}</b><span class="muted small">${toplam > enUcuz ? `${para(toplam - enUcuz)} daha ucuza inebilir` : "Zaten en ucuzdasın"}</span></div>
+    <div class="panel figure"><span class="tag">Gelirin yüzde kaçı</span><b>%${gelir ? ((toplam / gelir) * 100).toFixed(1) : "—"}</b><span class="muted small">${para(gelir)} gelir · ${durum.musteri} × ${para(durum.paket)}</span></div>
   </div>
-  <section class="panel">
-    <div style="padding:20px 22px 6px"><h2>Nereye gidiyor?</h2></div>
-    <div class="bars">
-      ${satirlar.map(({ e, t }) => `<div class="bar-row"><span>${kac(e.ad)} <span class="muted small">${kac(fiyat(e, p).saglayici)}</span></span><div class="track"><span style="width:${(t / enCok) * 100}%"></span></div><span class="v">${para(t)}</span></div>`).join("")
-        || `<p class="muted">Henüz bağlı araç yok. “Tüm araçlar”ı seç ya da Başla sayfasından bağla.</p>`}
-      ${ucretsiz.length ? `<p class="muted small">Ücretsiz: ${ucretsiz.map((e) => kac(e.ad)).join(", ")}</p>` : ""}
+  ${toplam > enUcuz ? `<div class="next"><button data-en-ucuz>En ucuz kombinasyonu uygula</button>${ozel ? `<button class="ghost" data-secim-sifirla>Plan varsayılanına dön</button>` : ""}</div>` : ozel ? `<div class="next"><button class="ghost" data-secim-sifirla>Plan varsayılanına dön</button></div>` : ""}
+  ${Object.entries(GRUPLAR).map(([g, ad]) => {
+    const liste = kume.filter((e) => e.grup === g);
+    if (!liste.length) return "";
+    return `<section class="stack"><h2>${ad} <span class="muted small" style="font-weight:400">${para(toplamMaliyet(liste))}/ay</span></h2>
+      <div class="tools">${liste.map(aracKarti).join("")}</div></section>`;
+  }).join("")}
+  ${depo.mod === "yerel" ? yedekBolumu() : ""}`;
+}
+
+function aracKarti(e) {
+  const secili = secimi(e);
+  const s = secenek(e, secili);
+  return `<article class="panel tool">
+    <div class="row"><div class="int-head">${avatar(e, bagliSet().has(e.id))}<div><h3>${kac(e.ad)}</h3><p class="muted small">${kac(e.aciklama)}</p></div></div>
+      <b class="price">${tutarMetni(s)}</b></div>
+    <div class="chips" aria-label="Gereklilikler">${e.gereksinimler.map((g) => `<span class="chip need">✓ ${kac(g)}</span>`).join("")}</div>
+    <div class="options" role="radiogroup" aria-label="${kac(e.ad)} seçenekleri">
+      ${Object.keys(SECIM_AD).map((k) => {
+        const o = secenek(e, k);
+        return `<button role="radio" class="option" data-arac="${e.id}" data-secim="${k}" aria-checked="${secili === k}">
+          <span class="tag">${SECIM_AD[k]}${durum.plan === k ? " · plan" : ""}</span><b>${kac(o.saglayici)}</b><span class="muted small">${tutarMetni(o)}</span></button>`;
+      }).join("")}
     </div>
-  </section>
-  ${p === "ekonomik" ? `<section class="stack"><h2>Ücretsiz katmanların sınırları</h2><div class="panel stops">
-    ${plandakiler("ekonomik").filter((e) => e.ekonomik.not).map((e) => `<div class="stop-row"><div><b>${kac(e.ekonomik.saglayici)}</b><p class="muted small">${kac(e.ekonomik.not)}</p></div><span class="chip">${kac(e.ad)}</span></div>`).join("")}
-  </div></section>` : ""}`;
+    ${s.not ? `<p class="small muted">${kac(s.not)}</p>` : ""}
+  </article>`;
+}
+
+// Yerel modda (ör. Netlify) tüm veriler bu tarayıcıda: dosyaya yedekle, başka cihaza taşı
+function yedekBolumu() {
+  return `<section class="panel plan">
+    <div><span class="tag">Verilerin</span><p class="small muted">Markalar, bağlantılar ve seçimlerin yalnızca bu tarayıcıda. Ara sıra yedek indir; başka cihazda “Yedeği yükle” ile aynı duruma gelirsin.</p></div>
+    <div class="next"><button data-yedek-indir>Yedeği indir</button><label class="btn ghost" for="yedek-dosya">Yedeği yükle</label><input type="file" id="yedek-dosya" accept="application/json,.json" hidden></div>
+  </section>`;
+}
+
+function yedekIndir() {
+  const blob = new Blob([JSON.stringify({ surum: 1, tarih: new Date().toISOString(), durum }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `ajans-os-yedek-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+async function yedekYukle(dosya) {
+  try {
+    const veri = JSON.parse(await dosya.text());
+    if (veri?.surum !== 1 || typeof veri.durum !== "object") throw new Error("biçim");
+    for (const k of Object.keys(durum)) delete durum[k];
+    Object.assign(durum, veri.durum);
+    depo.liste = durum.markalar ?? [];
+    kaydet();
+    bildir("Yedek yüklendi");
+    ciz(false);
+  } catch {
+    bildir("Bu dosya bir Ajans OS yedeği değil");
+  }
 }
 
 // ---- Markalar: ekip üyesi görünümü ----
@@ -393,9 +458,12 @@ async function depoBaslat() {
 }
 function markalarYenile() {
   // Form açıkken yeniden çizme: yazılanlar kaybolmasın; kayıt ya da vazgeçince güncel liste çizilir
-  if (sekme() === "markalar" && !ui.form) ciz(false);
+  if (["markalar", "basla", "araclar"].includes(sekme()) && !ui.form) ciz(false);
 }
-const benimMi = (m) => (depo.mod === "ortak" ? m.sorumlu === depo.benId : m.sorumlu === durum.benimAdim);
+// Yerel modda tek kullanıcı varsayılır: adın yazılmamışsa ya da markanın sorumlusu yoksa marka senindir
+const benimMi = (m) => (depo.mod === "ortak"
+  ? m.sorumlu === depo.benId
+  : !durum.benimAdim || !m.sorumlu || m.sorumlu === durum.benimAdim);
 
 function markalar() {
   if (depo.mod === "yukleniyor") return `<p class="muted">Markalar yükleniyor…</p>`;
@@ -554,8 +622,8 @@ async function markaSil(id) {
 }
 
 // ---- Yönlendirme ve olaylar ----
-const SAYFALAR = { basla, markalar, sistemler, ekip, maliyet };
-const ESKI = { panel: "basla", entegrasyonlar: "basla" };
+const SAYFALAR = { basla, markalar, sistemler, ekip, araclar };
+const ESKI = { panel: "basla", entegrasyonlar: "basla", maliyet: "araclar" };
 
 function sekme() {
   const h = location.hash.slice(1);
@@ -577,12 +645,37 @@ function ciz(basaDon = true) {
 window.addEventListener("hashchange", () => ciz(true));
 
 document.addEventListener("click", (ev) => {
-  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],[data-plan],#sifirla,[data-gorunum],[data-marka-yeni],[data-marka-duzenle],[data-marka-iptal],[data-sil-sor],[data-sil-vazgec],[data-marka-sil],[data-kisi-sec]");
+  const t = ev.target.closest("[data-bagla],[data-kopar],[data-senaryo],[data-kapsam],[data-plan],#sifirla,[data-gorunum],[data-marka-yeni],[data-marka-duzenle],[data-marka-iptal],[data-sil-sor],[data-sil-vazgec],[data-marka-sil],[data-kisi-sec],[data-secim],[data-en-ucuz],[data-secim-sifirla],[data-yedek-indir]");
   if (!t) return;
   const d = t.dataset;
   if (d.gorunum) { ui.gorunum = d.gorunum; return ciz(false); }
   if ("markaYeni" in d) { ui.form = { durum: "iyi", sorumlu: depo.mod === "ortak" ? depo.benId : undefined }; ciz(false); return document.getElementById("m-ad")?.focus(); }
-  if (d.markaDuzenle) { ui.form = { ...depo.liste.find((m) => m.id === d.markaDuzenle) }; ciz(false); return document.getElementById("m-ad")?.focus(); }
+  if (d.markaDuzenle) {
+    ui.form = { ...depo.liste.find((m) => m.id === d.markaDuzenle) };
+    if (sekme() !== "markalar") { location.hash = "#markalar"; return; }
+    ciz(false);
+    return document.getElementById("m-ad")?.focus();
+  }
+  if (d.secim) {
+    durum.secimler = { ...durum.secimler };
+    if (d.secim === durum.plan) delete durum.secimler[d.arac];
+    else durum.secimler[d.arac] = d.secim;
+    kaydet();
+    return ciz(false);
+  }
+  if ("enUcuz" in d) {
+    const yeni = {};
+    for (const e of plandakiler(durum.plan)) {
+      const enIyi = Object.keys(SECIM_AD).reduce((a, k) => (tutar(secenek(e, k)) < tutar(secenek(e, a)) ? k : a), durum.plan);
+      if (enIyi !== durum.plan) yeni[e.id] = enIyi;
+    }
+    durum.secimler = yeni;
+    kaydet();
+    bildir(`En ucuz kombinasyon: ${para(toplamMaliyet())}/ay`);
+    return ciz(false);
+  }
+  if ("secimSifirla" in d) { durum.secimler = {}; kaydet(); bildir("Plan varsayılanına dönüldü"); return ciz(false); }
+  if ("yedekIndir" in d) return yedekIndir();
   if ("markaIptal" in d) { ui.form = null; return ciz(false); }
   if (d.silSor) { ui.silOnay = d.silSor; return ciz(false); }
   if ("silVazgec" in d) { ui.silOnay = null; return ciz(false); }
@@ -599,7 +692,14 @@ document.addEventListener("click", (ev) => {
   else if (t.dataset.kopar) kopar(t.dataset.kopar);
   else if (t.dataset.senaryo) { ui.senaryo = Number(t.dataset.senaryo); ui.olay = null; ciz(false); }
   else if (t.dataset.kapsam) { durum.kapsam = t.dataset.kapsam; kaydet(); ciz(false); }
-  else if (t.dataset.plan) { durum.plan = t.dataset.plan; kaydet(); bildir(`${PLANLAR[durum.plan].ad} plana geçildi`); ciz(false); }
+  else if (t.dataset.plan) {
+    const ozel = ozelSecimSayisi();
+    durum.plan = t.dataset.plan;
+    durum.secimler = {};
+    kaydet();
+    bildir(`${PLANLAR[durum.plan].ad} plana geçildi${ozel ? ", özel seçimler sıfırlandı" : ""}`);
+    ciz(false);
+  }
 });
 
 // Açık sistem kartı yeniden çizimde açık kalsın
@@ -625,7 +725,10 @@ document.addEventListener("submit", (ev) => {
 });
 document.addEventListener("focusin", (ev) => { if (ev.target.id === "m-kisi-ara") kisiAra(ev.target.value); });
 // Yerel modda adını yazınca liste güncellensin (yazarken değil, alandan çıkınca)
-document.addEventListener("change", (ev) => { if (ev.target.id === "m-benim") ciz(false); });
+document.addEventListener("change", (ev) => {
+  if (ev.target.id === "m-benim") ciz(false);
+  if (ev.target.id === "yedek-dosya" && ev.target.files[0]) yedekYukle(ev.target.files[0]);
+});
 
 ciz(false);
 depoBaslat();
