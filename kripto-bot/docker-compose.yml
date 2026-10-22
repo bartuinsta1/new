@@ -1,0 +1,9 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./state:/app/state      # pozisyonlar ve sanal cüzdan
+      - ./vault:/app/vault      # Obsidian vault (bot buraya yazar)
+      - ./config.yaml:/app/config.yaml:ro

@@ -1,0 +1,92 @@
+# Kripto Al-Sat Botu ayarları.
+# Bu dosyayı config.yaml olarak kopyalayın: cp config.example.yaml config.yaml
+# API anahtarları buraya DEĞİL .env dosyasına yazılır.
+
+# paper = sanal para ile gerçek fiyatlardan işlem (varsayılan, güvenli)
+# live  = borsada gerçek emir. Sadece paper modda haftalarca test ettikten sonra açın.
+mode: paper
+
+exchange:
+  id: binance            # ccxt borsa kimliği: binance, bybit, okx, kucoin, gateio, mexc ...
+  quote: USDT            # işlem yapılan karşı para
+  sandbox: false         # borsanın testnet'i varsa true
+  paper_start_balance: 100.0
+  fee_rate: 0.001        # %0.1 komisyon (paper modda simülasyon için)
+  slippage: 0.002        # %0.2 kayma (paper modda simülasyon için)
+
+universe:
+  # Boş bırakılırsa bot hacme göre otomatik tarama yapar.
+  symbols: []            # örn: [SOL/USDT, PEPE/USDT, WIF/USDT]
+  min_quote_volume_24h: 3000000   # 24s hacmi 3M $ altındaki coinler elenir (likidite)
+  max_symbols: 40                  # taranacak en fazla coin
+  min_price_change_24h: -15.0      # 24s'te %15'ten fazla düşenler elenir
+  exclude: [USDC/USDT, FDUSD/USDT, TUSD/USDT, DAI/USDT, USDP/USDT, EUR/USDT, WBTC/USDT]
+  exclude_patterns: [UP/, DOWN/, BULL/, BEAR/]   # kaldıraçlı tokenlar
+
+timeframe: 1h            # analiz mum aralığı
+lookback_candles: 300    # analiz için çekilecek mum sayısı (EMA200 için en az 210)
+
+position:
+  stake_min_usd: 10.0    # en düşük giriş
+  stake_max_usd: 15.0    # en yüksek giriş (skor yükseldikçe 10'dan 15'e çıkar)
+  max_open_positions: 5
+  max_total_exposure_usd: 75.0
+  daily_loss_limit_usd: 20.0     # gün içinde bu kadar zarar edilirse yeni alım durur
+  cooldown_hours_after_loss: 12  # stop olan coine bu süre tekrar girilmez
+
+exits:
+  stop_loss_pct: 0.25            # girişten %25 düşerse kesin sat
+  take_profit:                   # kademeli kâr alma (multiple = giriş fiyatının katı)
+    - {multiple: 2.0, sell_fraction: 0.5}   # 2x'te pozisyonun yarısı
+    - {multiple: 3.0, sell_fraction: 1.0}   # 3x'te kalan hepsi
+  trailing:
+    activate_gain: 0.40          # %40 kâra ulaşınca iz süren stop devreye girer
+    trail_pct: 0.20              # zirveden %20 geri çekilirse sat
+  breakeven_after_gain: 0.25     # %25 kâr görülünce stop giriş fiyatına çekilir
+  profit_protect:                # "olası artıdayken sat": kârdayken analiz bozulursa çık
+    min_gain: 0.08               # en az %8 kârdayken
+    exit_below_score: -10        # yeni analiz skoru bunun altına düşerse sat
+  max_hold_hours: 336            # 14 gün sonunda kâr/zarar ne olursa olsun çık
+
+analysis:
+  buy_threshold: 40              # -100..+100 arası toplam skor; bu ve üstü AL adayı
+  weights:                       # toplam skora katkı oranları
+    technical: 0.55
+    news: 0.25
+    market: 0.20
+  rsi_veto: 85                   # RSI bunun üstündeyse alım yok (tepeden alma)
+  max_spread_pct: 0.006          # alış-satış farkı %0.6'dan büyükse girme
+  btc_dump_veto_pct: -6.0        # BTC 24s'te %6'dan fazla düştüyse hiç alım yapma
+
+news:
+  enabled: true
+  lookback_hours: 48
+  half_life_hours: 12            # haberin etkisi 12 saatte yarıya iner
+  rss_feeds:
+    - https://www.coindesk.com/arc/outboundfeeds/rss/
+    - https://cointelegraph.com/rss
+    - https://decrypt.co/feed
+    - https://bitcoinmagazine.com/.rss/full/
+  cryptopanic: true              # CRYPTOPANIC_TOKEN .env'de varsa kullanılır
+  fear_greed: true               # alternative.me Korku & Açgözlülük endeksi
+  llm:
+    enabled: false               # true + ANTHROPIC_API_KEY => haberler Claude ile yorumlanır
+    model: claude-opus-5-5
+    effort: low
+    max_items: 15
+
+obsidian:
+  vault_path: ./vault
+  write_trades: true
+  write_daily: true
+  write_coin_notes: true
+  scan_top_n: 8                  # günlük nota yazılacak en iyi aday sayısı
+
+notify:
+  telegram: true                 # TELEGRAM_BOT_TOKEN ve TELEGRAM_CHAT_ID .env'de varsa
+  webhook: true                  # WEBHOOK_URL (Discord/Slack/n8n/Zapier) .env'de varsa
+
+loop:
+  interval_seconds: 300          # her 5 dakikada bir tur
+
+state_dir: ./state
