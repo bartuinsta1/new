@@ -122,6 +122,39 @@ def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | No
     return res
 
 
+def load_file(path: str) -> pd.DataFrame:
+    """Elle indirilen veriyi okur:
+    - Binance API cevabı (JSON dizi: /api/v3/klines), metin olarak yapıştırılmış hali dahil
+    - data.binance.vision CSV / ZIP (başlıksız, zaman ms veya µs)
+    - Başlıklı CSV: ts,open,high,low,close,volume
+    """
+    import io
+    import json
+    import zipfile
+    raw = open(path, "rb").read()
+    if raw[:2] == b"PK":
+        with zipfile.ZipFile(io.BytesIO(raw)) as z:
+            raw = z.read(z.namelist()[0])
+    text = raw.decode("utf-8-sig").strip()
+    start = text.find("[[")
+    if start != -1:
+        rows = json.loads(text[start: text.rfind("]]") + 2])
+    else:
+        rows = []
+        for line in text.splitlines():
+            parts = line.replace(";", ",").split(",")
+            try:
+                rows.append([float(x) for x in parts[:6]])
+            except ValueError:
+                continue  # başlık satırı
+    rows = [[float(x) for x in r[:6]] for r in rows]
+    for r in rows:
+        while r[0] > 1e14:  # µs / ns -> ms
+            r[0] /= 1000
+    uniq = {r[0]: r for r in rows}
+    return ohlcv_to_df([uniq[k] for k in sorted(uniq)])
+
+
 def warmup_days(timeframe: str, hours: float) -> float:
     """Son `hours` saati test etmek için gereken veri (EMA200 ısınması için +220 mum)."""
     return (hours * 3_600_000 + 220 * TF_MS[timeframe]) / 86_400_000

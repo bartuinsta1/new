@@ -25,7 +25,8 @@ def main(argv=None):
     ap.add_argument("--days", type=float, default=90)
     ap.add_argument("--hours", type=float, help="backtest: sadece son N saatte alım aç (öncesi ısınma)")
     ap.add_argument("--top", type=int, help="backtest: 24s hacmi en yüksek N coini test et")
-    ap.add_argument("--csv", help="backtest için ts,open,high,low,close,volume CSV (ts milisaniye)")
+    ap.add_argument("--csv", "--file", dest="csv", nargs="+",
+                    help="backtest için dosya(lar): Binance JSON, Binance CSV/ZIP ya da ts,open,high,low,close,volume CSV")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
 
@@ -40,8 +41,9 @@ def main(argv=None):
         from .journal import Journal
         days = backtest.warmup_days(cfg["timeframe"], args.hours) if args.hours else args.days
         if args.csv:
-            from .indicators import ohlcv_to_df
-            data = {args.symbol or "CSV": ohlcv_to_df(pd.read_csv(args.csv).iloc[:, :6].values.tolist())}
+            import os
+            names = args.symbols if len(args.symbols) == len(args.csv) else [os.path.basename(f).split(".")[0] for f in args.csv]
+            data = {n: backtest.load_file(f) for n, f in zip(names, args.csv)}
         else:
             from .engine import Bot
             from .exchange import CcxtExchange
