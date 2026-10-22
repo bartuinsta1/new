@@ -37,6 +37,7 @@ python -m bot run                       # sürekli çalış
 python -m bot status                    # bakiye, açık pozisyonlar, kazanma oranı
 python -m bot backtest SOL/USDT --days 180   # geçmiş veride test (teknik blok)
 python -m bot backtest X/USDT --csv veri.csv # kendi verinle test
+python -m bot backtest --top 20 --hours 72   # hacimce ilk 20 coin, son 72 saat; kârlıysa yapılacaklar listesini basar
 ```
 Docker ile sunucuda: `docker compose up -d --build` (önce `config.yaml` ve `.env` oluştur).
 

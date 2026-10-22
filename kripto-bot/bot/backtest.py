@@ -69,7 +69,8 @@ class Result:
         return "\n".join(lines)
 
 
-def run(symbol: str, raw: pd.DataFrame, cfg: dict) -> Result:
+def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | None = None) -> Result:
+    """trade_from verilirse öncesi sadece gösterge ısınması için kullanılır, alım o andan sonra açılır."""
     df = add_indicators(raw)
     fee = cfg["exchange"]["fee_rate"] + cfg["exchange"]["slippage"]
     res = Result(symbol)
@@ -111,7 +112,7 @@ def run(symbol: str, raw: pd.DataFrame, cfg: dict) -> Result:
                         close_part(bar["close"], a.fraction, a.reason, ts)
         else:
             d = decide(symbol, df, cfg, i=i)
-            if d.verdict == "AL":
+            if d.verdict == "AL" and (trade_from is None or ts >= trade_from):
                 stake = risk.stake_for(d.score, cfg)
                 entry = bar["close"] * (1 + fee)
                 pos = Position(symbol, entry, stake / entry, stake, now, d.score, stop_price=risk.initial_stop(entry, cfg))
@@ -119,3 +120,45 @@ def run(symbol: str, raw: pd.DataFrame, cfg: dict) -> Result:
     if pos is not None:
         close_part(df["close"].iloc[-1], 1.0, "test sonu", df.index[-1])
     return res
+
+
+def warmup_days(timeframe: str, hours: float) -> float:
+    """Son `hours` saati test etmek için gereken veri (EMA200 ısınması için +220 mum)."""
+    return (hours * 3_600_000 + 220 * TF_MS[timeframe]) / 86_400_000
+
+
+@dataclass
+class Summary:
+    results: list[Result]
+
+    @property
+    def trades(self) -> list[dict]:
+        return [t for r in self.results for t in r.trades]
+
+    @property
+    def pnl(self) -> float:
+        return sum(t["pnl"] for t in self.trades)
+
+    @property
+    def profit_factor(self) -> float:
+        win = sum(t["pnl"] for t in self.trades if t["pnl"] > 0)
+        loss = -sum(t["pnl"] for t in self.trades if t["pnl"] <= 0)
+        return win / loss if loss else (float("inf") if win else 0.0)
+
+    @property
+    def invested(self) -> float:
+        return sum(abs(t["pnl"] / t["pct"] * 100) for t in self.trades if t["pct"])
+
+    def is_high(self, cfg: dict) -> bool:
+        b = cfg["backtest"]
+        return (len(self.trades) >= b["min_trades"] and self.pnl > 0 and self.profit_factor >= b["good_profit_factor"]
+                and self.invested and self.pnl / self.invested * 100 >= b["good_return_pct"])
+
+    def report(self) -> str:
+        n = len(self.trades)
+        if not n:
+            return "TOPLAM: hiç işlem açılmadı."
+        wins = sum(1 for t in self.trades if t["pnl"] > 0)
+        ret = self.pnl / self.invested * 100 if self.invested else 0
+        return (f"TOPLAM: {len(self.results)} coin · {n} işlem · kazanan %{wins/n*100:.0f} · net {self.pnl:+.2f} $ "
+                f"(yatırılana göre %{ret:+.1f}) · kâr faktörü {self.profit_factor:.2f}")

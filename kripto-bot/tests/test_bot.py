@@ -246,3 +246,18 @@ def test_news_watch_sells_on_red_flag_and_buys_on_good_news(cfg):
     news.queue = [_item("ABC surges after Binance listing and major partnership")]
     assert bot.news_watch() == 1
     assert bot.store.has_open("ABC/USDT")
+
+
+def test_backtest_window_and_todo(cfg):
+    import pandas as pd
+    from shutil import copytree
+    from pathlib import Path
+    cfg["analysis"]["buy_threshold"] = 20
+    raw = ohlcv_to_df(make_ohlcv(n=900, drift=0.003, vol=0.03, seed=7))
+    start = raw.index[-1] - pd.Timedelta(hours=72)
+    res = backtest.run("X/USDT", raw, cfg, trade_from=start)
+    assert all(t["open"] >= start for t in res.trades)
+    s = backtest.Summary([res])
+    assert isinstance(s.report(), str) and isinstance(s.is_high(cfg), bool)
+    copytree(Path(__file__).resolve().parent.parent / "vault", cfg["obsidian"]["vault_path"])
+    assert "BOT_MODE=live" in Journal(cfg).todo()

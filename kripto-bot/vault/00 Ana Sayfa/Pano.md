@@ -14,7 +14,7 @@ Bu vault botun hafızası ve senin karar defterin. Bot her işlemi, analizi ve g
 - **Analiz:** [[Göstergeler]] · [[Haber Analizi]] · [[Kırmızı Bayraklar]] · [[Piyasa Bağlamı]]
 - **Risk:** [[Risk Yönetimi]] · [[Pozisyon Büyüklüğü]] · [[Çıkış Kuralları]] · [[Kara Liste]]
 - **Kayıtlar:** [[İşlem Günlüğü]] · [[Dersler]]
-- **Kurulum:** [[Entegrasyon]] · [[Canlıya Geçiş Kontrol Listesi]]
+- **Kurulum:** [[Yapılacaklar]] · [[Entegrasyon]] · [[Canlıya Geçiş Kontrol Listesi]]
 
 ## Açık pozisyonlar
 > Dataview eklentisi gerekir (Ayarlar → Topluluk eklentileri → Dataview).

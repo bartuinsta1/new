@@ -97,4 +97,9 @@ notify:
 loop:
   interval_seconds: 300          # her 5 dakikada bir tur
 
+backtest:                        # "kârlılık yüksek" sayılma şartları (hepsi birden)
+  min_trades: 5
+  good_profit_factor: 1.5        # toplam kazanç / toplam kayıp
+  good_return_pct: 10.0          # net kâr / yatırılan toplam tutar
+
 state_dir: ./state

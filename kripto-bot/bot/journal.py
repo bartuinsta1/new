@@ -59,6 +59,16 @@ class Journal:
     def watchlist(self) -> list[str]:
         return self._symbols_in("01 Strateji/İzleme Listesi.md")
 
+    def todo(self) -> str:
+        """09 Entegrasyon/Yapılacaklar.md içindeki liste (frontmatter hariç)."""
+        path = self.root / "09 Entegrasyon/Yapılacaklar.md"
+        if not path.exists():
+            return "(vault'ta 09 Entegrasyon/Yapılacaklar.md yok)"
+        text = path.read_text(encoding="utf-8")
+        if text.startswith("---"):
+            text = text.split("---", 2)[2]
+        return "\n".join(l for l in text.strip().splitlines() if not l.startswith("# "))
+
     # ---------- yazma ----------
     def _write(self, rel: str, text: str):
         path = self.root / rel
