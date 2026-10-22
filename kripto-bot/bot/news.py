@@ -112,6 +112,8 @@ class NewsAnalyzer:
         self.secrets = cfg.get("secrets", {})
         self.get = http_get or (lambda url, **kw: requests.get(url, timeout=10, headers={"User-Agent": "kripto-bot/1.0"}, **kw))
         self._feed_cache: tuple[float, list[dict]] | None = None
+        self._seen: set[str] = set()
+        self._watch_since = _now() - 15 * 60  # ilk turda son 15 dakikanın haberlerini de değerlendir
         self._llm_cache: dict[str, dict] = {}
         self._llm = llm_client
         if self._llm is None and self.ncfg["llm"]["enabled"] and self.secrets.get("anthropic_api_key"):
@@ -120,7 +122,7 @@ class NewsAnalyzer:
 
     # ---------- kaynaklar ----------
     def fetch_rss(self) -> list[dict]:
-        if self._feed_cache and _now() - self._feed_cache[0] < 600:
+        if self._feed_cache and _now() - self._feed_cache[0] < max(20, self.ncfg.get("poll_seconds", 60) - 5):
             return self._feed_cache[1]
         import feedparser
         items = []
@@ -160,6 +162,49 @@ class NewsAnalyzer:
                 "source": "cryptopanic", "votes": {k: votes.get(k, 0) for k in ("positive", "negative", "important", "toxic")},
             })
         return out
+
+    def fetch_cryptopanic_latest(self) -> list[dict]:
+        """Coin filtresi olmadan en son haberler (anlık takip için)."""
+        token = self.secrets.get("cryptopanic_token")
+        if not (self.ncfg.get("cryptopanic") and token):
+            return []
+        try:
+            data = self.get(f"https://cryptopanic.com/api/developer/v2/posts/?auth_token={token}&public=true").json()
+        except Exception as exc:
+            log.warning("CryptoPanic okunamadı: %s", exc)
+            return []
+        out = []
+        for p in data.get("results", [])[:50]:
+            codes = [c.get("code", "") for c in (p.get("instruments") or p.get("currencies") or []) if isinstance(c, dict)]
+            # Haberin etiketlediği coinleri başlığa $KOD olarak ekle ki mentions() yakalasın
+            out.append({"title": p.get("title", ""), "summary": " ".join(f"${c}" for c in codes),
+                        "url": p.get("url", "") or p.get("original_url", ""), "ts": _parse_time(p.get("published_at")) or _now(),
+                        "source": "cryptopanic-akış"})
+        return out
+
+    def new_items(self) -> list[dict]:
+        """Daha önce görülmemiş, son taramadan beri yayınlanmış haberler (en yenisi önce)."""
+        out = []
+        for it in self.fetch_rss() + self.fetch_cryptopanic_latest():
+            key = (it.get("url") or it["title"]).strip().lower()
+            if key in self._seen:
+                continue
+            self._seen.add(key)
+            if it["ts"] >= self._watch_since:
+                out.append(it)
+        self._watch_since = _now() - 120  # saat farkı / geç yayınlanan RSS için 2 dk pay
+        return sorted(out, key=lambda x: -x["ts"])
+
+    def score_item(self, item: dict, base: str) -> tuple[float, list[str]]:
+        """Tek haber için duygu (-1..+1) ve kırmızı bayraklar. Claude açıksa onunla."""
+        if self._llm:
+            llm = self._llm_scores(base, [item])
+            if llm:
+                d = llm["items"][0]
+                return d["sentiment"], ([d.get("reason") or "LLM kırmızı bayrak"] if d["red_flag"] else [])
+        s, flags = lexicon_score(f"{item['title']} {item['summary']}")
+        # Bayrak sadece başlıkta coin geçiyorsa geçerli (başka projenin hack haberi bizi sattırmasın)
+        return s, flags if mentions(item["title"], base) or f"${base}" in item["summary"] else []
 
     def fear_greed(self) -> Optional[int]:
         if not self.ncfg.get("fear_greed"):

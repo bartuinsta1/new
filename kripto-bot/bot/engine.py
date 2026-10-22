@@ -29,6 +29,7 @@ class Bot:
         self.notify = notifier or Notifier(cfg)
         self.store = store or Store(cfg["state_dir"])
         self.quote = cfg["exchange"]["quote"]
+        self._last_universe: list[str] = []
 
     # ---------- veri ----------
     def candles(self, symbol: str):
@@ -137,9 +138,53 @@ class Bot:
                 self.sell(pos, act.fraction, act.reason, price)
             self.store.save()
 
+    def news_watch(self) -> int:
+        """Anlık haber takibi: yeni haberleri okur, elindeki coinde kötü haber varsa hemen satar,
+        izlenen bir coinde güçlü olumlu haber varsa beklemeden tam analiz yapıp uygunsa alır."""
+        w = self.cfg["news"]["watch"]
+        items = self.news.new_items()
+        if not items:
+            return 0
+        open_by_base = {coin_name(p.symbol): p for p in self.store.open_positions()}
+        bases = set(open_by_base) | {coin_name(s) for s in self._last_universe}
+        from .news import mentions
+        tickers = None
+        acted = 0
+        for it in items:
+            text = f"{it['title']} {it['summary']}"
+            for base in [b for b in bases if mentions(text, b)]:
+                score, flags = self.news.score_item(it, base)
+                self.journal.daily(f"📰 [[{base}]] {score:+.2f}{' 🚩' if flags else ''} [{it['title'][:100]}]({it['url']})")
+                pos = open_by_base.get(base)
+                if pos and pos.is_open:
+                    tickers = tickers or self.ex.fetch_tickers()
+                    price = (tickers.get(pos.symbol) or self.ex.fetch_ticker(pos.symbol))["last"]
+                    if flags and w["sell_on_red_flag"]:
+                        self.sell(pos, 1.0, f"acil haber çıkışı: {it['title'][:80]} ({', '.join(flags[:2])})", price)
+                        acted += 1
+                    elif score <= w["sell_below_sentiment"] and pos.gain(price) > 0:
+                        self.sell(pos, 1.0, f"kötü haber, kârdayken çık: {it['title'][:80]}", price)
+                        acted += 1
+                elif not pos and score >= w["buy_trigger_sentiment"] and not flags:
+                    sym = f"{base}/{self.quote}"
+                    tickers = tickers or self.ex.fetch_tickers()
+                    if sym not in tickers:
+                        continue
+                    try:
+                        d = self.analyze(sym, tickers, self.market_context(tickers))
+                    except Exception as exc:
+                        log.warning("%s haber sonrası analiz edilemedi: %s", sym, exc)
+                        continue
+                    log.info("Haber tetikledi: %s", d.summary())
+                    self.journal.coin_analysis(d)
+                    if d.verdict == "AL" and self.buy(d):
+                        acted += 1
+        return acted
+
     def scan(self, tickers: dict, ctx: dict) -> list[Decision]:
         decisions = []
-        for sym in self.universe(tickers):
+        self._last_universe = self.universe(tickers)
+        for sym in self._last_universe:
             if self.store.has_open(sym):
                 continue
             try:
@@ -167,17 +212,24 @@ class Bot:
 
     def run_forever(self):
         interval = self.cfg["loop"]["interval_seconds"]
-        self.notify.send(f"Bot başladı ({self.cfg['exchange']['id']}, {self.cfg['timeframe']}, her {interval}s)", "start")
+        poll = self.cfg["news"]["poll_seconds"]
+        watch = self.cfg["news"]["enabled"] and self.cfg["news"]["watch"]["enabled"]
+        self.notify.send(f"Bot başladı ({self.cfg['exchange']['id']}, {self.cfg['timeframe']}, tam tur her {interval}s"
+                         + (f", haber takibi her {poll}s)" if watch else ")"), "start")
+        last_full = 0.0
         while True:
-            started = time.time()
             try:
-                self.run_once()
+                if time.time() - last_full >= interval:
+                    last_full = time.time()
+                    self.run_once()
+                elif watch:
+                    self.news_watch()
             except KeyboardInterrupt:
                 raise
             except Exception as exc:
                 log.exception("Tur hatası: %s", exc)
                 self.notify.send(f"Hata: {exc}", "error")
-            time.sleep(max(5, interval - (time.time() - started)))
+            time.sleep(poll if watch else max(5, interval - (time.time() - last_full)))
 
     def status(self, tickers: dict | None = None) -> str:
         tickers = tickers or {}

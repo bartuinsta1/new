@@ -203,3 +203,46 @@ def test_backtest_runs(cfg):
     res = backtest.run("X/USDT", ohlcv_to_df(make_ohlcv(n=900, drift=0.003, vol=0.03, seed=7)), cfg)
     assert isinstance(res.report(), str)
     assert len(res.equity) == 900 - 210
+
+
+class QueueNews(NoNews):
+    """Sırayla verilen haberleri 'yeni haber' olarak döndürür, gerçek sözlükle puanlar."""
+
+    def __init__(self, cfg):
+        self.real = NewsAnalyzer(cfg, http_get=lambda *a, **k: None)
+        self.queue = []
+
+    def new_items(self):
+        out, self.queue = self.queue, []
+        return out
+
+    def score_item(self, item, base):
+        return self.real.score_item(item, base)
+
+
+def _item(title):
+    return {"title": title, "summary": "", "url": f"https://n/{abs(hash(title))}", "ts": time.time(), "source": "test"}
+
+
+def test_news_watch_sells_on_red_flag_and_buys_on_good_news(cfg):
+    cfg["analysis"]["buy_threshold"] = -100
+    cfg["analysis"]["rsi_veto"] = 101
+    cfg["universe"]["symbols"] = ["XYZ/USDT"]
+    m = FakeMarket({"XYZ/USDT": make_ohlcv(), "ABC/USDT": make_ohlcv(seed=4)})
+    news = QueueNews(cfg)
+    bot = Bot(cfg, exchange=PaperExchange(cfg, m), news=news, notifier=SilentNotifier())
+    bot.run_once()
+    pos = bot.store.open_positions()[0]
+    assert pos.symbol == "XYZ/USDT"
+
+    news.queue = [_item("Another protocol hacked, ABC not affected")]  # bizim coin değil
+    assert bot.news_watch() == 0 and pos.is_open
+
+    news.queue = [_item("XYZ bridge exploited, $30M drained")]
+    assert bot.news_watch() == 1
+    assert not pos.is_open and "acil haber" in pos.exit_reasons[-1]
+
+    bot._last_universe = ["ABC/USDT"]
+    news.queue = [_item("ABC surges after Binance listing and major partnership")]
+    assert bot.news_watch() == 1
+    assert bot.store.has_open("ABC/USDT")

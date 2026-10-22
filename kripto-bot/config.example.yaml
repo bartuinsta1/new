@@ -67,6 +67,14 @@ news:
     - https://cointelegraph.com/rss
     - https://decrypt.co/feed
     - https://bitcoinmagazine.com/.rss/full/
+    - https://www.theblock.co/rss.xml
+    - https://cryptoslate.com/feed/
+  poll_seconds: 60               # anlık takip: haber kaynakları her 60 saniyede okunur
+  watch:                         # tam turları beklemeden habere tepki
+    enabled: true
+    sell_on_red_flag: true       # elindeki coinde hack/delist/dava haberi -> hemen hepsini sat
+    sell_below_sentiment: -0.5   # elindeki coinde çok olumsuz haber ve kârdaysan -> sat
+    buy_trigger_sentiment: 0.5   # izlenen coinde çok olumlu haber -> hemen tam analiz, uygunsa al
   cryptopanic: true              # CRYPTOPANIC_TOKEN .env'de varsa kullanılır
   fear_greed: true               # alternative.me Korku & Açgözlülük endeksi
   llm:

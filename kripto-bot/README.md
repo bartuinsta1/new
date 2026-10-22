@@ -14,7 +14,7 @@ her 5 dk ─► açık pozisyonlar: stop / 2x'te %50 sat / 3x'te hepsini sat / i
 | Blok | Ağırlık | Hesaplananlar |
 |---|---|---|
 | Teknik | %55 | EMA20/50/200, RSI, MACD, ADX/±DI, Bollinger (%B, sıkışma), ATR %, hacim oranı, OBV, 24 mum momentum, 50 mum zirvesi |
-| Haber | %25 | RSS (CoinDesk, Cointelegraph, Decrypt, Bitcoin Magazine), CryptoPanic, zaman ağırlıklı duygu, kırmızı bayrak vetosu, isteğe bağlı Claude ile yorum |
+| Haber | %25 | Her 60 sn anlık takip (elindeki coinde hack/delist haberi → anında sat), RSS (CoinDesk, Cointelegraph, Decrypt, Bitcoin Magazine), CryptoPanic, zaman ağırlıklı duygu, kırmızı bayrak vetosu, isteğe bağlı Claude ile yorum |
 | Piyasa | %20 | BTC 24s ve trend, Korku & Açgözlülük endeksi, likidite, spread, 24s pompa |
 
 ## Kurulum

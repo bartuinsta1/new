@@ -19,6 +19,15 @@ Kod: `bot/news.py`
 4. Haber bloğu puanı = 20 × ortalama duygu (+ 5 puan "gündemde ve olumlu" bonusu).
 5. Son 24 saatte başlıkta coin + [[Kırmızı Bayraklar|kırmızı bayrak]] varsa → **veto**.
 
+## Anlık takip (her 60 sn)
+Tam tarama 5 dakikada bir yapılır. Arada bot her 60 saniyede bir tüm kaynaklardaki **yeni** haberleri okur (`news.poll_seconds`, `news.watch`):
+- **Elindeki coin** başlıkta [[Kırmızı Bayraklar|kırmızı bayrakla]] geçiyorsa → **hemen hepsini satar** ("acil haber çıkışı").
+- Elindeki coin hakkında çok olumsuz haber (duygu ≤ −0.5) ve pozisyon kârdaysa → satar.
+- Taranan/izlenen bir coin hakkında çok olumlu haber (≥ +0.5) → 5 dakikayı beklemeden tam analiz yapar, skor yeterliyse alır. Haber tek başına alım sebebi değildir, teknik ve piyasa da onaylamalı.
+- İlgili her haber günlük nota 📰 satırı olarak düşer.
+
+Gerçek anlık için en iyi kaynak CryptoPanic (token gerekir); RSS'ler genelde 1–10 dakika gecikmeli yayınlar.
+
 ## Sınırlar
 - Sözlük yöntemi alaycılığı, "hack iddiaları yalanlandı" gibi cümleleri yanlış okuyabilir. Önemli kararlar için Claude modunu aç.
 - Haber çoğu zaman fiyattan sonra gelir. Haber bloğu daha çok **frende** işe yarar (kötü haberde girme), gaz pedalı olarak değil.
