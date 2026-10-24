@@ -261,3 +261,17 @@ def test_backtest_window_and_todo(cfg):
     assert isinstance(s.report(), str) and isinstance(s.is_high(cfg), bool)
     copytree(Path(__file__).resolve().parent.parent / "vault", cfg["obsidian"]["vault_path"])
     assert "BOT_MODE=live" in Journal(cfg).todo()
+
+
+def test_backtest_time_exit_is_priced_at_close_not_target(cfg):
+    """Süre dolunca çıkış kapanış fiyatından olmalı, 2x hedef fiyatından değil."""
+    import pandas as pd
+    cfg["analysis"]["buy_threshold"] = -100
+    cfg["analysis"]["rsi_veto"] = 101
+    cfg["exits"]["max_hold_hours"] = 5
+    raw = ohlcv_to_df(make_ohlcv(n=260, drift=0.0, vol=0.002, seed=3))
+    res = backtest.run("X/USDT", raw, cfg)
+    assert res.trades
+    for t in res.trades:
+        assert t["max_multiple"] < 2
+        assert t["pct"] < 50, t

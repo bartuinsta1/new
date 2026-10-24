@@ -22,7 +22,7 @@ TF_MS = {"1m": 60_000, "5m": 300_000, "15m": 900_000, "30m": 1_800_000, "1h": 3_
 def fetch_history(ex, symbol: str, timeframe: str, days: int) -> pd.DataFrame:
     """ccxt borsasından sayfalı geçmiş mum çeker."""
     step = TF_MS[timeframe]
-    since = int(time.time() * 1000) - days * 86_400_000
+    since = int(time.time() * 1000 - days * 86_400_000)
     rows: list = []
     while True:
         batch = ex.ex.fetch_ohlcv(symbol, timeframe=timeframe, since=since, limit=1000)
@@ -69,9 +69,26 @@ class Result:
         return "\n".join(lines)
 
 
-def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | None = None) -> Result:
+def btc_context(btc_raw: pd.DataFrame | None):
+    """Her mum zamanı için canlı botun kullandığı BTC bağlamı (24s değişim %, EMA50 üstü mü)."""
+    if btc_raw is None:
+        return lambda ts: {}
+    b = add_indicators(btc_raw)
+    chg = b["close"].pct_change(24) * 100
+    up = b["close"] > b["ema50"]
+
+    def ctx(ts):
+        if ts not in b.index:
+            return {}
+        return {"btc_change_24h": float(chg.loc[ts]), "btc_trend_up": bool(up.loc[ts])}
+    return ctx
+
+
+def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | None = None,
+        btc_raw: pd.DataFrame | None = None) -> Result:
     """trade_from verilirse öncesi sadece gösterge ısınması için kullanılır, alım o andan sonra açılır."""
     df = add_indicators(raw)
+    ctx_at = btc_context(btc_raw)
     fee = cfg["exchange"]["fee_rate"] + cfg["exchange"]["slippage"]
     res = Result(symbol)
     pos: Position | None = None
@@ -100,18 +117,20 @@ def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | No
                 close_part(min(bar["open"], pos.stop_price), 1.0, "iz süren stop" if pos.stop_price > pos.entry_price else "zarar kes", ts)
             else:
                 ladder, hits_before = cfg["exits"]["take_profit"], pos.tp_hits
-                for k, a in enumerate(risk.exit_actions(pos, bar["high"], now, None, cfg)):
+                # Mumun zirvesinde sadece kâr alma kademeleri kontrol edilir (zamanı açılışa sabitleyerek
+                # süre çıkışını, skor vermeyerek kârı koru çıkışını burada tetiklemiyoruz; onlar kapanışta).
+                for k, a in enumerate(risk.exit_actions(pos, bar["high"], pos.opened_at, None, cfg)):
                     if pos is None:
                         break
                     close_part(pos.entry_price * ladder[hits_before + k]["multiple"], a.fraction, a.reason, ts)
                 if pos is not None:
-                    score = decide(symbol, df, cfg, i=i).score
+                    score = decide(symbol, df, cfg, ctx_at(ts), i=i).score
                     for a in risk.exit_actions(pos, bar["close"], now, score, cfg):
                         if pos is None:
                             break
                         close_part(bar["close"], a.fraction, a.reason, ts)
         else:
-            d = decide(symbol, df, cfg, i=i)
+            d = decide(symbol, df, cfg, ctx_at(ts), i=i)
             if d.verdict == "AL" and (trade_from is None or ts >= trade_from):
                 stake = risk.stake_for(d.score, cfg)
                 entry = bar["close"] * (1 + fee)

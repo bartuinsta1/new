@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -47,12 +48,22 @@ class CcxtExchange:
         import ccxt
         ex_cfg, sec = cfg["exchange"], cfg["secrets"]
         klass = getattr(ccxt, ex_cfg["id"])
-        params = {"enableRateLimit": True, "options": {"defaultType": "spot"}}
+        params = {"enableRateLimit": True, "options": {"defaultType": "spot", "fetchMarkets": {"types": ["spot"]}}}
         if sec.get("api_key"):
             params.update(apiKey=sec["api_key"], secret=sec["api_secret"])
             if sec.get("api_password"):
                 params["password"] = sec["api_password"]
         self.ex = klass(params)
+        # Sistem proxy'si varsa kullan (ccxt bunu kendiliğinden okumaz)
+        proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+        if proxy:
+            self.ex.https_proxy = proxy
+            ca = os.environ.get("REQUESTS_CA_BUNDLE") or os.environ.get("SSL_CERT_FILE")
+            if ca:
+                self.ex.session.verify = ca
+        # Fiyat verisi için ayna adres (örn. Binance'in bölge engeli olan yerlerde data-api.binance.vision)
+        if ex_cfg.get("public_api_url"):
+            self.ex.urls["api"]["public"] = ex_cfg["public_api_url"]
         if ex_cfg.get("sandbox"):
             self.ex.set_sandbox_mode(True)
         self.quote = ex_cfg["quote"]

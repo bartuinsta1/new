@@ -61,10 +61,17 @@ def main(argv=None):
                     data[sym] = backtest.fetch_history(ex, sym, cfg["timeframe"], days)
                 except Exception as exc:
                     print(f"{sym}: veri alınamadı ({exc})")
+        btc_sym = f"BTC/{cfg['exchange']['quote']}"
+        btc_raw = data.get(btc_sym)
+        if btc_raw is None and not args.csv:
+            try:
+                btc_raw = backtest.fetch_history(ex, btc_sym, cfg["timeframe"], days)
+            except Exception as exc:
+                print(f"BTC verisi alınamadı, piyasa bağlamı olmadan test ediliyor ({exc})")
         results = []
         for sym, raw in data.items():
             start = raw.index[-1] - pd.Timedelta(hours=args.hours) if args.hours else None
-            res = backtest.run(sym, raw, cfg, trade_from=start)
+            res = backtest.run(sym, raw, cfg, trade_from=start, btc_raw=None if sym == btc_sym else btc_raw)
             results.append(res)
             print(res.report())
         summary = backtest.Summary(results)

@@ -10,6 +10,7 @@ exchange:
   id: binance            # ccxt borsa kimliği: binance, bybit, okx, kucoin, gateio, mexc ...
   quote: USDT            # işlem yapılan karşı para
   sandbox: false         # borsanın testnet'i varsa true
+  public_api_url: ""     # Binance "451" bölge hatası verirse: https://data-api.binance.vision/api/v3
   paper_start_balance: 100.0
   fee_rate: 0.001        # %0.1 komisyon (paper modda simülasyon için)
   slippage: 0.002        # %0.2 kayma (paper modda simülasyon için)
@@ -20,7 +21,10 @@ universe:
   min_quote_volume_24h: 3000000   # 24s hacmi 3M $ altındaki coinler elenir (likidite)
   max_symbols: 40                  # taranacak en fazla coin
   min_price_change_24h: -15.0      # 24s'te %15'ten fazla düşenler elenir
-  exclude: [USDC/USDT, FDUSD/USDT, TUSD/USDT, DAI/USDT, USDP/USDT, EUR/USDT, WBTC/USDT]
+  min_range_24h_pct: 1.0          # 24s'te en yüksek-en düşük farkı %1'den azsa (stablecoin vb.) atla
+  exclude: [USDC/USDT, FDUSD/USDT, TUSD/USDT, DAI/USDT, USDP/USDT, EUR/USDT, WBTC/USDT, USD1/USDT,
+            RLUSD/USDT, U/USDT, USDE/USDT, PYUSD/USDT, BFUSD/USDT, XUSD/USDT, EURI/USDT,
+            XAUT/USDT, PAXG/USDT, SNDKB/USDT, SOXLB/USDT, CRCLB/USDT]   # stablecoin, altın, hisse token'ları
   exclude_patterns: [UP/, DOWN/, BULL/, BEAR/]   # kaldıraçlı tokenlar
 
 timeframe: 1h            # analiz mum aralığı

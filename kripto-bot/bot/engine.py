@@ -64,6 +64,9 @@ class Bot:
                     continue
                 if (t.get("percentage") or 0) < u["min_price_change_24h"]:
                     continue
+                hi, lo, last = t.get("high"), t.get("low"), t.get("last")
+                if hi and lo and last and (hi - lo) / last * 100 < u.get("min_range_24h_pct", 0):
+                    continue
                 rows.append((t.get("quoteVolume") or 0, s))
             syms = [s for _, s in sorted(rows, reverse=True)[: u["max_symbols"]]]
             syms += [s for s in self.journal.watchlist() if s in tickers and s not in syms]
