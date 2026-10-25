@@ -275,3 +275,71 @@ def test_backtest_time_exit_is_priced_at_close_not_target(cfg):
     for t in res.trades:
         assert t["max_multiple"] < 2
         assert t["pct"] < 50, t
+
+
+def test_exchange_announcements_listing_and_delist(cfg):
+    from bot.news import extract_tickers
+    assert extract_tickers("Binance Will List Pudgy Penguins (PENGU) with Seed Tag Applied") == ["PENGU"]
+    assert extract_tickers("Binance Will Delist ALPACA, PDA, VIB, WING on 2025-05-02") == ["ALPACA", "PDA", "VIB", "WING"]
+    assert extract_tickers("[거래] 엑스와이지(XYZ) 원화 마켓 디지털 자산 추가") == ["XYZ"]
+
+    now_ms = int(time.time() * 1000)
+    payloads = {
+        "catalogId=48": {"data": {"catalogs": [{"articles": [{"title": "Binance Will List Foo (FOO)", "code": "a1", "releaseDate": now_ms}]}]}},
+        "catalogId=161": {"data": {"catalogs": [{"articles": [{"title": "Binance Will Delist BAR, BAZ on 2026-11-01", "code": "a2", "releaseDate": now_ms}]}]}},
+        "upbit": {"data": {"notices": []}},
+    }
+
+    class R:
+        def __init__(self, d):
+            self.d = d
+            self.content = b"<rss></rss>"
+
+        def json(self):
+            return self.d
+
+    def get(url, **kw):
+        for k, v in payloads.items():
+            if k in url:
+                return R(v)
+        return R({})
+
+    cfg["news"]["rss_feeds"] = []
+    na = NewsAnalyzer(cfg, http_get=get)
+    foo = na.analyze("FOO")
+    assert foo["count"] == 1 and foo["score"] > 0.8 and not foo["red_flags"]
+    bar = na.analyze("BAR")
+    assert bar["red_flags"] and bar["score"] < 0
+    items = na.new_items()
+    assert {it["kind"] for it in items} == {"listing", "delisting"}
+    s, flags = na.score_item(next(i for i in items if i["kind"] == "delisting"), "BAZ")
+    assert s == -1.0 and flags
+
+
+def test_news_log_writes_vault(cfg):
+    j = Journal(cfg)
+    j.news_log("[Foo listed](https://x) · FOO +0.90", ["FOO"])
+    from pathlib import Path
+    files = list((Path(cfg["obsidian"]["vault_path"]) / "03 Haber Analizi" / "Akış").glob("*.md"))
+    assert files and "[[FOO]]" in files[0].read_text()
+
+
+def test_portfolio_respects_limits_and_cache_roundtrip(cfg, tmp_path):
+    import pandas as pd
+    from bot.optimize import load_data  # noqa: F401  (import kontrolü)
+    cfg["analysis"]["buy_threshold"] = -100
+    cfg["analysis"]["rsi_veto"] = 101
+    pres = {f"C{i}/USDT": backtest.precompute(f"C{i}/USDT", ohlcv_to_df(make_ohlcv(n=400, vol=0.02, seed=i)), cfg) for i in range(8)}
+    any_df = next(iter(pres.values()))
+    res = backtest.run_portfolio(pres, cfg, any_df.index[210], any_df.index[-1])
+    # Aynı anda en fazla 5 pozisyon: ilk saatte açılanlar 5'i geçemez
+    first = min(t["open"] for t in res.trades)
+    assert sum(1 for t in res.trades if t["open"] == first) <= cfg["position"]["max_open_positions"]
+    # Önbellek biçimi: ms zaman damgası geri okununca aynı tarih
+    df = ohlcv_to_df(make_ohlcv(n=50))
+    out = df.reset_index()
+    out["ts"] = (out["ts"] - pd.Timestamp(0, tz="UTC")) // pd.Timedelta(milliseconds=1)
+    f = tmp_path / "c.csv"
+    out.to_csv(f, index=False)
+    back = backtest.load_file(str(f))
+    assert back.index[0] == df.index[0] and len(back) == len(df)

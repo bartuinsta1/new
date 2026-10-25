@@ -27,7 +27,7 @@ POSITIVE = {
     "partnership": 2, "partners with": 2, "listing": 2, "lists": 1, "listed on": 2, "launch": 1, "launches": 1,
     "upgrade": 1, "mainnet": 2, "approval": 2, "approved": 2, "etf": 1, "adoption": 2, "integrates": 1,
     "bullish": 2, "gains": 1, "jumps": 2, "climbs": 1, "inflows": 2, "accumulate": 1, "buyback": 2,
-    "burn": 1, "airdrop": 1, "institutional": 1, "invest": 1, "raises": 1, "funding": 1, "outperform": 1,
+    "burn": 1, "airdrop": 1, "rebound": 1, "rebounds": 1, "recovers": 1, "surpasses": 1, "breaks above": 2, "institutional": 1, "invest": 1, "raises": 1, "funding": 1, "outperform": 1,
     # TR
     "yükseliş": 2, "rekor": 2, "ortaklık": 2, "listelendi": 2, "onaylandı": 2, "yükseldi": 1, "fırladı": 2,
     "boğa": 2, "yatırım": 1, "entegrasyon": 1, "güncelleme": 1,
@@ -37,6 +37,7 @@ NEGATIVE = {
     "bearish": -2, "outflows": -2, "sell-off": -2, "selloff": -2, "liquidation": -1, "liquidations": -1,
     "investigation": -2, "probe": -2, "fine": -1, "fined": -2, "warning": -1, "concern": -1, "delay": -1,
     "delayed": -1, "outage": -2, "downtime": -2, "unlock": -1, "token unlock": -2, "whale sells": -2,
+    "slides": -1, "slips": -1, "under pressure": -1, "declines": -1, "breaks below": -2, "falls below": -2,
     "düşüş": -2, "çöktü": -2, "soruşturma": -2, "ceza": -2, "uyarı": -1, "satış baskısı": -2, "ayı": -1,
 }
 RED_FLAGS = [
@@ -61,6 +62,28 @@ NAMES = {
 }
 
 GENERIC_MARKET_WORDS = ["crypto market", "cryptocurrency market", "kripto piyasa"]
+
+
+# Borsa duyuruları: fiyatı en sert etkileyen haberler (listeleme = pompa, delist = çöküş)
+ANNOUNCEMENT_FEEDS = {
+    "binance-listeleme": "https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48&pageNo=1&pageSize=20",
+    "binance-delist": "https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=161&pageNo=1&pageSize=20",
+    "upbit": "https://api-manager.upbit.com/api/v1/announcements?os=web&page=1&per_page=20&category=trade",
+}
+NOT_TICKERS = {"BINANCE", "WILL", "LIST", "ADD", "AND", "ON", "THE", "FOR", "USDT", "USDC", "FDUSD", "TRY", "EUR", "BTC",
+               "BNB", "KRW", "SPOT", "MARGIN", "FUTURES", "USD", "USDⓈ", "PERPETUAL", "CONTRACT", "TRADING", "PAIRS", "OF",
+               "NEW", "SEED", "TAG", "ALPHA", "EARN", "HODLER", "AIRDROPS", "DELIST", "DELISTING", "NOTICE", "UTC", "AM", "PM"}
+LISTING_WORDS = ["will list", "will add", "will launch", "listing", "new cryptocurrency", "디지털 자산 추가", "신규 거래지원", "마켓 추가"]
+DELIST_WORDS = ["delist", "will remove", "cease trading", "거래지원 종료", "유의 종목", "유의종목"]
+
+
+def extract_tickers(title: str) -> list[str]:
+    """Duyuru başlığından coin sembolleri: önce parantez içi, yoksa büyük harfli kelimeler."""
+    found = re.findall(r"\(([A-Z0-9]{2,12})\)", title)
+    if not found:
+        found = [t for t in re.findall(r"\b[A-Z][A-Z0-9]{1,11}\b", title) if t not in NOT_TICKERS]
+    found = [re.sub(r"(USDT|USDC|FDUSD)$", "", t) if len(t) > 6 and re.search(r"(USDT|USDC|FDUSD)$", t) else t for t in found]
+    return list(dict.fromkeys(t for t in found if t and t not in NOT_TICKERS))
 
 
 def _now() -> float:
@@ -112,6 +135,7 @@ class NewsAnalyzer:
         self.secrets = cfg.get("secrets", {})
         self.get = http_get or (lambda url, **kw: requests.get(url, timeout=10, headers={"User-Agent": "kripto-bot/1.0"}, **kw))
         self._feed_cache: tuple[float, list[dict]] | None = None
+        self._ann_cache: tuple[float, list[dict]] | None = None
         self._seen: set[str] = set()
         self._watch_since = _now() - 15 * 60  # ilk turda son 15 dakikanın haberlerini de değerlendir
         self._llm_cache: dict[str, dict] = {}
@@ -182,10 +206,52 @@ class NewsAnalyzer:
                         "source": "cryptopanic-akış"})
         return out
 
+    def fetch_announcements(self) -> list[dict]:
+        """Binance listeleme/delist ve Upbit duyuruları. Her öğede 'kind' (listing/delisting) ve 'coins' bulunur."""
+        if not self.ncfg.get("announcements", True):
+            return []
+        if self._ann_cache and _now() - self._ann_cache[0] < max(20, self.ncfg.get("poll_seconds", 60) - 5):
+            return self._ann_cache[1]
+        out = []
+        for name, url in ANNOUNCEMENT_FEEDS.items():
+            try:
+                data = self.get(url).json()
+            except Exception as exc:
+                log.warning("Duyuru okunamadı %s: %s", name, exc)
+                continue
+            if name.startswith("binance"):
+                arts = [a for c in (data.get("data") or {}).get("catalogs", []) for a in c.get("articles", [])]
+                rows = [(a.get("title", ""), a.get("releaseDate"), f"https://www.binance.com/en/support/announcement/{a.get('code', '')}") for a in arts]
+            else:
+                notices = (data.get("data") or {}).get("notices") or (data.get("data") or {}).get("list") or []
+                rows = [(n.get("title", ""), n.get("listed_at") or n.get("first_listed_at") or n.get("created_at"),
+                         f"https://upbit.com/service_center/notice?id={n.get('id', '')}") for n in notices]
+            for title, ts, link in rows:
+                low = title.lower()
+                kind = "delisting" if any(w in low for w in DELIST_WORDS) else "listing" if any(w in low for w in LISTING_WORDS) else ""
+                if not kind:
+                    continue
+                coins = extract_tickers(title)
+                out.append({"title": title, "summary": " ".join(f"${c}" for c in coins), "url": link,
+                            "ts": _parse_time(ts / 1000 if isinstance(ts, (int, float)) and ts > 1e12 else ts) or _now(),
+                            "source": name, "kind": kind, "coins": coins})
+        self._ann_cache = (_now(), out)
+        return out
+
+    def item_signal(self, item: dict, base: str) -> tuple[float, list[str]]:
+        """Sözlük tabanlı duygu + bayrak; borsa duyurularında kesin kural."""
+        if item.get("kind") == "delisting" and base in item.get("coins", []):
+            return -1.0, ["borsa delist/uyarı duyurusu"]
+        if item.get("kind") == "listing" and base in item.get("coins", []):
+            weak = any(w in item["title"].lower() for w in ("futures", "perpetual", "alpha", "earn", "margin"))
+            return (0.5 if weak else 0.9), []
+        s, flags = lexicon_score(f"{item['title']} {item['summary']}")
+        return s, flags
+
     def new_items(self) -> list[dict]:
         """Daha önce görülmemiş, son taramadan beri yayınlanmış haberler (en yenisi önce)."""
         out = []
-        for it in self.fetch_rss() + self.fetch_cryptopanic_latest():
+        for it in self.fetch_announcements() + self.fetch_rss() + self.fetch_cryptopanic_latest():
             key = (it.get("url") or it["title"]).strip().lower()
             if key in self._seen:
                 continue
@@ -197,12 +263,14 @@ class NewsAnalyzer:
 
     def score_item(self, item: dict, base: str) -> tuple[float, list[str]]:
         """Tek haber için duygu (-1..+1) ve kırmızı bayraklar. Claude açıksa onunla."""
+        if item.get("kind"):  # borsa duyurusu: yoruma gerek yok
+            return self.item_signal(item, base)
         if self._llm:
             llm = self._llm_scores(base, [item])
             if llm:
                 d = llm["items"][0]
                 return d["sentiment"], ([d.get("reason") or "LLM kırmızı bayrak"] if d["red_flag"] else [])
-        s, flags = lexicon_score(f"{item['title']} {item['summary']}")
+        s, flags = self.item_signal(item, base)
         # Bayrak sadece başlıkta coin geçiyorsa geçerli (başka projenin hack haberi bizi sattırmasın)
         return s, flags if mentions(item["title"], base) or f"${base}" in item["summary"] else []
 
@@ -219,9 +287,9 @@ class NewsAnalyzer:
     def items_for(self, base: str) -> list[dict]:
         cutoff = _now() - self.ncfg["lookback_hours"] * 3600
         seen, out = set(), []
-        for it in self.fetch_rss() + self.fetch_cryptopanic(base):
+        for it in self.fetch_announcements() + self.fetch_rss() + self.fetch_cryptopanic(base):
             text = f"{it['title']} {it['summary']}"
-            if it["ts"] < cutoff or not (it["source"] == "cryptopanic" or mentions(text, base)):
+            if it["ts"] < cutoff or not (it["source"] == "cryptopanic" or base in it.get("coins", []) or mentions(text, base)):
                 continue
             key = it["title"].strip().lower()
             if key in seen:
@@ -239,9 +307,8 @@ class NewsAnalyzer:
         wsum = ssum = 0.0
         red_flags = []
         for idx, it in enumerate(items):
-            lex, flags = lexicon_score(f"{it['title']} {it['summary']}")
-            s = lex
-            if llm and idx < len(llm["items"]):
+            s, flags = self.item_signal(it, base)
+            if llm and idx < len(llm["items"]) and not it.get("kind"):
                 s = llm["items"][idx]["sentiment"]
                 if llm["items"][idx]["red_flag"]:
                     flags = flags or [llm["items"][idx].get("reason") or "LLM kırmızı bayrak"]
@@ -251,9 +318,10 @@ class NewsAnalyzer:
             if v:
                 s = max(-1.0, min(1.0, s + 0.1 * (v["positive"] - v["negative"] - 2 * v["toxic"])))
             # Kırmızı bayraklar sadece son 24 saatte ve başlıkta coin geçiyorsa veto eder
-            if flags and _now() - it["ts"] < 86400 and (it["source"] == "cryptopanic" or mentions(it["title"], base)):
+            if flags and _now() - it["ts"] < 86400 and (it["source"] == "cryptopanic" or it.get("kind") or mentions(it["title"], base)):
                 red_flags.append(f"{it['title'][:90]} ({', '.join(flags[:2])})")
             w = math.exp(-math.log(2) * max(0.0, _now() - it["ts"]) / half)
+            w *= self.ncfg.get("source_weights", {}).get(it["source"], 2.0 if it.get("kind") else 1.0)
             it["sentiment"] = round(s, 2)
             wsum += w
             ssum += w * s

@@ -84,60 +84,134 @@ def btc_context(btc_raw: pd.DataFrame | None):
     return ctx
 
 
-def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | None = None,
-        btc_raw: pd.DataFrame | None = None) -> Result:
-    """trade_from verilirse öncesi sadece gösterge ısınması için kullanılır, alım o andan sonra açılır."""
+def precompute(symbol: str, raw: pd.DataFrame, cfg: dict, btc_raw: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Göstergeler + her mum için analiz skoru ve veto. Skor çıkış ayarlarından bağımsız olduğu için
+    bir kez hesaplanıp farklı çıkış/eşik ayarlarıyla tekrar tekrar kullanılabilir (optimize)."""
     df = add_indicators(raw)
     ctx_at = btc_context(btc_raw)
+    scores, vetoes = [float("nan")] * len(df), [True] * len(df)
+    for i in range(210, len(df)):
+        d = decide(symbol, df, cfg, ctx_at(df.index[i]), i=i)
+        scores[i], vetoes[i] = d.score, bool(d.vetoes)
+    df["score"], df["veto"] = scores, vetoes
+    return df
+
+
+def bar_exits(pos: Position, bar, now: float, score: float, cfg: dict) -> list[tuple[float, float, str]]:
+    """Bir mum içinde (fiyat, satılacak oran, neden) listesi. Temkinli sıra: stop (low) → hedefler (high) → kapanış.
+    Uygulanan kısmi satışlar pos.remaining'i değiştirmez; çağıran uygular."""
+    if bar["low"] <= pos.stop_price:
+        return [(min(bar["open"], pos.stop_price), 1.0, "iz süren stop" if pos.stop_price > pos.entry_price else "zarar kes")]
+    out = []
+    ladder, hits_before = cfg["exits"]["take_profit"], pos.tp_hits
+    # Zirvede sadece kâr alma kademeleri (zaman açılışa sabit, skor yok: süre ve kârı koru kapanışta)
+    for k, a in enumerate(risk.exit_actions(pos, bar["high"], pos.opened_at, None, cfg)):
+        out.append((pos.entry_price * ladder[hits_before + k]["multiple"], a.fraction, a.reason))
+        if a.fraction >= 1:
+            return out
+    for a in risk.exit_actions(pos, bar["close"], now, score, cfg):
+        out.append((bar["close"], a.fraction, a.reason))
+    return out
+
+
+def _trade_record(pos: Position, price: float, reason: str) -> dict:
+    pnl = pos.realized - pos.cost
+    return {"symbol": pos.symbol, "open": pd.Timestamp(pos.opened_at, unit="s", tz="UTC"), "entry": pos.entry_price,
+            "exit": price, "score": pos.entry_score, "pnl": pnl, "pct": pnl / pos.cost * 100, "reason": reason,
+            "hours": (pos.closed_at - pos.opened_at) / 3600, "max_multiple": pos.highest_price / pos.entry_price}
+
+
+def _sell(pos: Position, price: float, fraction: float, fee: float) -> bool:
+    """Kısmi/tam satış uygular; pozisyon kapandıysa True."""
+    amt = pos.remaining * fraction
+    pos.remaining -= amt
+    pos.realized += amt * price * (1 - fee)
+    return pos.remaining * price < 1.0
+
+
+def run(symbol: str, raw: pd.DataFrame, cfg: dict, trade_from: pd.Timestamp | None = None,
+        btc_raw: pd.DataFrame | None = None, pre: pd.DataFrame | None = None) -> Result:
+    """Tek coin testi. trade_from verilirse öncesi sadece gösterge ısınması için kullanılır."""
+    df = pre if pre is not None else precompute(symbol, raw, cfg, btc_raw)
     fee = cfg["exchange"]["fee_rate"] + cfg["exchange"]["slippage"]
+    th = cfg["analysis"]["buy_threshold"]
     res = Result(symbol)
     pos: Position | None = None
     equity = 0.0
-
-    def close_part(price, fraction, reason, ts):
-        nonlocal pos, equity
-        amt = pos.remaining * fraction
-        pos.remaining -= amt
-        pos.realized += amt * price * (1 - fee)
-        pos.exit_reasons.append(reason)
-        if pos.remaining * price < 1.0:
-            pos.closed_at = ts.timestamp()
-            pnl = pos.realized - pos.cost
-            equity += pnl
-            res.trades.append({"open": pd.Timestamp(pos.opened_at, unit="s", tz="UTC"), "entry": pos.entry_price, "exit": price,
-                               "score": pos.entry_score, "pnl": pnl, "pct": pnl / pos.cost * 100, "reason": reason,
-                               "hours": (pos.closed_at - pos.opened_at) / 3600, "max_multiple": pos.highest_price / pos.entry_price})
-            pos = None
-
     for i in range(210, len(df)):
         bar, ts = df.iloc[i], df.index[i]
         now = ts.timestamp()
         if pos is not None:
-            if bar["low"] <= pos.stop_price:
-                close_part(min(bar["open"], pos.stop_price), 1.0, "iz süren stop" if pos.stop_price > pos.entry_price else "zarar kes", ts)
-            else:
-                ladder, hits_before = cfg["exits"]["take_profit"], pos.tp_hits
-                # Mumun zirvesinde sadece kâr alma kademeleri kontrol edilir (zamanı açılışa sabitleyerek
-                # süre çıkışını, skor vermeyerek kârı koru çıkışını burada tetiklemiyoruz; onlar kapanışta).
-                for k, a in enumerate(risk.exit_actions(pos, bar["high"], pos.opened_at, None, cfg)):
-                    if pos is None:
-                        break
-                    close_part(pos.entry_price * ladder[hits_before + k]["multiple"], a.fraction, a.reason, ts)
-                if pos is not None:
-                    score = decide(symbol, df, cfg, ctx_at(ts), i=i).score
-                    for a in risk.exit_actions(pos, bar["close"], now, score, cfg):
-                        if pos is None:
-                            break
-                        close_part(bar["close"], a.fraction, a.reason, ts)
-        else:
-            d = decide(symbol, df, cfg, ctx_at(ts), i=i)
-            if d.verdict == "AL" and (trade_from is None or ts >= trade_from):
-                stake = risk.stake_for(d.score, cfg)
-                entry = bar["close"] * (1 + fee)
-                pos = Position(symbol, entry, stake / entry, stake, now, d.score, stop_price=risk.initial_stop(entry, cfg))
+            for price, frac, reason in bar_exits(pos, bar, now, bar["score"], cfg):
+                if _sell(pos, price, frac, fee):
+                    pos.closed_at = now
+                    equity += pos.realized - pos.cost
+                    res.trades.append(_trade_record(pos, price, reason))
+                    pos = None
+                    break
+        elif not bar["veto"] and bar["score"] >= th and (trade_from is None or ts >= trade_from):
+            stake = risk.stake_for(bar["score"], cfg)
+            entry = bar["close"] * (1 + fee)
+            pos = Position(symbol, entry, stake / entry, stake, now, bar["score"], stop_price=risk.initial_stop(entry, cfg))
         res.equity.append(equity + (pos.pnl(bar["close"]) if pos else 0.0))
     if pos is not None:
-        close_part(df["close"].iloc[-1], 1.0, "test sonu", df.index[-1])
+        price = df["close"].iloc[-1]
+        _sell(pos, price, 1.0, fee)
+        pos.closed_at = df.index[-1].timestamp()
+        res.trades.append(_trade_record(pos, price, "test sonu"))
+    return res
+
+
+def run_portfolio(pres: dict[str, pd.DataFrame], cfg: dict, start: pd.Timestamp, end: pd.Timestamp) -> Result:
+    """Canlı bot gibi tüm coinler aynı kasada: en fazla N açık pozisyon ve toplam risk limiti.
+    Her saat önce çıkışlar, sonra en yüksek skorlu adaylardan alım."""
+    p = cfg["position"]
+    fee = cfg["exchange"]["fee_rate"] + cfg["exchange"]["slippage"]
+    th = cfg["analysis"]["buy_threshold"]
+    # Hız için: her coin için zaman -> satır sözlüğü (pandas .loc yerine)
+    rows = {}
+    for sym, d in pres.items():
+        recs = d[["open", "high", "low", "close", "score", "veto"]].to_dict("records")
+        rows[sym] = {ts: recs[i] for i, ts in enumerate(d.index) if start <= ts <= end}
+    index = sorted(set().union(*[r.keys() for r in rows.values()]))
+    res = Result("PORTFÖY")
+    open_pos: dict[str, Position] = {}
+    last_close: dict[str, float] = {}
+    realized = 0.0
+    for ts in index:
+        now = ts.timestamp()
+        for sym in list(open_pos):
+            bar = rows[sym].get(ts)
+            if bar is None:
+                continue
+            pos = open_pos[sym]
+            for price, frac, reason in bar_exits(pos, bar, now, bar["score"], cfg):
+                if _sell(pos, price, frac, fee):
+                    pos.closed_at = now
+                    realized += pos.realized - pos.cost
+                    res.trades.append(_trade_record(pos, price, reason))
+                    del open_pos[sym]
+                    break
+        cands = []
+        for sym, r in rows.items():
+            bar = r.get(ts)
+            if bar is None:
+                continue
+            last_close[sym] = bar["close"]
+            if sym not in open_pos and not bar["veto"] and bar["score"] >= th:
+                cands.append((bar["score"], sym, bar["close"]))
+        for score, sym, close in sorted(cands, reverse=True):
+            stake = risk.stake_for(score, cfg)
+            if len(open_pos) >= p["max_open_positions"] or sum(x.cost for x in open_pos.values()) + stake > p["max_total_exposure_usd"]:
+                break
+            entry = close * (1 + fee)
+            open_pos[sym] = Position(sym, entry, stake / entry, stake, now, score, stop_price=risk.initial_stop(entry, cfg))
+        res.equity.append(realized + sum(x.pnl(last_close[s]) for s, x in open_pos.items()))
+    for sym, pos in open_pos.items():
+        price = last_close[sym]
+        _sell(pos, price, 1.0, fee)
+        pos.closed_at = end.timestamp()
+        res.trades.append(_trade_record(pos, price, "test sonu"))
     return res
 
 

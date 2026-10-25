@@ -14,7 +14,7 @@ her 5 dk ─► açık pozisyonlar: stop / 2x'te %50 sat / 3x'te hepsini sat / i
 | Blok | Ağırlık | Hesaplananlar |
 |---|---|---|
 | Teknik | %55 | EMA20/50/200, RSI, MACD, ADX/±DI, Bollinger (%B, sıkışma), ATR %, hacim oranı, OBV, 24 mum momentum, 50 mum zirvesi |
-| Haber | %25 | Her 60 sn anlık takip (elindeki coinde hack/delist haberi → anında sat), RSS (CoinDesk, Cointelegraph, Decrypt, Bitcoin Magazine), CryptoPanic, zaman ağırlıklı duygu, kırmızı bayrak vetosu, isteğe bağlı Claude ile yorum |
+| Haber | %25 | Binance/Upbit listeleme-delist duyuruları, her 60 sn anlık takip (elindeki coinde hack/delist haberi → anında sat), RSS (CoinDesk, Cointelegraph, Decrypt, Bitcoin Magazine), CryptoPanic, zaman ağırlıklı duygu, kırmızı bayrak vetosu, isteğe bağlı Claude ile yorum |
 | Piyasa | %20 | BTC 24s ve trend, Korku & Açgözlülük endeksi, likidite, spread, 24s pompa |
 
 ## Kurulum
@@ -38,6 +38,9 @@ python -m bot status                    # bakiye, açık pozisyonlar, kazanma or
 python -m bot backtest SOL/USDT --days 180   # geçmiş veride test (teknik blok)
 python -m bot backtest X/USDT --csv veri.csv # kendi verinle test
 python -m bot backtest --top 20 --hours 72   # hacimce ilk 20 coin, son 72 saat; kârlıysa yapılacaklar listesini basar
+python -m bot optimize --top 20 --days 180   # ayar taraması: eğitim/sınav ayrımı, 5 pozisyon limitli portföy
+python -m bot news SOL PEPE                  # canlı haber akışı (listeleme/delist, duygu puanı)
+python -m bot notify-test                    # Telegram bildirim testi
 ```
 Docker ile sunucuda: `docker compose up -d --build` (önce `config.yaml` ve `.env` oluştur).
 
@@ -64,9 +67,9 @@ state/          pozisyonlar ve sanal cüzdan (git'e girmez)
 | Ayar | Varsayılan |
 |---|---|
 | `position.stake_min_usd / stake_max_usd` | 10 / 15 |
-| `exits.take_profit` | 2x'te %50, 3x'te kalan |
-| `exits.stop_loss_pct` | %25 |
+| `exits.take_profit` | +%25'te %50, +%60'ta kalan (2x/3x seçeneği yorumda) |
+| `exits.stop_loss_pct` | %15 |
 | `exits.trailing` | %40 kârdan sonra zirvenin %20 altı |
 | `exits.profit_protect` | %8+ kârdayken skor −10 altına düşerse sat |
-| `analysis.buy_threshold` | 40 |
+| `analysis.buy_threshold` | 50 |
 | `position.max_open_positions / max_total_exposure_usd / daily_loss_limit_usd` | 5 / 75 $ / 20 $ |

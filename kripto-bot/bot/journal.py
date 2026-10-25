@@ -190,6 +190,14 @@ tags: [işlem, {coin.lower()}]
                   f"Bağlantılar: [[Pano]] · [[İşlem Günlüğü]]\n\n## Bot kayıtları\n")
         self._append(f"07 Günlük/{day:%Y-%m-%d}.md", f"- {day:%H:%M} {line}\n", header)
 
+    def news_log(self, line: str, coins: list[str]):
+        """03 Haber Analizi/Akış/GG-AA-YYYY.md: ilgili coin(ler)i etiketlenmiş haber satırları."""
+        day = _ts()
+        header = (f"---\ntür: haber-akışı\ntarih: {day:%Y-%m-%d}\ntags: [haber]\n---\n# Haber akışı {day:%Y-%m-%d}\n\n"
+                  "Bağlantılar: [[Haber Analizi]] · [[Kırmızı Bayraklar]]\n\n")
+        links = " ".join(f"[[{c}]]" for c in coins)
+        self._append(f"03 Haber Analizi/Akış/{day:%Y-%m-%d}.md", f"- {day:%H:%M} {links} {line}\n", header)
+
     def scan_summary(self, decisions: list[Decision]):
         top = sorted(decisions, key=lambda d: -d.score)[: self.cfg["scan_top_n"]]
         if not top:

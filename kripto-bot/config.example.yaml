@@ -39,10 +39,11 @@ position:
   cooldown_hours_after_loss: 12  # stop olan coine bu süre tekrar girilmez
 
 exits:
-  stop_loss_pct: 0.25            # girişten %25 düşerse kesin sat
+  stop_loss_pct: 0.15            # girişten %15 düşerse kesin sat (optimize: %25'ten daha tutarlı)
   take_profit:                   # kademeli kâr alma (multiple = giriş fiyatının katı)
-    - {multiple: 2.0, sell_fraction: 0.5}   # 2x'te pozisyonun yarısı
-    - {multiple: 3.0, sell_fraction: 1.0}   # 3x'te kalan hepsi
+    - {multiple: 1.25, sell_fraction: 0.5}  # +%25'te pozisyonun yarısı
+    - {multiple: 1.6, sell_fraction: 1.0}   # +%60'ta kalan hepsi
+    # 2x/3x hedefi için: [{multiple: 2.0, sell_fraction: 0.5}, {multiple: 3.0, sell_fraction: 1.0}]
   trailing:
     activate_gain: 0.40          # %40 kâra ulaşınca iz süren stop devreye girer
     trail_pct: 0.20              # zirveden %20 geri çekilirse sat
@@ -53,7 +54,7 @@ exits:
   max_hold_hours: 336            # 14 gün sonunda kâr/zarar ne olursa olsun çık
 
 analysis:
-  buy_threshold: 40              # -100..+100 arası toplam skor; bu ve üstü AL adayı
+  buy_threshold: 50              # -100..+100 arası toplam skor; bu ve üstü AL adayı (optimize: 40'tan daha tutarlı)
   weights:                       # toplam skora katkı oranları
     technical: 0.55
     news: 0.25
@@ -73,6 +74,8 @@ news:
     - https://bitcoinmagazine.com/.rss/full/
     - https://www.theblock.co/rss.xml
     - https://cryptoslate.com/feed/
+  announcements: true            # Binance listeleme/delist + Upbit duyuruları (en güçlü haber sinyali)
+  source_weights: {binance-listeleme: 2.0, binance-delist: 2.0, upbit: 2.0, cryptopanic: 1.2}
   poll_seconds: 60               # anlık takip: haber kaynakları her 60 saniyede okunur
   watch:                         # tam turları beklemeden habere tepki
     enabled: true

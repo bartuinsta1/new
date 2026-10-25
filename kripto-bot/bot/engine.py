@@ -155,7 +155,11 @@ class Bot:
         acted = 0
         for it in items:
             text = f"{it['title']} {it['summary']}"
-            for base in [b for b in bases if mentions(text, b)]:
+            extra = []
+            if it.get("coins"):  # borsa duyurusu: takip listesinde olmasa da borsada işlem görüyorsa dikkate al
+                tickers = tickers or self.ex.fetch_tickers()
+                extra = [c for c in it["coins"] if f"{c}/{self.quote}" in tickers and c not in bases]
+            for base in [b for b in bases if mentions(text, b)] + extra:
                 score, flags = self.news.score_item(it, base)
                 self.journal.daily(f"📰 [[{base}]] {score:+.2f}{' 🚩' if flags else ''} [{it['title'][:100]}]({it['url']})")
                 pos = open_by_base.get(base)

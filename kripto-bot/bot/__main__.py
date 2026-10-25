@@ -7,6 +7,9 @@
   python -m bot status              # bakiye ve açık pozisyonlar
   python -m bot backtest SOL/USDT --days 90
   python -m bot backtest --top 20 --hours 72   # hacimce ilk 20 coinde son 72 saat
+  python -m bot optimize --top 20 --days 180   # ayar taraması (eğitim/sınav ayrımıyla)
+  python -m bot news [SOL PEPE]     # canlı haber akışı (coin etiketi + duygu), vault'a da yazar
+  python -m bot notify-test         # Telegram/webhook bildirim testi
 """
 from __future__ import annotations
 
@@ -19,7 +22,7 @@ from .config import load_config
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="bot", description="Kripto al-sat botu")
-    ap.add_argument("command", choices=["run", "once", "scan", "analyze", "status", "backtest"])
+    ap.add_argument("command", choices=["run", "once", "scan", "analyze", "status", "backtest", "optimize", "news", "notify-test"])
     ap.add_argument("symbols", nargs="*")
     ap.add_argument("--config", help="config.yaml yolu")
     ap.add_argument("--days", type=float, default=90)
@@ -34,6 +37,13 @@ def main(argv=None):
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     cfg = load_config(args.config)
     args.symbol = args.symbols[0] if args.symbols else None
+
+    if args.command == "optimize":
+        from pathlib import Path
+        from .optimize import load_data, optimize
+        data = load_data(cfg, args.top or 20, args.days if args.days != 90 else 180, Path(cfg["state_dir"]) / "cache")
+        print(optimize(cfg, data))
+        return
 
     if args.command == "backtest":
         import pandas as pd
@@ -85,6 +95,19 @@ def main(argv=None):
             print("\nKârlılık yüksek eşiğini geçmedi; canlıya geçmeyin, ayarları/eşiği gözden geçirin.")
         return
 
+    if args.command == "notify-test":
+        from .notifier import Notifier
+        sec = cfg["secrets"]
+        print("Telegram:", "ayarlı" if sec["telegram_token"] and sec["telegram_chat_id"] else "EKSİK (.env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)")
+        print("Webhook :", "ayarlı" if sec["webhook_url"] else "yok (opsiyonel)")
+        Notifier(cfg).send("Test mesajı: bildirimler çalışıyor ✅", "test")
+        print("Gönderildi. Telefonuna mesaj gelmediyse token/chat id'yi kontrol et.")
+        return
+
+    if args.command == "news":
+        _news_monitor(cfg, args)
+        return
+
     from .engine import Bot
     bot = Bot(cfg)
     if args.command == "run":
@@ -116,6 +139,42 @@ def main(argv=None):
         else:
             for d in bot.scan(tickers, ctx)[:20]:
                 print(d.summary())
+
+
+def _news_monitor(cfg, args):
+    """Canlı haber akışı: yeni haberleri coin etiketi ve duygu puanıyla yazar, vault'a kaydeder."""
+    import time
+    from datetime import datetime, timezone
+    from .journal import Journal
+    from .news import NewsAnalyzer, mentions
+    na, journal = NewsAnalyzer(cfg), Journal(cfg)
+    na._watch_since = time.time() - 6 * 3600  # açılışta son 6 saatin haberlerini de göster
+    watch = [s.split("/")[0] for s in args.symbols] or [s.split("/")[0] for s in journal.watchlist()]
+    poll = cfg["news"]["poll_seconds"]
+    fg = na.fear_greed()
+    print(f"Haber takibi başladı (her {poll} sn) · izlenen: {', '.join(watch) or 'tümü'} · korku/açgözlülük: {fg}")
+    print("Kaynaklar:", "borsa duyuruları (Binance, Upbit) +" if cfg["news"].get("announcements", True) else "",
+          f"{len(cfg['news']['rss_feeds'])} RSS", "+ CryptoPanic" if cfg["secrets"]["cryptopanic_token"] else "(CryptoPanic token yok)")
+    while True:
+        for it in reversed(na.new_items()):
+            coins = list(it.get("coins") or []) + [b for b in watch if mentions(f"{it['title']} {it['summary']}", b)]
+            coins = list(dict.fromkeys(coins))
+            parts = []
+            for c in coins or [None]:
+                if c is None:
+                    s_, flags = na.item_signal(it, "")
+                    parts.append(f"{s_:+.2f}")
+                else:
+                    s_, flags = na.score_item(it, c)
+                    parts.append(f"{c} {s_:+.2f}{' 🚩' if flags else ''}")
+            when = datetime.fromtimestamp(it["ts"], timezone.utc).strftime("%H:%M")
+            kind = {"listing": "🟢LİSTELEME ", "delisting": "🔴DELİST "}.get(it.get("kind", ""), "")
+            line = f"{when} [{it['source']}] {kind}{it['title'][:110]} · {' | '.join(parts)}"
+            print(line, flush=True)
+            if coins:
+                journal.news_log(f"{kind}[{it['title'][:120]}]({it['url']}) · {' | '.join(parts)} · {it['source']}",
+                                 [c for c in coins if c])
+        time.sleep(poll)
 
 
 if __name__ == "__main__":

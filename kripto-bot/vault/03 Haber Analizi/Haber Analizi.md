@@ -6,6 +6,7 @@ tags: [haber, moc]
 Kod: `bot/news.py`
 
 ## Kaynaklar
+- **Borsa duyuruları:** Binance listeleme ve delist, Upbit (Kore) listeleme/uyarı. Listeleme +0.9, delist anında veto/satış. Ağırlığı normal haberin 2 katı. Kurulum: [[Haber Sistemi Kurulumu]]
 - RSS: CoinDesk, Cointelegraph, Decrypt, Bitcoin Magazine (`config.yaml → news.rss_feeds`, istediğini ekle; Türkçe kaynak da olur)
 - [CryptoPanic](https://cryptopanic.com/developers/api/): coin bazlı haber + topluluk oyları (`CRYPTOPANIC_TOKEN`)
 - Korku & Açgözlülük endeksi (alternative.me) → [[Piyasa Bağlamı]]
