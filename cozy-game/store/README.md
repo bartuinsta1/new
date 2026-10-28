@@ -17,6 +17,9 @@
 - Gizlilik: **Veri toplanmıyor** (App Store "Data Not Collected"; Play "No data collected").
 - Gizlilik politikası URL'si: `https://bartuinsta1.github.io/new/privacy.html`
 
+## Ekran görüntüleri
+`screenshots/` klasöründe 1290×2796 boyutunda (App Store 6,9 inç) 4 Türkçe ve 4 İngilizce görüntü var. Google Play de aynı dosyaları kabul eder.
+
 ## Derleme
 ```bash
 cd cozy-game

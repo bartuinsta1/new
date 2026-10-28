@@ -8,3 +8,4 @@ backend/.env
 docs/preview/node_modules/
 Config.local.xcconfig
 cozy-game/dist/
+!cozy-game/ios/App/App.xcodeproj/
