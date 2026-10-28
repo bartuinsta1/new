@@ -1,15 +1,20 @@
 import './style.css';
 import {
-  BREEDS, BREED_BY_ID, FURNITURE, FURNITURE_BY_ID, RARITY_LABEL, ROOMS, ROOM_BY_ID, TAG_INFO,
-  type FurnitureDef,
+  BREEDS, BREED_BY_ID, FURNITURE, LEVEL_HEARTS, FURNITURE_BY_ID, ROOMS, ROOM_BY_ID, TAG_INFO, UPGRADES, WALLPAPERS,
+  WALLPAPER_BY_ID, type FurnitureDef, type WallpaperDef,
 } from './data';
 import {
-  bestSeatFor, buyFurniture, catAt, catchUp, catIncome, claimDaily, cleanMess, dailyAmount, dayKey,
+  bestSeatFor, buyFurniture, buyUpgrade, catAt, catchUp, catIncome, claimDaily, cleanMess, dailyAmount, dayKey,
   freeSeats, isMatch, levelOf, levelProgress, load, newGame, placeCat, removeFurniture, resetSave,
-  roomComfort, save, tick, totalIncome, unlockRoom, type Cat, type GameEvent, type GameState, type Seat,
+  roomComfort, save, tick, totalIncome, unlockRoom, upg, upgradeCost, useWallpaper,
+  type Cat, type GameEvent, type GameState, type Seat,
 } from './game';
-import { drawCat, drawEmptySlot, drawFurniture, drawMess, drawRoom, seasonOf, seatPoints } from './draw';
+import { drawCat, drawEmptySlot, drawFurniture, drawMess, drawRoom, drawWall, seasonOf, seatPoints } from './draw';
 import { setMusic, setSfx, sfx, unlockAudio } from './audio';
+import {
+  breedBlurb, breedName, detectLang, furnDesc, furnName, getLang, paperName, rarityLabel, roomName, setLang, t,
+  tagLabel, upgDesc, upgName, type Lang,
+} from './i18n';
 
 // ---------- durum ----------
 const params = new URLSearchParams(location.search);
@@ -18,6 +23,12 @@ const month = () => monthOverride ?? new Date().getMonth();
 const hourOverride = params.has('hour') ? Number(params.get('hour')) : null;
 const hour = () => hourOverride ?? new Date().getHours();
 const isFestive = () => month() === 10 || month() === 11;
+/** Ücretsiz web demosu: tam sürüm mağazalarda ücretli. */
+const DEMO = import.meta.env.VITE_DEMO === '1';
+const DEMO_MAX_HEARTS = LEVEL_HEARTS[4] - 1; // 4. seviyede durur
+let demoEndShown = false;
+/** Capacitor içinde mi (App Store / Google Play sürümü)? */
+const isNative = !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
 
 let state: GameState = load() ?? newGame();
 let currentRoom = 'salon';
@@ -28,6 +39,7 @@ let time = 0;
 
 setMusic(state.settings.music);
 setSfx(state.settings.sfx);
+setLang(state.settings.lang ?? detectLang());
 
 // ---------- DOM ----------
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -59,14 +71,14 @@ const unit = () => Math.min(W * 0.22, H * 0.17);
 const fmt = (n: number) => {
   n = Math.floor(n);
   if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.0', '') + 'M';
-  if (n >= 1e4) return (n / 1e3).toFixed(1).replace('.0', '') + 'B';
-  return n.toLocaleString('tr-TR');
+  if (n >= 1e4) return (n / 1e3).toFixed(1).replace('.0', '') + t('thousand');
+  return n.toLocaleString(getLang() === 'tr' ? 'tr-TR' : 'en-US');
 };
 const fmtTime = (sec: number) => {
   sec = Math.max(0, Math.round(sec));
-  if (sec >= 3600) return `${Math.floor(sec / 3600)} sa ${Math.floor((sec % 3600) / 60)} dk`;
-  if (sec >= 60) return `${Math.floor(sec / 60)} dk ${sec % 60} sn`;
-  return `${sec} sn`;
+  if (sec >= 3600) return `${Math.floor(sec / 3600)} ${t('h')} ${Math.floor((sec % 3600) / 60)} ${t('m')}`;
+  if (sec >= 60) return `${Math.floor(sec / 60)} ${t('m')} ${sec % 60} ${t('s')}`;
+  return `${sec} ${t('s')}`;
 };
 
 let toastTimer = 0;
@@ -94,6 +106,16 @@ function catCanvas(breedId: string, size: number, pose: 'sit' | 'loaf' | 'sleep'
   const g = c.getContext('2d')!;
   g.scale(DPR, DPR);
   drawCat(g, size / 2 - (pose === 'sit' ? size * 0.06 : -size * 0.04), size * 0.9, size * (pose === 'sit' ? 0.72 : 0.62), BREED_BY_ID[breedId], pose, 0.6, 0, happy);
+  return c;
+}
+
+function wallCanvas(paper: WallpaperDef | undefined, w: number, h: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = w * DPR;
+  c.height = h * DPR;
+  const g = c.getContext('2d')!;
+  g.scale(DPR, DPR);
+  drawWall(g, ROOM_BY_ID[currentRoom], paper, w, h);
   return c;
 }
 
@@ -242,8 +264,8 @@ function onPlaced(cat: Cat) {
   const g = seatGeo(cat as Seat);
   sfx('place');
   const match = isMatch(state, cat);
-  floater(match ? '💖 Tam sevdiği yer!' : '😊', g.x, g.y - g.size, match);
-  if (state.album[cat.breed] === 1) toast(`📖 Yeni kedi albüme eklendi: ${breed.name}!`);
+  floater(match ? t('perfectSpot') : '😊', g.x, g.y - g.size, match);
+  if (state.album[cat.breed] === 1) toast(t('newInAlbum', { breed: breedName(breed) }));
   selectedCat = null;
   renderQueue();
   if (state.tutorial <= 1) advanceTutorial(2);
@@ -251,20 +273,23 @@ function onPlaced(cat: Cat) {
 
 function onLevelUp(level: number) {
   sfx('level');
-  const unlocked = FURNITURE.filter((f) => f.unlockLevel === level).map((f) => f.name);
-  const rooms = ROOMS.filter((r) => r.unlockLevel === level).map((r) => r.name);
-  const breeds = BREEDS.filter((b) => b.minLevel === level && !b.months).map((b) => b.name);
+  const unlocked = FURNITURE.filter((f) => f.unlockLevel === level).map(furnName);
+  const rooms = ROOMS.filter((r) => r.unlockLevel === level).map(roomName);
+  const breeds = BREEDS.filter((b) => b.minLevel === level && !b.months).map(breedName);
+  const upgs = UPGRADES.filter((u) => u.unlockLevel === level).map(upgName);
+  const papers = WALLPAPERS.filter((w) => w.unlockLevel === level).map(paperName);
   openSheet(`
     <div class="hero">
       <div class="big">🏡✨</div>
-      <h2>Han ${level}. seviyeye ulaştı!</h2>
-      <p>Kasabada adın duyuluyor. Daha çok kedi kapını çalacak.</p>
+      <h2>${t('levelTitle', { level })}</h2>
+      <p>${t('levelText')}</p>
     </div>
     <div class="stack">
-      ${unlocked.length ? `<div class="banner">🛋️ Yeni mobilyalar: ${unlocked.join(', ')}</div>` : ''}
-      ${rooms.length ? `<div class="banner">🚪 Açılabilir oda: ${rooms.join(', ')}</div>` : ''}
-      ${breeds.length ? `<div class="banner">🐾 Yeni ziyaretçiler gelebilir: ${breeds.join(', ')}</div>` : ''}
-      <button class="btn" data-close>Harika!</button>
+      ${unlocked.length ? `<div class="banner">${t('levelFurn', { list: unlocked.join(', ') })}</div>` : ''}
+      ${rooms.length ? `<div class="banner">${t('levelRooms', { list: rooms.join(', ') })}</div>` : ''}
+      ${breeds.length ? `<div class="banner">${t('levelBreeds', { list: breeds.join(', ') })}</div>` : ''}
+      ${upgs.length || papers.length ? `<div class="banner">${t('levelUpg', { list: [...upgs, ...papers].join(', ') })}</div>` : ''}
+      <button class="btn" data-close>${t('great')}</button>
     </div>`);
 }
 
@@ -274,13 +299,13 @@ function renderQueue() {
   if (!state.queue.length) {
     const e = document.createElement('div');
     e.className = 'empty';
-    e.textContent = freeSeats(state).length ? 'Kar yağıyor… yakında biri gelir.' : 'Yeni misafir için boş yer lazım.';
+    e.textContent = freeSeats(state).length ? t('queueEmpty') : t('queueFull');
     queueEl.appendChild(e);
   }
   for (const cat of state.queue) {
     const b = document.createElement('button');
     b.className = 'qcat' + (cat.uid === selectedCat ? ' sel' : '');
-    b.setAttribute('aria-label', `${cat.name}, ${BREED_BY_ID[cat.breed].name}, ${TAG_INFO[cat.pref].label} yer sever`);
+    b.setAttribute('aria-label', t('catAria', { name: cat.name, breed: breedName(BREED_BY_ID[cat.breed]), tag: tagLabel(cat.pref) }));
     b.appendChild(catCanvas(cat.breed, 64));
     const p = document.createElement('span');
     p.className = 'pref';
@@ -289,7 +314,7 @@ function renderQueue() {
     if (!state.album[cat.breed]) {
       const n = document.createElement('span');
       n.className = 'new';
-      n.textContent = 'YENİ';
+      n.textContent = t('newBadge');
       b.appendChild(n);
     }
     b.onclick = () => {
@@ -302,16 +327,16 @@ function renderQueue() {
           if (seat.room !== currentRoom) switchRoom(seat.room);
           onPlaced(cat);
         } else {
-          toast('Boş yer yok! Bir mobilya ekle.');
+          toast(t('noSeat'));
           sfx('error');
         }
       } else {
         selectedCat = cat.uid;
         const free = freeSeats(state);
         const b = BREED_BY_ID[cat.breed];
-        toast(`${cat.name} (${b.name}) · ${TAG_INFO[cat.pref].icon} ${TAG_INFO[cat.pref].label} yerleri sever`);
+        toast(t('catInfo', { name: cat.name, breed: breedName(b), icon: TAG_INFO[cat.pref].icon, tag: tagLabel(cat.pref) }));
         if (!free.length) {
-          toast('Boş yer yok! Boş "+" alana mobilya koy.');
+          toast(t('noSeatPlus'));
         } else if (!free.some((s) => s.room === currentRoom)) {
           switchRoom(free[0].room);
         }
@@ -336,7 +361,7 @@ function renderRooms() {
     const owned = !!state.rooms[r.id];
     const b = document.createElement('button');
     b.className = 'room-tab' + (r.id === currentRoom ? ' on' : '') + (owned ? '' : ' locked');
-    b.innerHTML = `<span class="ri">${owned ? r.icon : lvl >= r.unlockLevel ? '🔓' : '🔒'}</span>${r.name}`;
+    b.innerHTML = `<span class="ri">${owned ? r.icon : lvl >= r.unlockLevel ? '🔓' : '🔒'}</span>${roomName(r)}`;
     if (owned) {
       const messes = state.messes.filter((m) => m.room === r.id).length;
       const free = freeSeats(state).filter((s) => s.room === r.id).length;
@@ -361,11 +386,11 @@ function openUnlock(id: string) {
   openSheet(`
     <div class="hero">
       <div class="big">${r.icon}</div>
-      <h2>${r.name}</h2>
-      <p>${canLevel ? 'Hanı genişletme zamanı! Bu odada 6 yeni mobilya alanı var.' : `Bu oda ${r.unlockLevel}. seviyede açılır. Kedileri mutlu ederek kalp topla.`}</p>
+      <h2>${roomName(r)}</h2>
+      <p>${canLevel ? t('roomOpenText') : t('roomLockedText', { level: r.unlockLevel })}</p>
     </div>
     <button class="btn" id="unlock-btn" ${canLevel && state.fish >= r.price ? '' : 'disabled'} style="width:100%">
-      ${canLevel ? `Aç · ${fmt(r.price)} 🐟` : `🔒 Seviye ${r.unlockLevel}`}
+      ${canLevel ? t('open', { price: fmt(r.price) }) : t('levelLock', { level: r.unlockLevel })}
     </button>`);
   $('unlock-btn').onclick = () => {
     const res = unlockRoom(state, id);
@@ -373,7 +398,7 @@ function openUnlock(id: string) {
       sfx('buy');
       closeSheet();
       switchRoom(id);
-      toast(`${r.name} açıldı! Hadi döşeyelim.`);
+      toast(t('roomOpened', { room: roomName(r) }));
       save(state);
     } else {
       sfx('error');
@@ -399,8 +424,8 @@ sheetWrap.addEventListener('pointerdown', (e) => {
 function openShop(slot: number) {
   const lvl = levelOf(state.hearts);
   openSheet(`
-    <h2>Mobilya Dükkânı</h2>
-    <p class="sub">${ROOM_BY_ID[currentRoom].name} · Konfor ${roomComfort(state, currentRoom)} · Kediler sevdikleri ${Object.values(TAG_INFO).map((t) => t.icon).join('')} yerlerde 2× mutlu olur.</p>
+    <h2>${t('furnShop')}</h2>
+    <p class="sub">${t('furnShopSub', { room: roomName(ROOM_BY_ID[currentRoom]), comfort: roomComfort(state, currentRoom), icons: Object.values(TAG_INFO).map((x) => x.icon).join('') })}</p>
     <div class="grid" id="shop-grid"></div>`);
   const grid = $('shop-grid');
   for (const f of FURNITURE) {
@@ -409,11 +434,11 @@ function openShop(slot: number) {
     card.className = 'card' + (locked ? ' locked' : '') + (state.fish < f.price ? ' poor' : '');
     card.appendChild(furnitureCanvas(f, 150, 86));
     card.insertAdjacentHTML('beforeend', `
-      <div class="nm">${f.name}</div>
-      <div class="meta">${f.tag ? `<span>${TAG_INFO[f.tag].icon} ${TAG_INFO[f.tag].label}</span>` : ''}${f.seats ? `<span>🐱×${f.seats}</span>` : ''}<span>✨+${f.comfort}</span></div>
-      <div class="meta">${f.desc}</div>
+      <div class="nm">${furnName(f)}</div>
+      <div class="meta">${f.tag ? `<span>${TAG_INFO[f.tag].icon} ${tagLabel(f.tag)}</span>` : ''}${f.seats ? `<span>🐱×${f.seats}</span>` : ''}<span>✨+${f.comfort}</span></div>
+      <div class="meta">${furnDesc(f)}</div>
       <div class="price">${fmt(f.price)} 🐟</div>
-      ${locked ? `<span class="lock">🔒 Sv ${f.unlockLevel}</span>` : ''}`);
+      ${locked ? `<span class="lock">🔒 ${t('lvShort', { level: f.unlockLevel })}</span>` : ''}`);
     card.onclick = () => {
       const res = buyFurniture(state, currentRoom, slot, f.id);
       if (res === 'ok') {
@@ -427,7 +452,7 @@ function openShop(slot: number) {
         renderQueue();
       } else {
         sfx('error');
-        toast(res === 'fish' ? `${fmt(f.price - state.fish)} balık daha lazım 🐟` : res === 'level' ? `Seviye ${f.unlockLevel} gerekli ❤️` : 'Burası dolu.');
+        toast(res === 'fish' ? t('needFish', { n: fmt(f.price - state.fish) }) : res === 'level' ? t('needLevel', { level: f.unlockLevel }) : t('occupied'));
       }
     };
     grid.appendChild(card);
@@ -439,15 +464,15 @@ function openFurnitureSheet(slot: number) {
   const f = FURNITURE_BY_ID[id];
   const guests = state.guests.filter((c) => c.room === currentRoom && c.slot === slot);
   openSheet(`
-    <h2>${f.name}</h2>
-    <p class="sub">${f.tag ? `${TAG_INFO[f.tag].icon} ${TAG_INFO[f.tag].label} · ` : ''}${f.seats} yer · ✨+${f.comfort} konfor</p>
+    <h2>${furnName(f)}</h2>
+    <p class="sub">${f.tag ? `${TAG_INFO[f.tag].icon} ${tagLabel(f.tag)} · ` : ''}${t('seatsComfort', { seats: f.seats, comfort: f.comfort })}</p>
     <div class="stack" id="guest-list"></div>
     <div class="row" style="margin-top:14px">
-      <button class="btn ghost" id="remove-btn" ${guests.length ? 'disabled' : ''}>Kaldır (+${fmt(Math.floor(f.price / 2))} 🐟)</button>
+      <button class="btn ghost" id="remove-btn" ${guests.length ? 'disabled' : ''}>${t('remove', { n: fmt(Math.floor(f.price / 2)) })}</button>
     </div>`);
   const list = $('guest-list');
-  if (!guests.length && f.seats) list.innerHTML = `<p class="sub">Şu an boş. Kapıdaki bir kediyi seçip buraya dokun.</p>`;
-  if (!f.seats) list.innerHTML = `<p class="sub">Dekor: odadaki tüm kedilerin konforunu artırır.</p>`;
+  if (!guests.length && f.seats) list.innerHTML = `<p class="sub">${t('emptySeat')}</p>`;
+  if (!f.seats) list.innerHTML = `<p class="sub">${t('decorOnly')}</p>`;
   for (const c of guests) {
     const b = BREED_BY_ID[c.breed];
     const row = document.createElement('div');
@@ -455,17 +480,17 @@ function openFurnitureSheet(slot: number) {
     row.appendChild(catCanvas(c.breed, 64, 'sit', true));
     const match = isMatch(state, c);
     row.insertAdjacentHTML('beforeend', `
-      <div class="info"><b>${c.name}</b> · ${b.name}<br>
-      <span class="tag ${match ? 'match' : ''}">${TAG_INFO[c.pref].icon} ${TAG_INFO[c.pref].label} sever${match ? ' ✓' : ''}</span>
-      <span class="tag">${RARITY_LABEL[b.rarity]}</span><br>
-      🐟 ${(catIncome(state, c) * 60).toFixed(1)}/dk · ⏳ ${fmtTime(c.remaining)}</div>`);
+      <div class="info"><b>${c.name}</b> · ${breedName(b)}<br>
+      <span class="tag ${match ? 'match' : ''}">${t('likes', { icon: TAG_INFO[c.pref].icon, tag: tagLabel(c.pref) })}${match ? ' ✓' : ''}</span>
+      <span class="tag">${rarityLabel(b.rarity)}</span><br>
+      🐟 ${(catIncome(state, c) * 60).toFixed(1)}${t('perMin')} · ⏳ ${fmtTime(c.remaining)}</div>`);
     list.appendChild(row);
   }
   $('remove-btn').onclick = () => {
     const refund = removeFurniture(state, currentRoom, slot);
     if (refund !== null) {
       sfx('tap');
-      toast(`+${refund} 🐟 geri alındı`);
+      toast(t('refund', { n: refund }));
       closeSheet();
       refreshHud();
       save(state);
@@ -476,8 +501,8 @@ function openFurnitureSheet(slot: number) {
 function openAlbum() {
   const seen = BREEDS.filter((b) => state.album[b.id]).length;
   openSheet(`
-    <h2>Kedi Albümü</h2>
-    <p class="sub">${seen} / ${BREEDS.length} cins ağırlandı. Mevsimlik kediler sadece belirli aylarda gelir.</p>
+    <h2>${t('albumTitle')}</h2>
+    <p class="sub">${t('albumSub', { seen, total: BREEDS.length })}</p>
     <div class="grid album" id="album-grid"></div>`);
   const grid = $('album-grid');
   for (const b of BREEDS) {
@@ -489,11 +514,11 @@ function openAlbum() {
     thumb.className = 'thumb';
     thumb.appendChild(cv);
     card.appendChild(thumb);
-    const season = b.months ? (b.months.includes(10) && b.months.includes(0) ? '❄️ Kış' : '🍂 Sonbahar') : '';
+    const season = b.months ? (b.months.includes(10) && b.months.includes(0) ? t('winter') : t('autumn')) : '';
     card.insertAdjacentHTML('beforeend', `
-      <div class="nm">${count ? b.name : '???'}</div>
+      <div class="nm">${count ? breedName(b) : '???'}</div>
       <div class="meta"><span>${'★'.repeat(b.rarity)}${'☆'.repeat(4 - b.rarity)}</span>${season ? `<span>${season}</span>` : ''}${count ? `<span>×${count}</span>` : ''}</div>
-      <div class="meta">${count ? b.blurb : `Seviye ${b.minLevel}+`}</div>`);
+      <div class="meta">${count ? breedBlurb(b) : t('levelPlus', { level: b.minLevel })}</div>`);
     grid.appendChild(card);
   }
 }
@@ -501,20 +526,33 @@ function openAlbum() {
 function openMenu() {
   const lvl = levelOf(state.hearts);
   openSheet(`
-    <h2>Han Defteri</h2>
-    <p class="sub">Mırnav Hanı · Seviye ${lvl}</p>
+    <h2>${t('menuTitle')}</h2>
+    <p class="sub">${t('menuSub', { title: t('title'), level: lvl })}</p>
     <div class="stats">
-      <div class="stat"><b>${fmt(state.served)}</b><span>ağırlanan kedi</span></div>
-      <div class="stat"><b>${fmt(state.cleaned)}</b><span>temizlik</span></div>
-      <div class="stat"><b>${fmt(state.totalFish)}</b><span>toplam balık</span></div>
-      <div class="stat"><b>${state.hearts}</b><span>sevgi ❤️</span></div>
+      <div class="stat"><b>${fmt(state.served)}</b><span>${t('statServed')}</span></div>
+      <div class="stat"><b>${fmt(state.cleaned)}</b><span>${t('statCleaned')}</span></div>
+      <div class="stat"><b>${fmt(state.totalFish)}</b><span>${t('statFish')}</span></div>
+      <div class="stat"><b>${state.hearts}</b><span>${t('statHearts')}</span></div>
     </div>
     <div class="stack" style="margin-top:12px">
-      <label class="toggle">🎵 Müzik <input type="checkbox" id="opt-music" ${state.settings.music ? 'checked' : ''}></label>
-      <label class="toggle">🔔 Efektler <input type="checkbox" id="opt-sfx" ${state.settings.sfx ? 'checked' : ''}></label>
-      <div class="banner">📱 Telefonda tarayıcı menüsünden “Ana Ekrana Ekle” deyip uygulama gibi oynayabilirsin. İnternetsiz de çalışır.</div>
-      <button class="btn ghost" id="reset-btn">Hanı sıfırla</button>
+      <div class="toggle">${t('language')} <div class="seg"><button data-lang="tr" class="${getLang() === 'tr' ? 'on' : ''}">TR</button><button data-lang="en" class="${getLang() === 'en' ? 'on' : ''}">EN</button></div></div>
+      <label class="toggle">${t('music')} <input type="checkbox" id="opt-music" ${state.settings.music ? 'checked' : ''}></label>
+      <label class="toggle">${t('sfx')} <input type="checkbox" id="opt-sfx" ${state.settings.sfx ? 'checked' : ''}></label>
+      ${DEMO ? `<div class="banner">${t('demoBanner')}</div>` : ''}
+      ${isNative ? '' : `<div class="banner">${t('homeScreen')}</div>`}
+      <button class="btn ghost" id="reset-btn">${t('reset')}</button>
     </div>`);
+  sheetBody.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach((b) => {
+    b.onclick = () => {
+      state.settings.lang = b.dataset.lang as Lang;
+      setLang(state.settings.lang);
+      save(state);
+      applyStaticText();
+      renderAll();
+      showHint();
+      openMenu();
+    };
+  });
   $<HTMLInputElement>('opt-music').onchange = (e) => {
     state.settings.music = (e.target as HTMLInputElement).checked;
     unlockAudio();
@@ -527,9 +565,11 @@ function openMenu() {
     save(state);
   };
   $('reset-btn').onclick = () => {
-    if (confirm('Tüm ilerleme silinecek. Emin misin?')) {
+    if (confirm(t('resetConfirm'))) {
+      const lang = state.settings.lang;
       resetSave();
       state = newGame();
+      state.settings.lang = lang;
       currentRoom = 'salon';
       selectedCat = null;
       closeSheet();
@@ -540,26 +580,107 @@ function openMenu() {
 }
 
 $('btn-album').onclick = () => { sfx('tap'); openAlbum(); };
+$('btn-shop').onclick = () => { sfx('tap'); openUpgrades(); };
 $('btn-menu').onclick = () => { sfx('tap'); openMenu(); };
 $('level-pill').onclick = () => {
   const p = levelProgress(state.hearts);
-  toast(`Seviye ${p.level} · ${p.cur}/${p.need} ❤️ — kedileri sevdiği yerlere koy, dağınıklığı topla.`);
+  toast(t('levelToast', { level: p.level, cur: p.cur, need: p.need }));
 };
-$('fish-pill').onclick = () => toast(`Dakikada ${(totalIncome(state) * 60).toFixed(1)} 🐟 · Misafirler ayrılırken bahşiş bırakır.`);
+$('fish-pill').onclick = () => toast(t('fishToast', { rate: (totalIncome(state) * 60).toFixed(1) }));
+
+function applyStaticText() {
+  $('door-label').textContent = t('door');
+  $('btn-album').setAttribute('aria-label', t('album'));
+  $('btn-menu').setAttribute('aria-label', t('menu'));
+  $('btn-shop').setAttribute('aria-label', t('shopBtn'));
+  $('sheet-close').setAttribute('aria-label', t('close'));
+}
+
+// ---------- geliştirmeler ----------
+let upgTab: 'upg' | 'paper' = 'upg';
+function openUpgrades() {
+  if (state.tutorial === 4) advanceTutorial();
+  const lvl = levelOf(state.hearts);
+  openSheet(`
+    <h2>${t('upgTitle')}</h2>
+    <p class="sub">${t('upgSub')}</p>
+    <div class="tabs"><button data-tab="upg" class="${upgTab === 'upg' ? 'on' : ''}">${t('tabUpg')}</button><button data-tab="paper" class="${upgTab === 'paper' ? 'on' : ''}">${t('tabPaper')}</button></div>
+    <div id="upg-body"></div>`);
+  sheetBody.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((b) => {
+    b.onclick = () => { upgTab = b.dataset.tab as 'upg' | 'paper'; sfx('tap'); openUpgrades(); };
+  });
+  const body = $('upg-body');
+  if (upgTab === 'upg') {
+    body.className = 'stack';
+    for (const u of UPGRADES) {
+      const n = upg(state, u.id);
+      const maxed = n >= u.max;
+      const locked = lvl < u.unlockLevel;
+      const cost = upgradeCost(state, u.id);
+      const row = document.createElement('div');
+      row.className = 'upg';
+      row.innerHTML = `
+        <div class="ui">${u.icon}</div>
+        <div class="ut"><b>${upgName(u)}</b>${upgDesc(u)}
+          <div class="pips">${Array.from({ length: u.max }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div></div>
+        <button class="btn ${maxed ? 'ghost' : ''}" ${maxed || locked || state.fish < cost ? 'disabled' : ''}>
+          ${maxed ? t('maxed') : locked ? t('levelLock', { level: u.unlockLevel }) : `${fmt(cost)} 🐟`}</button>`;
+      row.querySelector('button')!.onclick = () => {
+        if (buyUpgrade(state, u.id) === 'ok') {
+          sfx('buy');
+          toast(t('boughtUpg', { name: upgName(u) }));
+          save(state);
+          refreshHud();
+          openUpgrades();
+        } else sfx('error');
+      };
+      body.appendChild(row);
+    }
+  } else {
+    const rs = state.rooms[currentRoom];
+    body.innerHTML = `<p class="sub">${t('paperSub', { room: roomName(ROOM_BY_ID[currentRoom]) })}</p><div class="grid" id="paper-grid"></div>`;
+    const grid = $('paper-grid');
+    const items: (WallpaperDef | null)[] = [null, ...WALLPAPERS];
+    for (const w of items) {
+      const id = w ? w.id : 'default';
+      const owned = !w || state.wallpapers.includes(w.id);
+      const applied = (rs.wallpaper ?? 'default') === id;
+      const locked = !!w && !owned && lvl < w.unlockLevel;
+      const card = document.createElement('button');
+      card.className = 'card' + (applied ? ' applied' : '') + (locked ? ' locked' : '') + (w && !owned && state.fish < w.price ? ' poor' : '');
+      card.appendChild(wallCanvas(w ?? undefined, 150, 86));
+      card.insertAdjacentHTML('beforeend', `
+        <div class="nm">${w ? paperName(w) : t('paperDefault')}</div>
+        <div class="price">${applied ? t('applied') : owned ? t('apply') : `${fmt(w!.price)} 🐟`}</div>
+        ${locked ? `<span class="lock">🔒 ${t('lvShort', { level: w!.unlockLevel })}</span>` : ''}`);
+      card.onclick = () => {
+        const res = useWallpaper(state, currentRoom, id);
+        if (res === 'bought' || res === 'applied') {
+          sfx(res === 'bought' ? 'buy' : 'tap');
+          if (res === 'bought') toast(t('boughtPaper', { name: paperName(w!) }));
+          save(state);
+          refreshHud();
+          openUpgrades();
+        } else {
+          sfx('error');
+          toast(res === 'fish' ? t('needFish', { n: fmt(w!.price - state.fish) }) : t('needLevel', { level: w!.unlockLevel }));
+        }
+      };
+      grid.appendChild(card);
+    }
+  }
+}
 
 // ---------- öğretici ----------
-const HINTS = [
-  'Kapıda bir kedi bekliyor! Ona dokun 👆',
-  'Şimdi parlayan mindere dokun. (Kediye ikinci kez dokunursan en iyi yere kendisi geçer.)',
-  'Daha çok misafir için kesikli “+” alana dokunup mobilya al. Kediler 🔥🌙🧶🪟 türlerini sever.',
-  'Kedilerin dağınıklıklarına ✨ dokunarak topla.',
-];
+const HINTS = ['hint0', 'hint1', 'hint2', 'hint3', 'hint4'] as const;
 function showHint() {
   if (state.tutorial >= HINTS.length || !sheetWrap.hidden) { hintEl.hidden = true; return; }
   if (state.tutorial === 0 && !state.queue.length) { hintEl.hidden = true; return; }
   if (state.tutorial === 2 && state.fish < 20) { hintEl.hidden = true; return; }
   if (state.tutorial === 3 && !state.messes.some((m) => m.room === currentRoom)) { hintEl.hidden = true; return; }
-  if (hintEl.textContent !== HINTS[state.tutorial]) hintEl.textContent = HINTS[state.tutorial];
+  if (state.tutorial === 4 && (levelOf(state.hearts) < 2 || state.fish < 150)) { hintEl.hidden = true; return; }
+  const text = t(HINTS[state.tutorial]);
+  if (hintEl.textContent !== text) hintEl.textContent = text;
   hintEl.hidden = false;
 }
 function advanceTutorial(to?: number) {
@@ -576,7 +697,7 @@ function refreshHud() {
     lastFishShown = f;
   }
   const rate = totalIncome(state) * 60;
-  $('rate').textContent = rate > 0 ? `+${rate.toFixed(1)}/dk` : '';
+  $('rate').textContent = rate > 0 ? `+${rate.toFixed(1)}${t('perMin')}` : '';
   const p = levelProgress(state.hearts);
   $('lvl').textContent = String(p.level);
   $<HTMLElement>('lvlbar').style.width = `${(p.cur / p.need) * 100}%`;
@@ -604,10 +725,10 @@ function handleEvents(events: GameEvent[], quiet = false) {
         petted.delete(e.cat.uid);
         if (!quiet && e.cat.room === currentRoom) {
           const g = slotGeo(e.cat.slot!);
-          floater(`👋 ${e.cat.name} +${e.fish}🐟 +${e.hearts}❤️`, g.x, g.y - unit() * 0.8, true);
+          floater(t('leaveFloat', { name: e.cat.name, fish: e.fish, hearts: e.hearts }), g.x, g.y - unit() * 0.8, true);
           sfx('leave');
         } else if (!quiet) {
-          toast(`👋 ${e.cat.name} teşekkür etti: +${e.fish}🐟 +${e.hearts}❤️`);
+          toast(t('leaveToast', { name: e.cat.name, fish: e.fish, hearts: e.hearts }));
         }
         break;
       }
@@ -650,6 +771,10 @@ function frame(now: number) {
       a.since = time + Math.random() * 2;
     }
   }
+  if (DEMO && state.hearts >= DEMO_MAX_HEARTS) {
+    state.hearts = DEMO_MAX_HEARTS;
+    if (!demoEndShown && sheetWrap.hidden) showDemoEnd();
+  }
   hudTimer += dt;
   if (hudTimer > 0.25) { refreshHud(); showHint(); hudTimer = 0; }
   saveTimer += dt;
@@ -667,7 +792,8 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   const room = ROOM_BY_ID[currentRoom];
   const rs = state.rooms[currentRoom];
-  drawRoom(ctx, room, W, H, time, hour(), seasonOf(month()), isFestive());
+  const paper = rs?.wallpaper ? WALLPAPER_BY_ID[rs.wallpaper] : undefined;
+  drawRoom(ctx, room, W, H, time, hour(), seasonOf(month()), isFestive(), paper);
   if (!rs) return;
   const u = unit();
   const selCat = selectedCat !== null ? state.queue.find((c) => c.uid === selectedCat) : undefined;
@@ -725,6 +851,18 @@ function draw() {
   for (const d of list) d.fn();
 }
 
+function showDemoEnd() {
+  demoEndShown = true;
+  sfx('level');
+  openSheet(`
+    <div class="hero">
+      <div class="big">🏔️💌</div>
+      <h2>${t('demoTitle')}</h2>
+      <p>${t('demoText')}</p>
+    </div>
+    <button class="btn" data-close style="width:100%">${t('demoBtn')}</button>`);
+}
+
 // ---------- açılış ----------
 function welcome() {
   const r = catchUp(state, Date.now(), Math.random, month());
@@ -734,28 +872,28 @@ function welcome() {
   const dailyReady = state.lastDaily !== today;
   const bits: string[] = [];
   if (r.seconds > 120 && (r.fish >= 1 || left.length)) {
-    bits.push(`<div class="banner">🌙 ${fmtTime(r.seconds)} yoktun. Misafirler <b>${fmt(r.fish)} 🐟</b> kazandırdı${left.length ? `, ${left.length} kedi teşekkür edip ayrıldı` : ''}.</div>`);
+    bits.push(`<div class="banner">${t('awayBanner', { time: fmtTime(r.seconds), fish: fmt(r.fish), left: left.length ? t('awayLeft', { n: left.length }) : '' })}</div>`);
   }
-  if (isFestive()) bits.push(`<div class="banner">❄️ <b>İlk Kar Festivali</b> başladı! Nadir <b>Kartopu</b> kedisi bu mevsim kapını çalabilir.</div>`);
-  else if (month() === 8 || month() === 9) bits.push(`<div class="banner">🍂 Sonbahar geldi! Nadir <b>Balkabağı</b> kedisi ortalıkta dolaşıyor.</div>`);
+  if (isFestive()) bits.push(`<div class="banner">${t('festival', { breed: breedName(BREED_BY_ID.kartopu) })}</div>`);
+  else if (month() === 8 || month() === 9) bits.push(`<div class="banner">${t('autumnBanner', { breed: breedName(BREED_BY_ID.balkabagi) })}</div>`);
   const isNew = state.served === 0 && state.guests.length === 0 && state.tutorial === 0;
   if (!dailyReady && !bits.length && !isNew) return;
   openSheet(`
     <div class="hero">
       <div class="big">${isNew ? '🏔️🐾' : '🏡☕'}</div>
-      <h2>${isNew ? 'Mırnav Hanı’na hoş geldin' : 'Tekrar hoş geldin!'}</h2>
-      <p>${isNew ? 'Dağ kasabasına kış geliyor. Bu eski hanı, soğukta kalan kediler için sıcacık bir yuvaya çevir.' : 'Şömine çıtırdıyor, kediler seni bekliyor.'}</p>
+      <h2>${isNew ? t('welcomeNew') : t('welcomeBack')}</h2>
+      <p>${isNew ? t('welcomeNewText') : t('welcomeBackText')}</p>
     </div>
     <div class="stack">
       ${bits.join('')}
-      ${dailyReady ? `<button class="btn alt" id="daily-btn">🎁 Günlük hediye: ${dailyAmount(state)} 🐟</button>` : ''}
-      <button class="btn" data-close>${isNew ? 'Kapıyı aç' : 'Devam et'}</button>
+      ${dailyReady ? `<button class="btn alt" id="daily-btn">${t('daily', { n: dailyAmount(state) })}</button>` : ''}
+      <button class="btn" data-close>${isNew ? t('openDoor') : t('continue')}</button>
     </div>`);
   const d = document.getElementById('daily-btn');
   if (d) d.onclick = () => {
     const amt = claimDaily(state, today);
     sfx('buy');
-    d.outerHTML = `<div class="banner">🎁 +${amt} 🐟 alındı. Yarın yine gel!</div>`;
+    d.outerHTML = `<div class="banner">${t('dailyTaken', { n: amt })}</div>`;
     refreshHud();
     save(state);
   };
@@ -768,7 +906,7 @@ document.addEventListener('visibilitychange', () => {
   } else {
     const r = catchUp(state, Date.now(), Math.random, month());
     handleEvents(r.events, true);
-    if (r.fish >= 1 && r.seconds > 30) toast(`Sen yokken +${fmt(r.fish)} 🐟`);
+    if (r.fish >= 1 && r.seconds > 30) toast(t('awayToast', { n: fmt(r.fish) }));
     last = performance.now();
   }
 });
@@ -777,11 +915,12 @@ window.addEventListener('pagehide', () => {
   save(state);
 });
 
+applyStaticText();
 renderAll();
 welcome();
 showHint();
 requestAnimationFrame(frame);
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+if ('serviceWorker' in navigator && import.meta.env.PROD && !isNative) {
   navigator.serviceWorker.register('./sw.js').catch(() => undefined);
 }

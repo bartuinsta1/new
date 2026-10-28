@@ -1,5 +1,5 @@
 // Basit çevrimdışı önbellek: önce ağ (HTML için), sonra önbellek.
-const CACHE = 'mirnav-v1';
+const CACHE = 'mirnav-v2';
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest', './icon.svg'])));
   self.skipWaiting();

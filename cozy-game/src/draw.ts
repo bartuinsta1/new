@@ -1,5 +1,5 @@
 // Tüm grafikler prosedürel çizilir: görsel dosyası yok, her ekranda keskin.
-import type { BreedDef, FurnitureDef, MessKind, RoomDef } from './data';
+import type { BreedDef, FurnitureDef, MessKind, RoomDef, WallpaperDef } from './data';
 
 type Ctx = CanvasRenderingContext2D;
 
@@ -651,13 +651,9 @@ function skyColors(hour: number): [string, string] {
 }
 
 /** Oda arka planı: duvar, pencere (mevsim+saat), zemin, halı, süsler. */
-export function drawRoom(ctx: Ctx, room: RoomDef, w: number, h: number, t: number, hour: number, season: Season, festive: boolean) {
+export function drawRoom(ctx: Ctx, room: RoomDef, w: number, h: number, t: number, hour: number, season: Season, festive: boolean, paper?: WallpaperDef) {
   const wallH = h * 0.47;
-  // duvar
-  ctx.fillStyle = room.wall;
-  ctx.fillRect(0, 0, w, wallH);
-  ctx.fillStyle = room.wallDark;
-  for (let x = 0; x < w; x += w / 12) ctx.fillRect(x, 0, w / 48, wallH);
+  drawWall(ctx, room, paper, w, wallH);
   // süpürgelik
   ctx.fillStyle = shade(room.floor, -0.25);
   ctx.fillRect(0, wallH - h * 0.02, w, h * 0.025);
@@ -813,6 +809,74 @@ export function drawRoom(ctx: Ctx, room: RoomDef, w: number, h: number, t: numbe
   if (night) {
     ctx.fillStyle = 'rgba(30,30,70,0.18)';
     ctx.fillRect(0, 0, w, h);
+  }
+}
+
+/** Duvar: odanın varsayılan çizgileri ya da satın alınmış duvar kâğıdı. */
+export function drawWall(ctx: Ctx, room: RoomDef, paper: WallpaperDef | undefined, w: number, wallH: number) {
+  ctx.fillStyle = paper ? paper.wall : room.wall;
+  ctx.fillRect(0, 0, w, wallH);
+  const ink = paper ? paper.ink : room.wallDark;
+  ctx.fillStyle = ink;
+  ctx.strokeStyle = ink;
+  const pattern = paper ? paper.pattern : 'stripes';
+  const step = Math.max(26, w / 12);
+  switch (pattern) {
+    case 'stripes':
+      for (let x = 0; x < w; x += w / 12) ctx.fillRect(x, 0, w / 48, wallH);
+      break;
+    case 'dots':
+      for (let y = step / 2, r = 0; y < wallH; y += step * 0.7, r++)
+        for (let x = (r % 2) * step * 0.5; x < w + step; x += step) { ellipse(ctx, x, y, step * 0.09, step * 0.09); ctx.fill(); }
+      break;
+    case 'snow':
+    case 'stars':
+      for (let y = step / 2, r = 0; y < wallH; y += step * 0.9, r++)
+        for (let x = (r % 2) * step * 0.6; x < w + step; x += step * 1.2) {
+          if (pattern === 'stars') star(ctx, x, y, step * 0.12);
+          else {
+            ctx.lineWidth = 1.5;
+            for (let k = 0; k < 3; k++) {
+              const a = (k * Math.PI) / 3;
+              ctx.beginPath();
+              ctx.moveTo(x - Math.cos(a) * step * 0.13, y - Math.sin(a) * step * 0.13);
+              ctx.lineTo(x + Math.cos(a) * step * 0.13, y + Math.sin(a) * step * 0.13);
+              ctx.stroke();
+            }
+          }
+        }
+      break;
+    case 'fish':
+      for (let y = step / 2, r = 0; y < wallH; y += step * 0.8, r++)
+        for (let x = (r % 2) * step * 0.6; x < w + step; x += step * 1.2) {
+          ellipse(ctx, x, y, step * 0.16, step * 0.08); ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(x + step * 0.12, y);
+          ctx.lineTo(x + step * 0.26, y - step * 0.08);
+          ctx.lineTo(x + step * 0.26, y + step * 0.08);
+          ctx.fill();
+        }
+      break;
+    case 'hearts':
+      for (let y = step / 2, r = 0; y < wallH; y += step * 0.85, r++)
+        for (let x = (r % 2) * step * 0.6; x < w + step; x += step * 1.2) {
+          const z = step * 0.09;
+          ctx.beginPath();
+          ctx.moveTo(x, y + z * 1.2);
+          ctx.bezierCurveTo(x - z * 2, y - z * 0.4, x - z * 0.8, y - z * 1.8, x, y - z * 0.6);
+          ctx.bezierCurveTo(x + z * 0.8, y - z * 1.8, x + z * 2, y - z * 0.4, x, y + z * 1.2);
+          ctx.fill();
+        }
+      break;
+    case 'diamond':
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.7;
+      for (let x = -wallH; x < w + wallH; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + wallH, wallH); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x + wallH, 0); ctx.lineTo(x, wallH); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      break;
   }
 }
 

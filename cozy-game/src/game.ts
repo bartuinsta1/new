@@ -1,7 +1,8 @@
 // Saf oyun mantığı: DOM/canvas bilmez, test edilebilir.
 import {
   BREEDS, BREED_BY_ID, CAT_NAMES, FURNITURE_BY_ID, LEVEL_HEARTS, MAX_LEVEL, MESS_KINDS,
-  RARITY_WEIGHT, ROOMS, ROOM_BY_ID, type BreedDef, type MessKind, type Tag,
+  RARITY_WEIGHT, ROOMS, ROOM_BY_ID, UPGRADE_BY_ID, WALLPAPER_BY_ID, type BreedDef, type MessKind, type Tag,
+  type UpgradeId,
 } from './data';
 
 export type Rand = () => number;
@@ -30,6 +31,7 @@ export interface Mess {
 
 export interface RoomState {
   furniture: (string | null)[];
+  wallpaper?: string;
 }
 
 export interface GameState {
@@ -50,7 +52,9 @@ export interface GameState {
   cleaned: number;
   served: number;
   tutorial: number;
-  settings: { music: boolean; sfx: boolean };
+  upgrades: Partial<Record<UpgradeId, number>>;
+  wallpapers: string[];
+  settings: { music: boolean; sfx: boolean; lang: 'tr' | 'en' | null };
 }
 
 export type GameEvent =
@@ -84,8 +88,14 @@ export function newGame(now = Date.now()): GameState {
     cleaned: 0,
     served: 0,
     tutorial: 0,
-    settings: { music: true, sfx: true },
+    upgrades: {},
+    wallpapers: [],
+    settings: { music: true, sfx: true, lang: null },
   };
+}
+
+export function upg(s: GameState, id: UpgradeId): number {
+  return s.upgrades[id] ?? 0;
 }
 
 export function levelOf(hearts: number): number {
@@ -142,7 +152,7 @@ export function catIncome(s: GameState, cat: Cat): number {
   if (cat.room === undefined) return 0;
   const rarity = BREED_BY_ID[cat.breed]?.rarity ?? 1;
   const comfort = roomComfort(s, cat.room);
-  return BASE_INCOME * (1 + comfort * 0.08) * (isMatch(s, cat) ? 2 : 1) * (1 + 0.2 * (rarity - 1));
+  return BASE_INCOME * (1 + comfort * 0.08) * (isMatch(s, cat) ? 2 : 1) * (1 + 0.2 * (rarity - 1)) * (1 + 0.1 * upg(s, 'mama'));
 }
 
 export function totalIncome(s: GameState): number {
@@ -168,7 +178,7 @@ const TAGS: Tag[] = ['sicak', 'sessiz', 'oyun', 'manzara'];
 
 export function makeCat(s: GameState, rand: Rand, month: number): Cat {
   const breed = pickBreed(levelOf(s.hearts), month, rand);
-  const stay = Math.round(150 + rand() * 210);
+  const stay = Math.round((150 + rand() * 210) * (1 + 0.1 * upg(s, 'battaniye')));
   return {
     uid: s.nextId++,
     breed: breed.id,
@@ -200,7 +210,7 @@ function departReward(s: GameState, cat: Cat): { fish: number; hearts: number } 
   const rarity = BREED_BY_ID[cat.breed]?.rarity ?? 1;
   const match = isMatch(s, cat);
   const comfort = roomComfort(s, cat.room!);
-  const fish = Math.round(8 + rarity * 6 + comfort);
+  const fish = Math.round((8 + rarity * 6 + comfort) * (1 + 0.15 * upg(s, 'kartpostal')));
   const hearts = 1 + (match ? 1 : 0) + (rarity >= 3 ? 1 : 0) + (comfort >= 12 ? 1 : 0);
   return { fish, hearts };
 }
@@ -240,7 +250,7 @@ export function tick(s: GameState, dt: number, rand: Rand, month: number): GameE
       s.queue.push(cat);
       events.push({ type: 'arrive', cat });
     }
-    s.catTimer = Math.max(8, 26 - level * 1.5) + rand() * 12;
+    s.catTimer = (Math.max(8, 26 - level * 1.5) + rand() * 12) * (1 - 0.07 * upg(s, 'zil'));
   }
 
   s.messTimer -= dt;
@@ -321,7 +331,7 @@ export function cleanMess(s: GameState, id: number): { fish: number; hearts: num
   const i = s.messes.findIndex((m) => m.id === id);
   if (i < 0) return null;
   s.messes.splice(i, 1);
-  const fish = 2 + levelOf(s.hearts);
+  const fish = 2 + levelOf(s.hearts) + 2 * upg(s, 'supurge');
   s.fish += fish;
   s.totalFish += fish;
   s.cleaned++;
@@ -342,6 +352,48 @@ export function unlockRoom(s: GameState, id: string): UnlockResult {
   s.fish -= r.price;
   s.rooms[id] = { furniture: [null, null, null, null, null, null] };
   return 'ok';
+}
+
+export function upgradeCost(s: GameState, id: UpgradeId): number {
+  const u = UPGRADE_BY_ID[id];
+  return Math.round(u.baseCost * Math.pow(u.growth, upg(s, id)));
+}
+
+export type UpgradeResult = 'ok' | 'fish' | 'level' | 'max';
+
+export function buyUpgrade(s: GameState, id: UpgradeId): UpgradeResult {
+  const u = UPGRADE_BY_ID[id];
+  if (upg(s, id) >= u.max) return 'max';
+  if (levelOf(s.hearts) < u.unlockLevel) return 'level';
+  const cost = upgradeCost(s, id);
+  if (s.fish < cost) return 'fish';
+  s.fish -= cost;
+  s.upgrades[id] = upg(s, id) + 1;
+  return 'ok';
+}
+
+export type WallpaperResult = 'bought' | 'applied' | 'fish' | 'level' | 'locked';
+
+/** Sahip değilse satın alır; her durumda odaya uygular. 'default' oda rengine döner. */
+export function useWallpaper(s: GameState, room: string, id: string): WallpaperResult {
+  const rs = s.rooms[room];
+  if (!rs) return 'locked';
+  if (id === 'default') {
+    delete rs.wallpaper;
+    return 'applied';
+  }
+  const w = WALLPAPER_BY_ID[id];
+  if (!w) return 'locked';
+  if (s.wallpapers.includes(id)) {
+    rs.wallpaper = id;
+    return 'applied';
+  }
+  if (levelOf(s.hearts) < w.unlockLevel) return 'level';
+  if (s.fish < w.price) return 'fish';
+  s.fish -= w.price;
+  s.wallpapers.push(id);
+  rs.wallpaper = id;
+  return 'bought';
 }
 
 export function dayKey(d: Date): string {
@@ -380,8 +432,11 @@ export function load(storage: Pick<Storage, 'getItem'> = localStorage): GameStat
     const merged = { ...base, ...data, settings: { ...base.settings, ...data.settings } };
     // bilinmeyen oda/mobilya kalıntılarını temizle
     for (const id of Object.keys(merged.rooms)) if (!ROOM_BY_ID[id]) delete merged.rooms[id];
-    for (const rs of Object.values(merged.rooms))
+    for (const rs of Object.values(merged.rooms)) {
       rs.furniture = rs.furniture.map((f) => (f && FURNITURE_BY_ID[f] ? f : null));
+      if (rs.wallpaper && !WALLPAPER_BY_ID[rs.wallpaper]) delete rs.wallpaper;
+    }
+    merged.wallpapers = merged.wallpapers.filter((w) => WALLPAPER_BY_ID[w]);
     merged.guests = merged.guests.filter((c) => c.room && merged.rooms[c.room] && BREED_BY_ID[c.breed]);
     merged.queue = merged.queue.filter((c) => BREED_BY_ID[c.breed]);
     return merged;

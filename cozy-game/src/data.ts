@@ -133,3 +133,48 @@ export const MAX_LEVEL = LEVEL_HEARTS.length;
 
 export const RARITY_WEIGHT: Record<Rarity, number> = { 1: 60, 2: 26, 3: 11, 4: 4 };
 export const RARITY_LABEL: Record<Rarity, string> = { 1: 'Sıradan', 2: 'Tatlı', 3: 'Nadir', 4: 'Efsanevi' };
+
+/** Han geliştirmeleri: her seviyede fiyat katlanır, geç oyun için balık harcama alanı. */
+export type UpgradeId = 'mama' | 'zil' | 'battaniye' | 'supurge' | 'kartpostal';
+export interface UpgradeDef {
+  id: UpgradeId;
+  icon: string;
+  name: string;
+  desc: string;
+  baseCost: number;
+  growth: number;
+  max: number;
+  unlockLevel: number;
+}
+
+export const UPGRADES: UpgradeDef[] = [
+  { id: 'mama', icon: '🍲', name: 'Sıcak Mama', desc: 'Kedilerin kazandırdığı balık +%10', baseCost: 150, growth: 1.75, max: 15, unlockLevel: 2 },
+  { id: 'supurge', icon: '🧹', name: 'Sihirli Süpürge', desc: 'Temizlik ödülü +2 🐟', baseCost: 120, growth: 1.7, max: 10, unlockLevel: 2 },
+  { id: 'zil', icon: '🔔', name: 'Kapı Zili', desc: 'Kediler %7 daha sık gelir', baseCost: 250, growth: 1.85, max: 8, unlockLevel: 3 },
+  { id: 'battaniye', icon: '🧣', name: 'Örgü Battaniye', desc: 'Kediler %10 daha uzun kalır', baseCost: 300, growth: 1.8, max: 10, unlockLevel: 4 },
+  { id: 'kartpostal', icon: '💌', name: 'Kartpostal Rafı', desc: 'Veda bahşişi +%15', baseCost: 400, growth: 1.85, max: 15, unlockLevel: 5 },
+];
+export const UPGRADE_BY_ID = Object.fromEntries(UPGRADES.map((u) => [u.id, u])) as Record<UpgradeId, UpgradeDef>;
+
+export type WallPattern = 'stripes' | 'dots' | 'snow' | 'fish' | 'stars' | 'hearts' | 'diamond';
+export interface WallpaperDef {
+  id: string;
+  name: string;
+  price: number;
+  unlockLevel: number;
+  wall: string;
+  /** desen rengi */
+  ink: string;
+  pattern: WallPattern;
+}
+
+export const WALLPAPERS: WallpaperDef[] = [
+  { id: 'cilek', name: 'Çilek Sütü', price: 400, unlockLevel: 2, wall: '#f3d6d3', ink: '#e8b7b2', pattern: 'dots' },
+  { id: 'nane', name: 'Nane Şekeri', price: 800, unlockLevel: 3, wall: '#d4ecdd', ink: '#f4fbf6', pattern: 'stripes' },
+  { id: 'kar', name: 'Kar Tanesi', price: 1500, unlockLevel: 4, wall: '#d6e5f2', ink: '#ffffff', pattern: 'snow' },
+  { id: 'balik', name: 'Balık Desenli', price: 2500, unlockLevel: 5, wall: '#f4e7cb', ink: '#8fb1cf', pattern: 'fish' },
+  { id: 'gece', name: 'Gece Mavisi', price: 4500, unlockLevel: 6, wall: '#3f4a6e', ink: '#f5e27a', pattern: 'stars' },
+  { id: 'kalp', name: 'Kalpli Kâğıt', price: 8000, unlockLevel: 8, wall: '#f6e0e7', ink: '#e98aa6', pattern: 'hearts' },
+  { id: 'altin', name: 'Altın Varak', price: 15000, unlockLevel: 10, wall: '#5a3f2e', ink: '#d8b26a', pattern: 'diamond' },
+];
+export const WALLPAPER_BY_ID: Record<string, WallpaperDef> = Object.fromEntries(WALLPAPERS.map((w) => [w.id, w]));

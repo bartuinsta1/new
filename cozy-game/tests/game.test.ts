@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   bestSeatFor, buyFurniture, catchUp, claimDaily, cleanMess, freeSeats, levelOf, load, newGame,
   placeCat, removeFurniture, save, tick, totalIncome, unlockRoom, OFFLINE_CAP,
+  buyUpgrade, upgradeCost, useWallpaper, catIncome,
 } from '../src/game';
 
 function seq(...vals: number[]) {
@@ -97,5 +98,36 @@ describe('oyun mantığı', () => {
     s.fish = 123;
     save(s, st);
     expect(load(st)?.fish).toBe(123);
+  });
+
+  it('geliştirmeler pahalanır ve gelir artırır', () => {
+    const s = newGame(0);
+    s.fish = 10000;
+    expect(buyUpgrade(s, 'mama')).toBe('level');
+    s.hearts = 6;
+    tick(s, 3, half, 10);
+    const cat = s.queue[0];
+    placeCat(s, cat.uid, bestSeatFor(s, cat)!);
+    const before = catIncome(s, s.guests[0]);
+    const c1 = upgradeCost(s, 'mama');
+    expect(buyUpgrade(s, 'mama')).toBe('ok');
+    expect(upgradeCost(s, 'mama')).toBeGreaterThan(c1);
+    expect(catIncome(s, s.guests[0])).toBeCloseTo(before * 1.1);
+    s.fish = 1e9;
+    for (let i = 0; i < 30; i++) buyUpgrade(s, 'mama');
+    expect(buyUpgrade(s, 'mama')).toBe('max');
+  });
+
+  it('duvar kağıdı bir kez alınır, her odaya uygulanır', () => {
+    const s = newGame(0);
+    s.hearts = 6;
+    s.fish = 500;
+    expect(useWallpaper(s, 'salon', 'cilek')).toBe('bought');
+    expect(s.fish).toBe(100);
+    expect(useWallpaper(s, 'salon', 'default')).toBe('applied');
+    expect(s.rooms.salon.wallpaper).toBeUndefined();
+    expect(useWallpaper(s, 'salon', 'cilek')).toBe('applied');
+    expect(s.fish).toBe(100);
+    expect(useWallpaper(s, 'salon', 'kar')).toBe('level');
   });
 });
