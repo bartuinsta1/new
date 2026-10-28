@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#3b2b25" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Karlı bir dağ kasabasında sokak kedilerine sıcak bir yuva aç. Rahatlatıcı kedi pansiyonu oyunu." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Mırnav Hanı</title>
+</head>
+<body>
+  <div id="app">
+    <header id="hud">
+      <div class="pill" id="fish-pill"><span class="ico">🐟</span><b id="fish">0</b><small id="rate"></small></div>
+      <div class="pill level" id="level-pill"><span class="ico">❤️</span><b id="lvl">1</b><div class="bar"><i id="lvlbar"></i></div></div>
+      <button class="icon-btn" id="btn-album" aria-label="Kedi albümü">📖</button>
+      <button class="icon-btn" id="btn-menu" aria-label="Ayarlar">⚙️</button>
+    </header>
+    <section id="door" aria-label="Kapıda bekleyen kediler">
+      <div class="door-label">🚪<span>Kapıda</span></div>
+      <div id="queue"></div>
+    </section>
+    <main id="stage">
+      <canvas id="scene"></canvas>
+      <div id="floaters"></div>
+      <div id="hint" hidden></div>
+    </main>
+    <nav id="rooms"></nav>
+    <div id="sheet-wrap" hidden>
+      <div id="sheet" role="dialog" aria-modal="true">
+        <button class="close" id="sheet-close" aria-label="Kapat">✕</button>
+        <div id="sheet-body"></div>
+      </div>
+    </div>
+    <div id="toast" aria-live="polite"></div>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
