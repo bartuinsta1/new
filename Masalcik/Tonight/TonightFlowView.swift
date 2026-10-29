@@ -248,7 +248,7 @@ struct StoryBookWaiting: View {
     var body: some View {
         VStack(spacing: Metrics.spacingL) {
             ZStack {
-                if !reduceMotion {
+                if !reduceMotion && PerformanceBudget.current.showsFlyingStars {
                     TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
                         FlyingStars(time: ctx.date.timeIntervalSinceReferenceDate)
                     }
@@ -341,7 +341,9 @@ private struct LibraryOfferView: View {
             if PaywallPolicy.canOffer(family: families.first) { ForParentsLink() }
         }
         .task {
-            items = ((try? await appState.api.library()) ?? []).filter(\.isFree).prefix(4).map { $0 }
+            let owned = Set(families.first?.entitlement?.ownedProductIDs ?? [])
+            items = ((try? await appState.api.library()) ?? [])
+                .filter { PackVisibility.isPlayableWithoutPremium($0, ownedPacks: owned) }.prefix(4).map { $0 }
         }
     }
 }

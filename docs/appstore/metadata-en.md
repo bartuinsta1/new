@@ -46,6 +46,9 @@ FREE AND PREMIUM
 Free: 1 personal story every day and 3 library stories a week. No credits, no tokens.
 Masalcık Premium: up to 10 personal stories a day, the full library and stories in your own voice. Monthly or yearly, with a 7-day free trial.
 
+STORY SHOP
+Buy-once packs you keep forever: the "Tales from Dede Korkut" and "Space Journey" story packs and "Festive Outfits" for the characters. Not included in Premium; Family Sharing is on. No tokens or credits. The shop is behind the parental gate.
+
 Payment is charged to your Apple Account. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in iPhone Settings › Apple Account › Subscriptions.
 
 Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

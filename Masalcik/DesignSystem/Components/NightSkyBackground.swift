@@ -11,6 +11,8 @@ struct NightSkyBackground: View {
     var showsMoon = true
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Eski cihazda / Düşük Güç Modu'nda daha az yıldız ve daha düşük kare hızı.
+    private let budget = PerformanceBudget.current
 
     /// Hareketi Azalt açıksa ya da masalın son bölümünde (kararma ≥ %80) gökyüzü durağandır.
     private var isStatic: Bool { reduceMotion || dimming >= 0.8 }
@@ -20,7 +22,7 @@ struct NightSkyBackground: View {
 
     var body: some View {
         // Pil: 24 fps yeterli (yıldız kırpışması yavaş); ekran neredeyse karardığında animasyon tamamen durur.
-        TimelineView(.animation(minimumInterval: 1 / 24, paused: isStatic)) { context in
+        TimelineView(.animation(minimumInterval: 1 / budget.framesPerSecond, paused: isStatic)) { context in
             let t = isStatic ? 0 : context.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
                 // Gökyüzü gradyanı
@@ -29,10 +31,11 @@ struct NightSkyBackground: View {
                                                startPoint: .zero, endPoint: CGPoint(x: 0, y: size.height)))
                 // Uzak katman: yıldızlar (parallax ×0.2)
                 let far = CGSize(width: parallax.width * 0.2, height: parallax.height * 0.2)
-                for s in Self.stars {
-                    let twinkle = 0.55 + 0.45 * sin(t * s.speed + s.phase)
-                    let r = s.radius
-                    let p = CGPoint(x: s.x * size.width + far.width, y: s.y * size.height * 0.75 + far.height)
+                for s in Self.stars.prefix(budget.stars) {
+                    let twinkle: Double = 0.55 + 0.45 * sin(t * s.speed + s.phase)
+                    let r = CGFloat(s.radius)
+                    let p = CGPoint(x: CGFloat(s.x) * size.width + far.width,
+                                    y: CGFloat(s.y) * size.height * 0.75 + far.height)
                     ctx.fill(Path(ellipseIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)),
                              with: .color(Palette.moon.opacity(twinkle)))
                 }
@@ -57,12 +60,12 @@ struct NightSkyBackground: View {
                 ctx.fill(hills, with: .color(Color(hex: "#2A2260")))
                 // Ateş böcekleri (en yakın katman)
                 if showsFireflies {
-                    for f in Self.fireflies {
-                        let dx = sin(t * f.speed * 0.3 + f.phase) * 18
-                        let dy = cos(t * f.speed * 0.25 + f.phase) * 12
-                        let glow = 0.4 + 0.6 * max(0, sin(t * f.speed * 0.6 + f.phase))
-                        let p = CGPoint(x: f.x * size.width + dx + parallax.width,
-                                        y: (0.55 + f.y * 0.42) * size.height + dy + parallax.height)
+                    for f in Self.fireflies.prefix(budget.fireflies) {
+                        let dx = CGFloat(sin(t * f.speed * 0.3 + f.phase) * 18)
+                        let dy = CGFloat(cos(t * f.speed * 0.25 + f.phase) * 12)
+                        let glow: Double = 0.4 + 0.6 * max(0, sin(t * f.speed * 0.6 + f.phase))
+                        let p = CGPoint(x: CGFloat(f.x) * size.width + dx + parallax.width,
+                                        y: CGFloat(0.55 + f.y * 0.42) * size.height + dy + parallax.height)
                         ctx.fill(Path(ellipseIn: CGRect(x: p.x - 9, y: p.y - 9, width: 18, height: 18)),
                                  with: .color(Palette.firefly.opacity(0.18 * glow)))
                         ctx.fill(Path(ellipseIn: CGRect(x: p.x - 2.5, y: p.y - 2.5, width: 5, height: 5)),

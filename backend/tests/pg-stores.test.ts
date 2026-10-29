@@ -3,7 +3,7 @@
 import { after, before, beforeEach, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  connect, deleteAuthUser, PgAnalyticsStore, PgCloneVoiceStore, PgCostLog, PgFlagLog, PgReferralStore, PgShareStore, PgStores,
+  connect, deleteAuthUser, PgAnalyticsStore, PgCloneVoiceStore, PgPurchaseStore, PgCostLog, PgFlagLog, PgReferralStore, PgShareStore, PgStores,
   PgStoryStore, type Sql,
 } from "../supabase/functions/_shared/pg/stores.ts";
 import { createEntitlementsHandler } from "../supabase/functions/entitlements/handler.ts";
@@ -36,7 +36,7 @@ describe("Postgres depoları", { skip: !url && "TEST_DATABASE_URL yok" }, () => 
   before(() => { sql = connect(url!, { max: 2 }); });
   beforeEach(async () => {
     await sql`truncate usage_daily, library_usage_weekly, entitlements, stories, story_shares, referral_codes,
-              referral_redemptions, voice_clones, flagged_content, cost_log, auth.users cascade`;
+              referral_redemptions, voice_clones, flagged_content, cost_log, purchases, auth.users cascade`;
   });
   after(async () => { await sql.end(); });
 
@@ -153,6 +153,22 @@ describe("Postgres depoları", { skip: !url && "TEST_DATABASE_URL yok" }, () => 
     assert.equal((await redeem()).status, 409);
     assert.equal(await stores.isPremium(a), true);
     assert.equal(await stores.isPremium(b), true);
+  });
+
+  test("paket sahipliği: ver, geri yüklemede taşı, iade, silme", async () => {
+    const p = new PgPurchaseStore(sql);
+    const a = await newUser(), b = await newUser();
+    await p.grant(a, "masalcik.pack.space", "tx-1", "Sandbox");
+    await p.grant(a, "masalcik.pack.dedekorkut", "tx-2", "Sandbox");
+    assert.deepEqual(await p.owned(a), ["masalcik.pack.dedekorkut", "masalcik.pack.space"]);
+    await p.grant(b, "masalcik.pack.space", "tx-1", "Sandbox");
+    assert.deepEqual(await p.owned(a), ["masalcik.pack.dedekorkut"]);
+    assert.equal(await p.ownerOf("tx-1"), b);
+    await p.revoke("tx-1");
+    assert.deepEqual(await p.owned(b), []);
+    await assert.rejects(p.grant(a, "masalcik.premium.yearly", "tx-3", "Sandbox"), "yalnızca paket ürünleri");
+    await p.deleteUser(a);
+    assert.deepEqual(await p.owned(a), []);
   });
 
   test("anonim sayaç birikir, boyut sırası önemsiz", async () => {

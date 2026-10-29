@@ -13,6 +13,8 @@ protocol StoryAPI: Sendable {
     func createVoiceClone(sample: Data, consentedAt: Date) async throws -> VoiceCloneResponseDTO
     /// `DELETE /voice-clone`
     func deleteVoiceClone() async throws
+    /// `GET /library/packs` — Masal Dükkanı kataloğu ve bu hesabın sahip oldukları.
+    func packs() async throws -> [PackDTO]
     /// `GET /library/:id` — kitaplık masalının tamamı. Ücretsiz haftalık hak sunucuda sayılır.
     func libraryStory(id: String) async throws -> StoryDTO
     /// `POST /entitlements/verify` — StoreKit 2 JWS işlemini sunucuda doğrular (nil: yalnızca durum sorgusu).
@@ -35,6 +37,9 @@ extension StoryAPI {
     func generateStory(_ request: StoryRequest) -> AsyncThrowingStream<StoryStreamEvent, Error> {
         generateStory(request, idempotencyKey: UUID().uuidString)
     }
+
+    /// Varsayılan (test sahteleri): dükkân boş.
+    func packs() async throws -> [PackDTO] { [] }
 
     /// Varsayılan (test sahteleri): kitaplık masalı da saklanan masal gibi okunur.
     func libraryStory(id: String) async throws -> StoryDTO { try await story(id: id) }
@@ -75,7 +80,7 @@ enum APICoding {
 
 /// NDJSON akış satırı. Backend `{"type":"paragraph","paragraph":{…}}` biçiminde gönderir.
 struct StreamLine: Decodable {
-    enum Kind: String, Decodable { case started, paragraph, completed, error }
+    enum Kind: String, Decodable { case progress, started, paragraph, completed, error }
     var type: Kind
     var id: String?
     var title: String?

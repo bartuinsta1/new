@@ -90,7 +90,7 @@ struct AvatarArt: View {
         let template = clamp(config.faceTemplate)
         let eyeSize: CGFloat = template == 4 ? 20 : 15
         ZStack {
-            ForEach([-1.0, 1.0], id: \.self) { side in
+            ForEach([CGFloat(-1), CGFloat(1)], id: \.self) { (side: CGFloat) in
                 Group {
                     if mood == .sleepy {
                         ClosedEye().stroke(Palette.ink, style: StrokeStyle(lineWidth: 4, lineCap: .round))
@@ -110,7 +110,7 @@ struct AvatarArt: View {
                 .position(x: 100 + side * 22, y: 92)
             }
             // Yanaklar + çiller
-            ForEach([-1.0, 1.0], id: \.self) { side in
+            ForEach([CGFloat(-1), CGFloat(1)], id: \.self) { (side: CGFloat) in
                 Ellipse().fill(Palette.berry.opacity(0.4)).frame(width: 16, height: 10).position(x: 100 + side * 34, y: 108)
                 if template == 2 || template == 5 {
                     ForEach(0..<3, id: \.self) { i in

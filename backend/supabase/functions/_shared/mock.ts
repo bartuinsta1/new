@@ -2,6 +2,7 @@
 // Adım 5'te gerçek LLM + TTS hattıyla değişecek.
 import type { CharacterID, Language, LibraryItem, Region, Story, StoryRequest } from "./contract.ts";
 import { dative, locative } from "./turkish.ts";
+import { PACKS } from "./packs.ts";
 
 export const REGION_TITLES: Record<Language, Record<Region, string>> = {
   tr: {
@@ -92,9 +93,13 @@ const LIB: [string, string, string, Region, number, boolean][] = [
 ];
 
 export function mockLibrary(lang: Language): LibraryItem[] {
-  return LIB.map(([id, tr, en, region, duration_minutes, is_free]) => ({
-    id, title: lang === "tr" ? tr : en, region, duration_minutes, is_free,
+  const base: LibraryItem[] = LIB.map(([id, tr, en, region, duration_minutes, is_free]) => ({
+    id, title: lang === "tr" ? tr : en, region, duration_minutes, is_free, pack_id: null,
   }));
+  const packed: LibraryItem[] = PACKS.flatMap((p) => (p.stories ?? []).map((s) => ({
+    id: s.id, title: s[lang], region: s.region, duration_minutes: s.minutes, is_free: false, pack_id: p.id,
+  })));
+  return [...base, ...packed];
 }
 
 /**

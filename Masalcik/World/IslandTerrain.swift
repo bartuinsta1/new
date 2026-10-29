@@ -78,8 +78,8 @@ enum IslandShape {
         var rng = SplitMix64(seed: seed)
         let c = WorldLayout.islandCenter, r = WorldLayout.islandRadius
         return (0..<count).map { i in
-            let a = Double(i) / Double(count) * 2 * .pi
-            let wobble = 0.96 + rng.nextUnit() * 0.1
+            let a = CGFloat(i) / CGFloat(count) * 2 * .pi
+            let wobble = CGFloat(0.96 + rng.nextUnit() * 0.1)
             return CGPoint(x: c.x + cos(a) * r * wobble, y: c.y + sin(a) * r * wobble)
         }
     }
@@ -112,8 +112,8 @@ enum IslandShape {
         var rng = SplitMix64(seed: seed)
         let c = WorldLayout.islandCenter
         return (0..<count).map { _ in
-            let a = rng.nextUnit() * 2 * .pi
-            let d = (0.35 + rng.nextUnit() * 0.5) * WorldLayout.islandRadius
+            let a = CGFloat(rng.nextUnit() * 2 * .pi)
+            let d = CGFloat(0.35 + rng.nextUnit() * 0.5) * WorldLayout.islandRadius
             return CGPoint(x: c.x + cos(a) * d, y: c.y + sin(a) * d)
         }
     }

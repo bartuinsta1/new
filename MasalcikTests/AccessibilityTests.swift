@@ -50,3 +50,22 @@ struct TapTargetTests {
         #expect(BubbleButton.Size.regular.side >= 44)
     }
 }
+
+@Suite("Performans bütçesi")
+struct PerformanceBudgetTests {
+    @Test func eskiCihazlarHafifCalisir() {
+        #expect(PerformanceBudget.make(memoryBytes: 3_000_000_000, modelIdentifier: "iPhone11,8", lowPowerMode: false,
+                                       thermalState: .nominal) == .reduced)      // iPhone XR
+        #expect(PerformanceBudget.make(memoryBytes: 4_000_000_000, modelIdentifier: "iPhone11,2", lowPowerMode: false,
+                                       thermalState: .nominal) == .reduced)      // iPhone XS
+        #expect(PerformanceBudget.make(memoryBytes: 6_000_000_000, modelIdentifier: "iPhone15,2", lowPowerMode: false,
+                                       thermalState: .nominal) == .full)
+    }
+
+    @Test func dusukGucVeIsinmadaHafifler() {
+        #expect(PerformanceBudget.make(memoryBytes: 8_000_000_000, modelIdentifier: "iPhone17,1", lowPowerMode: true,
+                                       thermalState: .nominal) == .reduced)
+        #expect(PerformanceBudget.make(memoryBytes: 8_000_000_000, modelIdentifier: "iPhone17,1", lowPowerMode: false,
+                                       thermalState: .serious) == .reduced)
+    }
+}

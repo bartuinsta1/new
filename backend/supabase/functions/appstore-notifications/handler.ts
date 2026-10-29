@@ -5,12 +5,13 @@
 // aynı bildirimi tekrar dener — işlemler idempotent (aynı abonelik kaydı tekrar yazılır).
 import { type AppStoreVerifier, AppStoreVerificationError, subscriptionFrom } from "../_shared/appstore.ts";
 import { type EntitlementStore, errorResponse } from "../_shared/http.ts";
+import { PACK_IDS, type PurchaseStore } from "../_shared/packs.ts";
 
 /** Erişimi hemen kapatan olaylar. EXPIRED ve GRACE_PERIOD_EXPIRED de süre dolduğu için kapanır. */
 const REVOKING = new Set(["REFUND", "REVOKE", "EXPIRED", "GRACE_PERIOD_EXPIRED"]);
 
 export function createAppStoreNotificationsHandler(deps: {
-  verifier?: AppStoreVerifier; entitlements: EntitlementStore; now?: () => Date;
+  verifier?: AppStoreVerifier; entitlements: EntitlementStore; purchases?: PurchaseStore; now?: () => Date;
 }) {
   const now = deps.now ?? (() => new Date());
   return async (req: Request): Promise<Response> => {
@@ -25,6 +26,13 @@ export function createAppStoreNotificationsHandler(deps: {
       const signedTx = n.data?.signedTransactionInfo;
       if (!signedTx) return new Response(null, { status: 200 }); // TEST bildirimi vb.
       const tx = await deps.verifier.verifyTransaction(signedTx);
+      if (PACK_IDS.includes(tx.productId)) {
+        // Tek seferlik paket: yalnızca iade/iptal önemli (yenileme yok).
+        if (REVOKING.has(n.notificationType) || tx.revocationDate !== undefined) {
+          await deps.purchases?.revoke(tx.originalTransactionId);
+        }
+        return new Response(null, { status: 200 });
+      }
       const owner = await deps.entitlements.userForOriginalTransaction(tx.originalTransactionId);
       if (!owner) return new Response(null, { status: 200 }); // henüz uygulamadan doğrulanmamış abonelik
 

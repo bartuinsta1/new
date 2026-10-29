@@ -1,7 +1,68 @@
 {
   "identifier": "8E5C1D1A-6C1F-4C2B-9A55-6A1B3C7D9E01",
   "nonRenewingSubscriptions": [],
-  "products": [],
+  "products": [
+    {
+      "displayPrice": "59.99",
+      "familyShareable": true,
+      "internalID": "6740000101",
+      "localizations": [
+        {
+          "description": "Dört sakin uyku masalı.",
+          "displayName": "Dede Korkut'tan Esintiler",
+          "locale": "tr"
+        },
+        {
+          "description": "Four calm bedtime tales.",
+          "displayName": "Tales from Dede Korkut",
+          "locale": "en_GB"
+        }
+      ],
+      "productID": "masalcik.pack.dedekorkut",
+      "referenceName": "Dede Korkut'tan Esintiler",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "59.99",
+      "familyShareable": true,
+      "internalID": "6740000102",
+      "localizations": [
+        {
+          "description": "Yıldızların arasında dört masal.",
+          "displayName": "Uzay Yolculuğu",
+          "locale": "tr"
+        },
+        {
+          "description": "Four tales among the stars.",
+          "displayName": "Space Journey",
+          "locale": "en_GB"
+        }
+      ],
+      "productID": "masalcik.pack.space",
+      "referenceName": "Uzay Yolculuğu",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "39.99",
+      "familyShareable": true,
+      "internalID": "6740000103",
+      "localizations": [
+        {
+          "description": "Altı arkadaşa bayramlık giysiler.",
+          "displayName": "Bayram Giysileri",
+          "locale": "tr"
+        },
+        {
+          "description": "Festive outfits for six friends.",
+          "displayName": "Festive Outfits",
+          "locale": "en_GB"
+        }
+      ],
+      "productID": "masalcik.pack.outfits.bayram",
+      "referenceName": "Bayram Giysileri",
+      "type": "NonConsumable"
+    }
+  ],
   "settings": {
     "_applicationInternalID": "6740000000",
     "_developerTeamID": "XXXXXXXXXX",

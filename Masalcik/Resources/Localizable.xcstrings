@@ -17,6 +17,22 @@
         }
       }
     },
+    "%@ artık Masal Adası'nda.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ artık Masal Adası'nda."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is now on Story Island."
+          }
+        }
+      }
+    },
     "%@ rakamla yazılırsa hangisi?": {
       "localizations": {
         "tr": {
@@ -501,6 +517,22 @@
         }
       }
     },
+    "Aile Paylaşımı açık: ailenizdeki cihazlarda da açılır.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aile Paylaşımı açık: ailenizdeki cihazlarda da açılır."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Family Sharing is on: it unlocks on your family's devices too."
+          }
+        }
+      }
+    },
     "Aktif": {
       "localizations": {
         "tr": {
@@ -929,6 +961,22 @@
         }
       }
     },
+    "Bir kez alınır, hep sizde kalır. Jeton ya da kredi yok.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir kez alınır, hep sizde kalır. Jeton ya da kredi yok."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy once, keep forever. No tokens or credits."
+          }
+        }
+      }
+    },
     "Bir varmış bir yokmuş": {
       "localizations": {
         "tr": {
@@ -1241,6 +1289,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Read this text in a calm voice"
+          }
+        }
+      }
+    },
+    "Bu paket şu an satın alınamıyor.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu paket şu an satın alınamıyor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This pack can't be bought right now."
           }
         }
       }
@@ -1773,6 +1837,22 @@
         }
       }
     },
+    "Dükkân şu an açılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dükkân şu an açılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The shop couldn't open right now. Check your internet connection and try again."
+          }
+        }
+      }
+    },
     "Ebeveyn Köşesi": {
       "localizations": {
         "tr": {
@@ -2013,6 +2093,22 @@
         }
       }
     },
+    "Fındık'ın bayram kurdelesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık'ın bayram kurdelesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fındık's festive bow"
+          }
+        }
+      }
+    },
     "Fındık'ın yıldızlı atkısı": {
       "localizations": {
         "tr": {
@@ -2089,6 +2185,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back"
+          }
+        }
+      }
+    },
+    "Geri yüklenecek satın alma yok": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geri yüklenecek satın alma yok"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No purchases to restore"
           }
         }
       }
@@ -2685,6 +2797,22 @@
         }
       }
     },
+    "Kaptan Midye'nin bayram şapkası": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaptan Midye'nin bayram şapkası"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Captain Mussel's festive hat"
+          }
+        }
+      }
+    },
     "Karakterler": {
       "localizations": {
         "tr": {
@@ -3149,6 +3277,22 @@
         }
       }
     },
+    "Lodos'un bayram atkısı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos'un bayram atkısı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lodos's festive scarf"
+          }
+        }
+      }
+    },
     "Lodos'un kurdelesi": {
       "localizations": {
         "tr": {
@@ -3257,6 +3401,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Story Island, lullabies, sleep timer, Treasure Chest"
+          }
+        }
+      }
+    },
+    "Masal Dükkanı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masal Dükkanı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Story Shop"
           }
         }
       }
@@ -3741,6 +3901,22 @@
         }
       }
     },
+    "Nur'un bayram tacı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur'un bayram tacı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur's festive crown"
+          }
+        }
+      }
+    },
     "Nur'un uyku şapkası": {
       "localizations": {
         "tr": {
@@ -3849,6 +4025,38 @@
         }
       }
     },
+    "Paket açıldı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paket açıldı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pack unlocked"
+          }
+        }
+      }
+    },
+    "Paketler Premium aboneliğe dahil değildir; ayrı satın alınır.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paketler Premium aboneliğe dahil değildir; ayrı satın alınır."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packs are not included in Premium; they're bought separately."
+          }
+        }
+      }
+    },
     "Pamuk": {
       "localizations": {
         "tr": {
@@ -3893,6 +4101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pamuk gave a long, slow yawn and gently closed both eyes."
+          }
+        }
+      }
+    },
+    "Pamuk'un bayram tacı": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk'un bayram tacı"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pamuk's festive crown"
           }
         }
       }
@@ -4217,6 +4441,22 @@
         }
       }
     },
+    "Satın al": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın al"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy"
+          }
+        }
+      }
+    },
     "Satın alma bir onay bekliyor (ör. Aile Paylaşımı'nda “Satın Almadan Önce Sor”). Onaylandığında Premium kendiliğinden açılır.": {
       "localizations": {
         "tr": {
@@ -4229,6 +4469,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "This purchase is waiting for approval (for example, Ask to Buy in Family Sharing). Premium will turn on by itself once it's approved."
+          }
+        }
+      }
+    },
+    "Satın alma bir onay bekliyor (ör. Aile Paylaşımı'nda “Satın Almadan Önce Sor”). Onaylandığında paket kendiliğinden açılır.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın alma bir onay bekliyor (ör. Aile Paylaşımı'nda “Satın Almadan Önce Sor”). Onaylandığında paket kendiliğinden açılır."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This purchase is waiting for approval (for example, Ask to Buy in Family Sharing). The pack will unlock by itself once it's approved."
           }
         }
       }
@@ -4261,6 +4517,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "Satın alımlarınız geri yüklendi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satın alımlarınız geri yüklendi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your purchases have been restored"
           }
         }
       }
@@ -4485,6 +4757,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Couldn't delete"
+          }
+        }
+      }
+    },
+    "Sizde": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sizde"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Owned"
           }
         }
       }
@@ -5257,6 +5545,22 @@
         }
       }
     },
+    "Yıldız'ın bayram kurdelesi": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız'ın bayram kurdelesi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yıldız's festive bow"
+          }
+        }
+      }
+    },
     "Yıllık": {
       "localizations": {
         "tr": {
@@ -5417,6 +5721,22 @@
         }
       }
     },
+    "Ödeme Apple Hesabınızdan alınır. İade talepleri Apple üzerinden yapılır (reportaproblem.apple.com).": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödeme Apple Hesabınızdan alınır. İade talepleri Apple üzerinden yapılır (reportaproblem.apple.com)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment is charged to your Apple Account. Refund requests go through Apple (reportaproblem.apple.com)."
+          }
+        }
+      }
+    },
     "Ödeme alındıysa Premium birkaç dakika içinde kendiliğinden açılır. Açılmazsa “Satın alımları geri yükle”ye dokunun.": {
       "localizations": {
         "tr": {
@@ -5429,6 +5749,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "If you were charged, Premium will turn on by itself within a few minutes. If it doesn't, tap “Restore purchases”."
+          }
+        }
+      }
+    },
+    "Ödeme alındıysa paket birkaç dakika içinde kendiliğinden açılır. Açılmazsa “Satın alımları geri yükle”ye dokunun.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ödeme alındıysa paket birkaç dakika içinde kendiliğinden açılır. Açılmazsa “Satın alımları geri yükle”ye dokunun."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you were charged, the pack will unlock by itself within a few minutes. If it doesn't, tap “Restore purchases”."
           }
         }
       }

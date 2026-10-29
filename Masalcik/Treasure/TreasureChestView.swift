@@ -102,11 +102,13 @@ private struct OutfitSection: View {
 
     var body: some View {
         let owned = Set(child.stickers.filter { $0.kind == .outfit }.map(\.assetKey))
+        let ownedPacks = Set(child.family?.entitlement?.ownedProductIDs ?? [])
         VStack(alignment: .leading, spacing: Metrics.spacingS) {
             SectionTitle(text: String(localized: "Kıyafetler"), symbol: "tshirt.fill")
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 104), spacing: 12)], spacing: 16) {
-                ForEach(Outfit.all) { outfit in
-                    let has = owned.contains(outfit.key)
+                ForEach(Outfit.visible(ownedPacks: ownedPacks)) { outfit in
+                    // Paket kıyafeti: paket alındıysa sahiplik; seri kıyafeti: kazanılmış çıkartma.
+                    let has = outfit.pack != nil || owned.contains(outfit.key)
                     let worn = child.equippedOutfits[outfit.character.rawValue] == outfit.key
                     Button {
                         guard has else { return }

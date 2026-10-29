@@ -257,6 +257,8 @@ final class Entitlement {
     var expiresAt: Date?
     var isInTrial: Bool
     var lastVerifiedAt: Date?
+    /// Masal Dükkanı'ndan alınmış tek seferlik paketler (sunucu doğrulamasından sonra).
+    var ownedProductIDs: [String] = []
 
     init(tier: Tier = .free, productID: String? = nil, expiresAt: Date? = nil,
          isInTrial: Bool = false, lastVerifiedAt: Date? = nil) {

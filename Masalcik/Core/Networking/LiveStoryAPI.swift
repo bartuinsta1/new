@@ -42,6 +42,10 @@ struct LiveStoryAPI: StoryAPI {
         try await get("library")
     }
 
+    func packs() async throws -> [PackDTO] {
+        try await get("library/packs")
+    }
+
     func libraryStory(id: String) async throws -> StoryDTO {
         try await get("library/\(id)")
     }
@@ -137,6 +141,7 @@ struct LiveStoryAPI: StoryAPI {
         case 400 where http.value(forHTTPHeaderField: "X-Error-Code") == "unsafe_input": throw APIError.unsafeInput
         case 401: throw APIError.unauthorized
         case 402 where http.value(forHTTPHeaderField: "X-Error-Code") == "premium_required": throw APIError.premiumRequired
+        case 402 where http.value(forHTTPHeaderField: "X-Error-Code") == "pack_required": throw APIError.packRequired
         case 402: throw APIError.dailyLimitReached
         case 403 where http.value(forHTTPHeaderField: "X-Error-Code") == "weekly_limit_reached":
             throw APIError.weeklyLimitReached

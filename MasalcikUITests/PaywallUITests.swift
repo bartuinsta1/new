@@ -66,3 +66,25 @@ final class PaywallUITests: MasalcikUITestCase {
         account.tap()
     }
 }
+
+/// Masal Dükkanı: ebeveyn kapısının arkasında, tek seferlik paket satın alma (sahte satın alma servisiyle).
+final class ShopUITests: MasalcikUITestCase {
+    func testPaketSatinAlinir() {
+        launch()
+        openParentZone()
+        let account = app.tabBars.buttons["Hesap"]
+        XCTAssertTrue(account.waitForExistence(timeout: 5))
+        account.tap()
+        let shop = app.buttons["account.shop"]
+        XCTAssertTrue(shop.waitForExistence(timeout: 3))
+        shop.tap()
+        let buy = app.buttons["shop.buy.masalcik.pack.space"]
+        if !buy.waitForExistence(timeout: 5) { app.swipeUp() }
+        XCTAssertTrue(buy.waitForExistence(timeout: 3))
+        buy.tap()
+        XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5), "satın alma onayı")
+        app.alerts.firstMatch.buttons.firstMatch.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["shop.owned.masalcik.pack.space"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["shop.buy.masalcik.pack.space"].exists)
+    }
+}

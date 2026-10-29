@@ -33,11 +33,22 @@ struct MockStoryAPI: StoryAPI {
         return s
     }
 
-    func library() async throws -> [LibraryItemDTO] { Self.sampleLibrary(language) }
+    func library() async throws -> [LibraryItemDTO] { Self.sampleLibrary(language) + Self.packLibrary(language) }
+
+    /// Paket masalları kitaplıkta `packId` ile görünür (sahip değilse çocuk tarafında gizlenir).
+    static func packLibrary(_ lang: AppLanguage) -> [LibraryItemDTO] {
+        packCatalog(lang).flatMap { pack in
+            pack.stories.map { LibraryItemDTO(id: $0.id, title: $0.title, region: $0.region, durationMinutes: $0.durationMinutes,
+                                              coverUrl: nil, isFree: false, packId: pack.id) }
+        }
+    }
 
     /// Sahte modda haftalık sayaç ve Premium kilidi yok (gerçek limitler sunucuda).
     func libraryStory(id: String) async throws -> StoryDTO {
-        guard let item = Self.sampleLibrary(language).first(where: { $0.id == id }) else { throw APIError.server(status: 404) }
+        guard let item = (Self.sampleLibrary(language) + Self.packLibrary(language)).first(where: { $0.id == id }) else {
+            throw APIError.server(status: 404)
+        }
+        if let pack = item.packId, !MockStoreState.shared.owned.contains(pack) { throw APIError.packRequired }
         var s = Self.sampleStory(for: Self.previewRequest(language: language))
         s.id = id
         s.title = item.title
@@ -53,14 +64,30 @@ struct MockStoryAPI: StoryAPI {
     func deleteVoiceClone() async throws {}
 
     func verifyEntitlement(signedTransaction: String?) async throws -> EntitlementDTO {
-        if signedTransaction != nil {
+        // Sahte sunucu durumu: paket işlemi sahipliğe, abonelik işlemi Premium'a çevrilir (gerçek sunucu gibi).
+        if let tx = signedTransaction {
+            if let pack = Self.packCatalog(language).first(where: { tx.contains($0.id) }) {
+                MockStoreState.shared.grant(pack.id)
+            } else {
+                MockStoreState.shared.premium = true
+            }
+        }
+        let owned = MockStoreState.shared.owned
+        if MockStoreState.shared.premium {
             return EntitlementDTO(tier: .premium, productId: "masalcik.premium.yearly",
                                   expiresAt: .now.addingTimeInterval(7 * 86_400), isInTrial: true,
-                                  personalStoriesRemainingToday: nil, libraryStoriesRemainingThisWeek: nil)
+                                  personalStoriesRemainingToday: nil, libraryStoriesRemainingThisWeek: nil,
+                                  ownedProducts: owned)
         }
         return EntitlementDTO(tier: .free, productId: nil, expiresAt: nil, isInTrial: false,
                               personalStoriesRemainingToday: AppConfig.FreeTier.personalStoriesPerDay,
-                              libraryStoriesRemainingThisWeek: AppConfig.FreeTier.libraryStoriesPerWeek)
+                              libraryStoriesRemainingThisWeek: AppConfig.FreeTier.libraryStoriesPerWeek,
+                              ownedProducts: owned)
+    }
+
+    func packs() async throws -> [PackDTO] {
+        let owned = Set(MockStoreState.shared.owned)
+        return Self.packCatalog(language).map { var p = $0; p.owned = owned.contains(p.id); return p }
     }
 
     func deleteAccount() async throws {}
@@ -76,6 +103,41 @@ struct MockStoryAPI: StoryAPI {
     func shareStory(id: String) async throws -> URL { URL(string: "https://masalcik.app/s/mock-\(id.prefix(8))")! }
 
     // MARK: - Örnek içerik
+
+    /// backend/_shared/packs.ts ile aynı katalog.
+    static func packCatalog(_ lang: AppLanguage) -> [PackDTO] {
+        let tr = lang == .tr
+        func s(_ id: String, _ trTitle: String, _ enTitle: String, _ region: Region, _ min: Int) -> PackDTO.StoryItem {
+            .init(id: id, title: tr ? trTitle : enTitle, region: region, durationMinutes: min)
+        }
+        return [
+            PackDTO(id: "masalcik.pack.dedekorkut", kind: .stories,
+                    title: tr ? "Dede Korkut'tan Esintiler" : "Tales from Dede Korkut",
+                    description: tr ? "Kopuz ezgileri, yaylalar ve ozanlar: dört sakin uyku masalı."
+                                    : "Lute songs, high meadows and wandering bards: four calm bedtime tales.",
+                    owned: false, stories: [
+                        s("lib-dk-kopuz", "Kopuzun Uyku Ezgisi", "The Lute's Sleepy Song", .storytellerPlane, 10),
+                        s("lib-dk-bozat", "Boz At ile Yayla Yolu", "The Grey Horse and the Meadow Road", .storytellerPlane, 10),
+                        s("lib-dk-ozan", "Küçük Ozan ve Yıldız Çadırı", "The Little Bard and the Star Tent", .starHill, 10),
+                        s("lib-dk-ceylan", "Ceylan Yavrusu ile Pınar", "The Fawn by the Spring", .whisperForest, 5),
+                    ], outfits: []),
+            PackDTO(id: "masalcik.pack.space", kind: .stories,
+                    title: tr ? "Uzay Yolculuğu" : "Space Journey",
+                    description: tr ? "Aya giden balondan gezegen ninnisine, yıldızların arasında dört masal."
+                                    : "From a balloon to the moon to a planets' lullaby: four tales among the stars.",
+                    owned: false, stories: [
+                        s("lib-space-balon", "Ay'a Giden Balon", "The Balloon to the Moon", .starHill, 10),
+                        s("lib-space-kuyruklu", "Kuyruklu Yıldızın Uykusu", "The Comet Who Needed a Nap", .starHill, 10),
+                        s("lib-space-gezegen", "Gezegenlerin Ninnisi", "The Planets' Lullaby", .starHill, 15),
+                        s("lib-space-yastik", "Yıldız Tozu Yastığı", "The Stardust Pillow", .sleepHouse, 5),
+                    ], outfits: []),
+            PackDTO(id: "masalcik.pack.outfits.bayram", kind: .outfits,
+                    title: tr ? "Bayram Giysileri" : "Festive Outfits",
+                    description: tr ? "Altı arkadaşın her birine bayramlık şapka, atkı, taç ya da kurdele."
+                                    : "A festive hat, scarf, crown or bow for each of the six friends.",
+                    owned: false, stories: [], outfits: Outfit.all.filter { $0.pack == "masalcik.pack.outfits.bayram" }.map(\.key)),
+        ]
+    }
 
     static func previewRequest(language: AppLanguage = .tr) -> StoryRequest {
         StoryRequest(
@@ -154,4 +216,20 @@ struct MockStoryAPI: StoryAPI {
             .init(id: "lib-home-1", title: tr ? "Pamuk'un Yumuşacık Yastığı" : "Pamuk's Fluffy Pillow", region: .sleepHouse, durationMinutes: 5, coverUrl: nil, isFree: true),
         ]
     }
+}
+
+/// Sahte backend'in satın alma durumu (yalnızca önizleme, sahte mod ve testler; uygulama kapanınca sıfırlanır).
+final class MockStoreState: @unchecked Sendable {
+    static let shared = MockStoreState()
+    private let lock = NSLock()
+    private var _owned: [String] = []
+    private var _premium = false
+
+    var owned: [String] { lock.withLock { _owned } }
+    var premium: Bool {
+        get { lock.withLock { _premium } }
+        set { lock.withLock { _premium = newValue } }
+    }
+    func grant(_ id: String) { lock.withLock { if !_owned.contains(id) { _owned.append(id) } } }
+    func reset() { lock.withLock { _owned = []; _premium = false } }
 }

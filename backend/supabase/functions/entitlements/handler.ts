@@ -5,6 +5,7 @@
 //   {}                                             yalnızca durum sorgusu
 // İmza + Apple sertifika zinciri doğrulaması: _shared/appstore.ts. İstemcinin söylediği "premium"a asla güvenilmez.
 import { FREE_TIER, type Entitlement } from "../_shared/contract.ts";
+import { PACK_IDS, type PurchaseStore } from "../_shared/packs.ts";
 import { type AppStoreVerifier, AppStoreVerificationError, subscriptionFrom } from "../_shared/appstore.ts";
 import {
   type AuthProvider, type EntitlementStore, type UsageStore,
@@ -17,6 +18,8 @@ export interface EntitlementsDeps {
   usage: UsageStore;
   /** Yoksa (yerel geliştirme) yalnızca "mock-" ile başlayan sahte işlemler kabul edilir. */
   verifier?: AppStoreVerifier;
+  /** Masal Dükkanı tek seferlik paketleri. */
+  purchases?: PurchaseStore;
   now?: () => Date;
 }
 
@@ -46,8 +49,13 @@ export function createEntitlementsHandler(deps: EntitlementsDeps) {
 
     for (const jws of list as string[]) {
       if (!deps.verifier) {
-        // SAHTE (yerel): "mock-yearly-trial" → 7 günlük deneme.
+        // SAHTE (yerel): "mock-yearly-trial" → 7 günlük deneme; "mock-<paket kimliği>" → paket.
         if (!jws.startsWith("mock-")) return errorResponse(400, "invalid_transaction");
+        const pack = PACK_IDS.find((id) => jws.includes(id));
+        if (pack) {
+          await deps.purchases?.grant(userId, pack, `mock-${userId}-${pack}`, "Xcode");
+          continue;
+        }
         await deps.entitlements.saveSubscription(userId, {
           productId: jws.includes("monthly") ? "masalcik.premium.monthly" : "masalcik.premium.yearly",
           expiresAt: new Date(now().getTime() + 7 * 86_400_000), isInTrial: jws.includes("trial"),
@@ -57,6 +65,12 @@ export function createEntitlementsHandler(deps: EntitlementsDeps) {
       }
       try {
         const tx = await deps.verifier.verifyTransaction(jws);
+        if (PACK_IDS.includes(tx.productId)) {
+          // Tek seferlik paket: süresi yok; iade edilmişse sahiplik kalkar.
+          if (tx.revocationDate !== undefined) await deps.purchases?.revoke(tx.originalTransactionId);
+          else await deps.purchases?.grant(userId, tx.productId, tx.originalTransactionId, tx.environment);
+          continue;
+        }
         const sub = subscriptionFrom(tx, now());
         // Süresi dolmuş/iade edilmiş işlem hata değildir (geri yüklemede eski işlemler gelebilir); yok sayılır.
         if (sub) await deps.entitlements.saveSubscription(userId, sub);
@@ -72,6 +86,12 @@ export function createEntitlementsHandler(deps: EntitlementsDeps) {
 }
 
 export async function entitlementFor(
+  userId: string, deps: { entitlements: EntitlementStore; usage: UsageStore; purchases?: PurchaseStore }, now: Date,
+): Promise<Entitlement> {
+  return { ...(await tierFor(userId, deps, now)), owned_products: (await deps.purchases?.owned(userId)) ?? [] };
+}
+
+async function tierFor(
   userId: string, deps: { entitlements: EntitlementStore; usage: UsageStore }, now: Date,
 ): Promise<Entitlement> {
   const sub = await deps.entitlements.subscription(userId);

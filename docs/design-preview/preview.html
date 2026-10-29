@@ -600,6 +600,16 @@ function appStoreFrames(){return AS.map((a,i)=>`<div class="as-frame" style="bac
   <div class="as-phone">${a.phone()}</div>
   <div class="as-char" style="${a.pos}">${charSVG(...a.char,i===4?'night':'day')}</div></div>`).join('');}
 
+// ---------- Uygulama simgesi (1024×1024, saydamlık yok) ----------
+function appIcon(){let stars='';const pts=[[150,170,7],[860,140,9],[760,300,5],[220,380,5],[900,520,6],[110,600,4],[640,120,5],[420,90,4]];
+  for(const [x,y,r] of pts) stars+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${P.moon}"/>`;
+  return `<div class="app-icon" style="width:1024px;height:1024px;position:relative;overflow:hidden;background:linear-gradient(180deg,#2A2470 0%,${P.nightSky} 45%,#5A3F7A 100%)">
+   <svg width="1024" height="1024" style="position:absolute;inset:0">${stars}
+     <circle cx="770" cy="250" r="150" fill="${P.moon}" opacity=".18"/><circle cx="770" cy="250" r="92" fill="${P.moon}"/>
+     <circle cx="735" cy="225" r="92" fill="#2A2470" opacity="0"/>
+     <path d="M-40 1024 C 200 760, 520 900, 1064 780 L 1064 1064 L -40 1064 Z" fill="#2A2260"/></svg>
+   <div style="position:absolute;left:120px;top:250px">${charSVG('pamuk','sleepy',760,'night')}</div></div>`;}
+
 const mode=new URLSearchParams(location.search).get('screen')||'all';
 const root=document.getElementById('root');
 const screens={
@@ -615,10 +625,11 @@ const screens={
     +playerScreen('tr',{progress:.78})
     +playerScreen('en',{finished:true}),
   appstore:()=>appStoreFrames(),
+  icon:()=>appIcon(),
   paywall:()=>paywallScreen('tr')+paywallScreen('en')+paywallDone()+libraryLimit(),
   map:()=>mapScreen('day','tr')+mapScreen('day','tr',{focus:'storyteller_plane'})+mapScreen('night','en')+mapScreen('night','en',{focus:'whisper_forest'}),
 };
-const caps={appstore:['1 Masal Adası','2 Bu Gece','3 Ses seçimi','4 Masalcı Çınarı','5 Gece oynatıcı','6 Ebeveyn Köşesi'],paywall:['Paywall — yıllık seçili, deneme bitişi açık (TR)','Paywall (EN)','Satın alma sonrası (TR)','Kitaplık hakkı doldu: çocuğa uykulu mesaj, ebeveyne kapılı bağlantı (TR)'],day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
+const caps={icon:['Uygulama simgesi'],appstore:['1 Masal Adası','2 Bu Gece','3 Ses seçimi','4 Masalcı Çınarı','5 Gece oynatıcı','6 Ebeveyn Köşesi'],paywall:['Paywall — yıllık seçili, deneme bitişi açık (TR)','Paywall (EN)','Satın alma sonrası (TR)','Kitaplık hakkı doldu: çocuğa uykulu mesaj, ebeveyne kapılı bağlantı (TR)'],day:['Galeri — Gündüz (1/2)','Galeri — Gündüz (2/2)'],night:['Galeri — Gece (1/2)','Galeri — Gece (2/2)'],extras:['ParentGate','Oynatıcı arka planı — başlangıç','Oynatıcı — %90 ilerleme (kararma)'],parent:['Çocuklar: haftalık özet + profiller (TR)','Settings (EN)','Hesap: abonelik, gizlilik, veri silme (TR)','Masal metni + WhatsApp paylaşımı (TR)'],treasure:['Uyku Evi: yeni masal / kitaplığım (TR, Pamuk şapkalı)','Kitaplık rafları (TR)','Hazine Sandığı (TR)','Treasure Chest — night (EN)'],tonight:['Uyku Evi: Pamuk karşılar (TR)','1 Kim olsun? (TR)','2 Where? (EN)','3 Ne olsun? (TR)','Writing: book + stars (EN)','Hak dolunca: kitaplık önerisi (TR)'],player:['Başlangıç, karaoke altyazı açık (TR)','Timer 30 min, lullaby on (EN)','%78 ilerleme: kararıyor (TR)','Finished: good night (EN)'],onboarding:['1 Karşılama (TR)','2 Parent info (EN)','3 Çocuğun adı ve yaşı (TR)','4 İlgi alanları (TR)','5 Values (EN)','6 Avatar + buddy (EN)','Kutlama (TR)','4 Interests — night (EN)'],map:['Masal Adası — Gündüz (TR)','Masalcı Çınarı seçildi (TR)','Story Island — Night (EN)','Whisper Forest selected (EN)']};
 const keys=mode==='all'?['day','night','extras','map','onboarding','player','tonight','treasure','parent','paywall']:[mode];
 if(mode==='onboarding'||mode==='tonight') root.style.cssText='flex-wrap:wrap;max-width:1720px;margin:0 auto';
 root.innerHTML=keys.map(k=>{const tmp=document.createElement('div');tmp.innerHTML=screens[k]();
