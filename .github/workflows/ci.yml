@@ -4,7 +4,7 @@ name: Masalcik CI
 
 on:
   push:
-    paths: &paths
+    paths:
       - "Masalcik/**"
       - "MasalcikTests/**"
       - "MasalcikUITests/**"
@@ -16,7 +16,17 @@ on:
       - "docs/appstore/**"
       - ".github/workflows/ci.yml"
   pull_request:
-    paths: *paths
+    paths:
+      - "Masalcik/**"
+      - "MasalcikTests/**"
+      - "MasalcikUITests/**"
+      - "backend/**"
+      - "scripts/**"
+      - "project.yml"
+      - "Config.xcconfig"
+      - "StoreKit/**"
+      - "docs/appstore/**"
+      - ".github/workflows/ci.yml"
   workflow_dispatch:
 
 concurrency:
