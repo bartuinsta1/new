@@ -81,6 +81,8 @@ export interface LibraryItem {
   duration_minutes: number;
   cover_url?: string | null;
   is_free: boolean;
+  /** Bir Masal Dükkanı paketine aitse paket kimliği: yalnızca paketi alan açar (Premium dahil değil). */
+  pack_id?: string | null;
 }
 
 export interface Entitlement {
@@ -90,6 +92,8 @@ export interface Entitlement {
   is_in_trial: boolean;
   personal_stories_remaining_today?: number | null;
   library_stories_remaining_this_week?: number | null;
+  /** Sahip olunan tek seferlik paketler (Masal Dükkanı). */
+  owned_products?: string[];
 }
 
 export const FREE_TIER = { personalStoriesPerDay: 1, libraryStoriesPerWeek: 3 } as const;

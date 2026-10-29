@@ -149,6 +149,7 @@ enum EntitlementSync {
         e.expiresAt = dto.expiresAt
         e.isInTrial = dto.isInTrial
         e.lastVerifiedAt = .now
+        if let owned = dto.ownedProducts { e.ownedProductIDs = owned }
         family.entitlement = e
     }
 }

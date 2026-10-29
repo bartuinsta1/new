@@ -16,6 +16,7 @@ import type { ShareEntry, ShareStore } from "../share.ts";
 import { newReferralCode, type Redemption, type ReferralStore } from "../referral.ts";
 import type { CloneVoiceStore } from "../tts/voice.ts";
 import { type AnalyticsStore, canonical } from "../analytics.ts";
+import type { PurchaseStore } from "../packs.ts";
 
 export type Sql = ReturnType<typeof postgres>;
 
@@ -253,6 +254,30 @@ export class PgCloneVoiceStore implements CloneVoiceStore {
         consented_at = excluded.consented_at`;
   }
   async delete(userId: string) { await this.sql`delete from voice_clones where user_id = ${userId}`; }
+}
+
+export class PgPurchaseStore implements PurchaseStore {
+  private sql: Sql;
+  constructor(sql: Sql) { this.sql = sql; }
+  async owned(userId: string) {
+    const rows = await this.sql`select distinct product_id from purchases
+      where user_id = ${userId} and revoked_at is null order by product_id`;
+    return rows.map((r) => String(r.product_id));
+  }
+  async grant(userId: string, productId: string, otid: string, environment: string) {
+    await this.sql`insert into purchases (original_transaction_id, user_id, product_id, environment)
+      values (${otid}, ${userId}, ${productId}, ${environment})
+      on conflict (original_transaction_id) do update set user_id = excluded.user_id,
+        product_id = excluded.product_id, revoked_at = null, verified_at = now()`;
+  }
+  async revoke(otid: string) {
+    await this.sql`update purchases set revoked_at = now() where original_transaction_id = ${otid}`;
+  }
+  async ownerOf(otid: string) {
+    const [r] = await this.sql`select user_id from purchases where original_transaction_id = ${otid}`;
+    return r ? String(r.user_id) : null;
+  }
+  async deleteUser(userId: string) { await this.sql`delete from purchases where user_id = ${userId}`; }
 }
 
 export class PgAnalyticsStore implements AnalyticsStore {

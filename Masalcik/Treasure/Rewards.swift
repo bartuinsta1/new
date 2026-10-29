@@ -59,6 +59,8 @@ struct Outfit: Identifiable, Equatable, Sendable {
     let character: CharacterID
     let style: Style
     let color: AccentColor
+    /// Masal Dükkanı paketine aitse paket kimliği (seriyle kazanılmaz; paketi alınca açılır).
+    var pack: String? = nil
     var id: String { key }
 
     var title: String {
@@ -68,6 +70,12 @@ struct Outfit: Identifiable, Equatable, Sendable {
         case "lodos_bow": String(localized: "Lodos'un kurdelesi")
         case "nur_nightcap": String(localized: "Nur'un uyku şapkası")
         case "yildiz_crown": String(localized: "Yıldız'ın ay tacı")
+        case "pamuk_crown_bayram": String(localized: "Pamuk'un bayram tacı")
+        case "findik_bow_bayram": String(localized: "Fındık'ın bayram kurdelesi")
+        case "lodos_scarf_bayram": String(localized: "Lodos'un bayram atkısı")
+        case "nur_crown_bayram": String(localized: "Nur'un bayram tacı")
+        case "yildiz_bow_bayram": String(localized: "Yıldız'ın bayram kurdelesi")
+        case "kaptan_midye_nightcap_bayram": String(localized: "Kaptan Midye'nin bayram şapkası")
         default: String(localized: "Kaptan Midye'nin atkısı")
         }
     }
@@ -79,7 +87,24 @@ struct Outfit: Identifiable, Equatable, Sendable {
         Outfit(key: "nur_nightcap", character: .nur, style: .nightcap, color: .sky),
         Outfit(key: "yildiz_crown", character: .yildiz, style: .crown, color: .grape),
         Outfit(key: "kaptan_midye_scarf", character: .kaptanMidye, style: .scarf, color: .sun),
+        // Masal Dükkanı: Bayram Giysileri
+        Outfit(key: "pamuk_crown_bayram", character: .pamuk, style: .crown, color: .sun, pack: bayram),
+        Outfit(key: "findik_bow_bayram", character: .findik, style: .bow, color: .berry, pack: bayram),
+        Outfit(key: "lodos_scarf_bayram", character: .lodos, style: .scarf, color: .orange, pack: bayram),
+        Outfit(key: "nur_crown_bayram", character: .nur, style: .crown, color: .sun, pack: bayram),
+        Outfit(key: "yildiz_bow_bayram", character: .yildiz, style: .bow, color: .berry, pack: bayram),
+        Outfit(key: "kaptan_midye_nightcap_bayram", character: .kaptanMidye, style: .nightcap, color: .grape, pack: bayram),
     ]
+    private static let bayram = "masalcik.pack.outfits.bayram"
+
+    /// Seriyle (7 gece) kazanılabilenler; paket kıyafetleri satın alınır.
+    static var earnable: [Outfit] { all.filter { $0.pack == nil } }
+
+    /// Çocuğun sandıkta göreceği kıyafetler: seri kıyafetleri + yalnızca SAHİP OLUNAN paketlerin kıyafetleri
+    /// (alınmamış paket içeriği çocuğa gösterilmez — satın alma çocuğa önerilmez).
+    static func visible(ownedPacks: Set<String>) -> [Outfit] {
+        all.filter { $0.pack == nil || ownedPacks.contains($0.pack!) }
+    }
 
     static func find(_ key: String?) -> Outfit? { all.first { $0.key == key } }
 }
@@ -114,7 +139,7 @@ enum RewardEngine {
             let outfits = child.stickers.filter { $0.kind == .outfit }
             let earnedThisRun = outfits.filter { RewardRules.nightKey(for: $0.earnedAt, calendar: calendar) >= runStart }.count
             let owned = Set(outfits.map(\.assetKey))
-            if earnedThisRun < due, let next = Outfit.all.first(where: { !owned.contains($0.key) }) {
+            if earnedThisRun < due, let next = Outfit.earnable.first(where: { !owned.contains($0.key) }) {
                 let outfit = Sticker(kind: .outfit, assetKey: next.key, earnedAt: now)
                 child.stickers.append(outfit)
                 earned.append(outfit)

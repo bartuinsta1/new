@@ -75,6 +75,27 @@ struct LibraryItemDTO: Codable, Hashable, Sendable, Identifiable {
     var coverUrl: URL?
     /// Ücretsiz kullanıcının da açabileceği masal mı?
     var isFree: Bool
+    /// Masal Dükkanı paketine aitse paket kimliği: yalnızca paketi alan açar (Premium'a dahil değil).
+    var packId: String? = nil
+}
+
+/// `GET /library/packs` — Masal Dükkanı paketi (fiyat App Store'dan gelir).
+struct PackDTO: Codable, Hashable, Sendable, Identifiable {
+    enum Kind: String, Codable, Sendable { case stories, outfits }
+    struct StoryItem: Codable, Hashable, Sendable, Identifiable {
+        var id: String
+        var title: String
+        var region: Region
+        var durationMinutes: Int
+    }
+    var id: String
+    var kind: Kind
+    var title: String
+    var description: String
+    var owned: Bool
+    var stories: [StoryItem]
+    /// `Outfit.key` değerleri.
+    var outfits: [String]
 }
 
 struct EntitlementDTO: Codable, Hashable, Sendable {
@@ -85,6 +106,8 @@ struct EntitlementDTO: Codable, Hashable, Sendable {
     /// Bugün kalan ücretsiz kişisel masal (premium için nil).
     var personalStoriesRemainingToday: Int?
     var libraryStoriesRemainingThisWeek: Int?
+    /// Sahip olunan tek seferlik paketler (Masal Dükkanı). nil: sunucu bildirmedi (eski yanıt), yerel kayıt korunur.
+    var ownedProducts: [String]? = nil
 }
 
 /// `POST /events` öğesi: olay adı + kaba boyutlar (kimlik yok).
@@ -136,6 +159,8 @@ enum APIError: Error, Equatable, Sendable {
     case weeklyLimitReached
     /// Bu kitaplık masalı yalnızca Premium'da.
     case premiumRequired
+    /// Bu kitaplık masalı bir Masal Dükkanı paketinde; paket alınmamış.
+    case packRequired
     /// Davet kodu kullanılamadı: invalid_code | own_code | already_redeemed
     case referralRejected(String)
     /// Ad ya da telaffuz güvenlik filtresine takıldı: ebeveyn düzeltmeli (çocuğa gösterilmez).

@@ -3,15 +3,18 @@
 //   • `is_free` olmayan masallar yalnızca Premium'da (402 premium_required),
 //   • ücretsiz kullanıcı haftada en fazla 3 farklı masal açar (403 weekly_limit_reached);
 //     bu hafta zaten açtığı masalı tekrar dinlemek hakkı azaltmaz. Hafta: Türkiye saatiyle pazartesi başlar.
+//   • paket masalları (`pack_id`) yalnızca paketi alana açıktır (402 pack_required); haftalık hakkı harcamaz.
+// GET /library/packs → Masal Dükkanı kataloğu (dile göre) + bu kullanıcının sahip oldukları.
 import { FREE_TIER } from "../_shared/contract.ts";
 import {
   type AuthProvider, type EntitlementStore, type UsageStore,
   errorResponse, istanbulWeek, json, pathAfter, requestLanguage,
 } from "../_shared/http.ts";
 import { mockLibrary, mockLibraryStory } from "../_shared/mock.ts";
+import { packCatalog, type PurchaseStore } from "../_shared/packs.ts";
 
 export function createLibraryHandler(deps: {
-  auth: AuthProvider; entitlements: EntitlementStore; usage: UsageStore; now?: () => Date;
+  auth: AuthProvider; entitlements: EntitlementStore; usage: UsageStore; purchases?: PurchaseStore; now?: () => Date;
 }) {
   const now = deps.now ?? (() => new Date());
   return async (req: Request): Promise<Response> => {
@@ -27,10 +30,18 @@ export function createLibraryHandler(deps: {
     }
     if (rest.length !== 1) return errorResponse(404, "not_found");
 
+    if (rest[0] === "packs") {
+      const owned = (await deps.purchases?.owned(userId)) ?? [];
+      return json(packCatalog(lang, owned), 200, { "cache-control": "private, no-store" });
+    }
+
     const item = mockLibrary(lang).find((i) => i.id === rest[0]);
     if (!item) return errorResponse(404, "not_found");
 
-    if (!(await deps.entitlements.isPremium(userId))) {
+    if (item.pack_id) {
+      const owned = (await deps.purchases?.owned(userId)) ?? [];
+      if (!owned.includes(item.pack_id)) return errorResponse(402, "pack_required");
+    } else if (!(await deps.entitlements.isPremium(userId))) {
       if (!item.is_free) return errorResponse(402, "premium_required");
       const week = istanbulWeek(now());
       const opened = await deps.usage.libraryStoriesInWeek(userId, week);

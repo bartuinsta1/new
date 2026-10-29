@@ -8,6 +8,7 @@ import { type CloneVoiceStore, deleteCloneVoice, type VoiceCloner } from "../_sh
 import type { AudioStore } from "../_shared/tts/tts.ts";
 import type { ShareStore } from "../_shared/share.ts";
 import type { ReferralStore } from "../_shared/referral.ts";
+import type { PurchaseStore } from "../_shared/packs.ts";
 
 export interface AccountDeps {
   auth: AuthProvider;
@@ -18,6 +19,8 @@ export interface AccountDeps {
   cloneVoices?: CloneVoiceStore;
   shares?: ShareStore;
   referrals?: ReferralStore;
+  /** Paket sahipliği sunucudan silinir; Apple tarafındaki satın alma kalır ve "geri yükle" ile yeni hesaba gelir. */
+  purchases?: PurchaseStore;
   /** Klon sesi sağlayıcıdan da silmek için. */
   cloner?: VoiceCloner;
   audio?: AudioStore;
@@ -42,6 +45,7 @@ export function createAccountHandler(deps: AccountDeps) {
       deps.stories?.deleteUser(userId),
       deps.shares?.deleteUser(userId),
       deps.referrals?.deleteUser(userId),
+      deps.purchases?.deleteUser(userId),
     ]);
     await deps.deleteAuthUser?.(userId);
     return new Response(null, { status: 204 });

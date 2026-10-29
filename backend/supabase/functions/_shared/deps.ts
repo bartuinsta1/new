@@ -5,7 +5,7 @@
 import {
   type EntitlementStore, MemoryStores, mockAuth, RateLimiter, supabaseJwtAuth, type UsageStore,
 } from "./http.ts";
-import { connect, deleteAuthUser, PgAnalyticsStore, PgCloneVoiceStore, PgCostLog, PgFlagLog, PgReferralStore, PgShareStore, PgStores,
+import { connect, deleteAuthUser, PgAnalyticsStore, PgCloneVoiceStore, PgPurchaseStore, PgCostLog, PgFlagLog, PgReferralStore, PgShareStore, PgStores,
   PgStoryStore } from "./pg/stores.ts";
 import type { CostLog, FlagLog, StoryStore } from "./engine/store.ts";
 import type { ShareStore } from "./share.ts";
@@ -14,6 +14,7 @@ import type { AudioStore } from "./tts/tts.ts";
 import type { CloneVoiceStore } from "./tts/voice.ts";
 import { SupabaseStorageAudioStore } from "./tts/storage.ts";
 import { type AnalyticsStore, MemoryAnalyticsStore } from "./analytics.ts";
+import { MemoryPurchaseStore, type PurchaseStore } from "./packs.ts";
 import type { EngineDeps } from "./engine/engine.ts";
 import { ClaudeStoryLLM, type Effort } from "./engine/llm.ts";
 import { MemoryCostLog, MemoryFlagLog, MemoryStoryStore } from "./engine/store.ts";
@@ -40,6 +41,7 @@ export const auth = env("SUPABASE_URL") && env("MOCK_AUTH") !== "1" ? supabaseJw
 export const limiter = new RateLimiter(20, 60_000);
 
 export const storyStore: StoryStore = db ? new PgStoryStore(db) : new MemoryStoryStore();
+export const purchaseStore: PurchaseStore = db ? new PgPurchaseStore(db) : new MemoryPurchaseStore();
 export const analyticsStore: AnalyticsStore = db ? new PgAnalyticsStore(db) : new MemoryAnalyticsStore();
 export const flagLog: FlagLog = db ? new PgFlagLog(db) : new MemoryFlagLog();
 export const costLog: CostLog = db ? new PgCostLog(db) : new MemoryCostLog();
