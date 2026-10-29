@@ -15,11 +15,9 @@ defaults:
     working-directory: cozy-game
 
 jobs:
-  web:
-    name: Test + web demo
+  unit:
+    name: Birim testleri + derleme
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,22 +27,67 @@ jobs:
           cache-dependency-path: cozy-game/package-lock.json
       - run: npm ci
       - run: npm test
-      - run: npm run build:demo
-      - name: Web demosunu gh-pages dalına yayınla
-        if: github.ref_name == github.event.repository.default_branch
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: cozy-game/dist
+
+  e2e:
+    name: Uçtan uca (${{ matrix.browser }})
+    needs: unit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # webkit = iOS Safari motoru, chromium = Android WebView motoru
+        browser: [chromium, webkit, firefox]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cozy-game/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: cozy-game/dist
+      - run: npm run test:e2e
+        env:
+          E2E_BROWSER: ${{ matrix.browser }}
+
+  web:
+    name: Web sürümünü yayınla
+    needs: [unit, e2e]
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: dist
+      - name: gh-pages dalına yayınla
+        working-directory: dist
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd dist
           touch .nojekyll
           git init -q -b gh-pages
           git add -A
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Web demo ${GITHUB_SHA::7}"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Web ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
 
   android:
-    name: Android APK
+    name: Android (APK + AAB)
+    needs: unit
     runs-on: ubuntu-latest
+    env:
+      ANDROID_VERSION_CODE: ${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -58,15 +101,69 @@ jobs:
           java-version: 21
       - run: npm ci
       - run: npm run build && npx cap sync android
-      - run: ./gradlew assembleDebug
+      - name: İmza anahtarı (varsa)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "İmza sırları tanımlı değil: AAB imzasız üretilecek."
+          fi
+      - run: ./gradlew assembleDebug bundleRelease
         working-directory: cozy-game/android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - uses: actions/upload-artifact@v4
         with:
           name: mirnav-hani-debug-apk
           path: cozy-game/android/app/build/outputs/apk/debug/*.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mirnav-hani-release-aab
+          path: cozy-game/android/app/build/outputs/bundle/release/*.aab
+
+  android-device:
+    name: Android emülatör (API ${{ matrix.api }})
+    needs: android
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 28 = Android 9 (eski), 31 = Android 12, 35 = Android 15 (kenardan kenara zorunlu)
+        api: [28, 31, 35]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: mirnav-hani-debug-apk
+          path: cozy-game/apk
+      - name: KVM
+        working-directory: .
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          working-directory: cozy-game
+          script: bash scripts/android-smoke.sh ${{ matrix.api }} apk/app-debug.apk smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-smoke-api${{ matrix.api }}
+          path: cozy-game/smoke
 
   ios:
-    name: iOS derleme kontrolü
+    name: iOS derleme + simülatör
+    needs: unit
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -80,5 +177,11 @@ jobs:
       - run: >
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug
           -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
-          CODE_SIGNING_ALLOWED=NO build | tail -n 40
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -n 30
         shell: bash -o pipefail {0}
+      - run: bash scripts/ios-smoke.sh build/Build/Products/Debug-iphonesimulator/App.app smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-smoke
+          path: cozy-game/smoke

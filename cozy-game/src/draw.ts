@@ -15,9 +15,16 @@ function ellipse(ctx: Ctx, x: number, y: number, rx: number, ry: number, rot = 0
   ctx.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot, 0, Math.PI * 2);
 }
 
+/** ctx.roundRect iOS 15 ve Chrome < 99'da yok: kendi yolumuzu çiziyoruz. */
 function roundRect(ctx: Ctx, x: number, y: number, w: number, h: number, r: number) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
   ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
 
 export type Pose = 'sit' | 'loaf' | 'sleep';
@@ -295,6 +302,7 @@ export function seatPoints(f: FurnitureDef): SeatPoint[] {
     case 'hammock': return [{ dx: 0, dy: -0.45, pose: 'sleep', scale: 0.9 }];
     case 'igloo': return [{ dx: -0.08, dy: -0.06, pose: 'loaf', scale: 0.7 }, { dx: 0.3, dy: -0.02, pose: 'sit', scale: 0.65 }];
     case 'fireplace': return [{ dx: -0.32, dy: 0.05, pose: 'sleep', scale: 0.75 }, { dx: 0.34, dy: 0.05, pose: 'loaf', scale: 0.75 }];
+    case 'snowglobe': return [{ dx: -0.18, dy: -0.2, pose: 'loaf', scale: 0.62 }, { dx: 0.2, dy: -0.2, pose: 'sleep', scale: 0.6 }];
     default: return [];
   }
 }
@@ -502,6 +510,38 @@ export function drawFurniture(ctx: Ctx, f: FurnitureDef, x: number, y: number, u
       }
       ctx.fillStyle = 'rgba(255,170,90,0.12)';
       ellipse(ctx, x, y - u * 0.2, u * (0.9 + Math.sin(t * 5) * 0.03), u * 0.5);
+      ctx.fill();
+      break;
+    }
+    case 'snowglobe': {
+      // ahşap kaide
+      ctx.fillStyle = a;
+      roundRect(ctx, x - u * 0.5, y - u * 0.2, u * 1.0, u * 0.2, u * 0.06);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = shade(a, 0.25);
+      ctx.fillRect(x - u * 0.44, y - u * 0.15, u * 0.88, u * 0.04);
+      // cam kubbe
+      const glass = ctx.createRadialGradient(x - u * 0.15, y - u * 0.75, u * 0.05, x, y - u * 0.5, u * 0.55);
+      glass.addColorStop(0, 'rgba(255,255,255,0.55)');
+      glass.addColorStop(1, 'rgba(180,215,240,0.28)');
+      ctx.fillStyle = glass;
+      ctx.beginPath();
+      ctx.ellipse(x, y - u * 0.2, u * 0.48, u * 0.62, 0, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.stroke();
+      // içerideki kar
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 14; i++) {
+        const k = (t * 0.25 + i * 0.137) % 1;
+        const px = x + Math.sin(i * 2.3 + t * 0.6) * u * 0.36;
+        const py = y - u * 0.78 + k * u * 0.55;
+        ellipse(ctx, px, py, u * 0.018, u * 0.018);
+        ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ellipse(ctx, x - u * 0.24, y - u * 0.6, u * 0.05, u * 0.12, -0.5);
       ctx.fill();
       break;
     }
@@ -868,6 +908,26 @@ export function drawWall(ctx: Ctx, room: RoomDef, paper: WallpaperDef | undefine
           ctx.fill();
         }
       break;
+    case 'aurora': {
+      for (let i = 0; i < 3; i++) {
+        const g = ctx.createLinearGradient(0, 0, w, 0);
+        g.addColorStop(0, 'rgba(125,226,184,0)');
+        g.addColorStop(0.5, i === 1 ? 'rgba(180,140,240,0.45)' : 'rgba(125,226,184,0.45)');
+        g.addColorStop(1, 'rgba(125,226,184,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        const base = wallH * (0.2 + i * 0.18);
+        ctx.moveTo(0, base);
+        for (let x = 0; x <= w; x += w / 16) ctx.lineTo(x, base + Math.sin(x / w * Math.PI * 3 + i) * wallH * 0.06);
+        ctx.lineTo(w, base + wallH * 0.12);
+        for (let x = w; x >= 0; x -= w / 16) ctx.lineTo(x, base + wallH * 0.12 + Math.sin(x / w * Math.PI * 2 + i) * wallH * 0.04);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(255,255,240,0.8)';
+      for (let i = 0; i < 24; i++) { ellipse(ctx, ((i * 37) % 100) / 100 * w, ((i * 61) % 100) / 100 * wallH, 1.2, 1.2); ctx.fill(); }
+      break;
+    }
     case 'diamond':
       ctx.lineWidth = 1.5;
       ctx.globalAlpha = 0.7;

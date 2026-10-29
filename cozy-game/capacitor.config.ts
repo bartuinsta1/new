@@ -6,7 +6,12 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   backgroundColor: '#3b2b25',
   ios: { contentInset: 'never' },
-  android: { backgroundColor: '#3b2b25' },
+  plugins: {
+    // Android 15+ kenardan kenara: güvenli alanlar CSS env() ile; koyu zemin üstünde açık simgeler.
+    SystemBars: { insetsHandling: 'css', initialViewportFitValueHint: 'cover', style: 'DARK' },
+  },
+  // Android 7 cihazlarda WebView Play Store'dan güncellenir; Chrome 64 altını kabul etme.
+  android: { backgroundColor: '#3b2b25', minWebViewVersion: 64 },
 };
 
 export default config;

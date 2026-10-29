@@ -1,17 +1,19 @@
 // Türkçe / İngilizce metinler. Veri kimliklerine göre isimler de burada çevrilir.
-import type { BreedDef, FurnitureDef, Rarity, RoomDef, Tag, UpgradeDef, WallpaperDef } from './data';
+import type { BreedDef, FurnitureDef, ProductId, Rarity, RoomDef, Tag, UpgradeDef, WallpaperDef } from './data';
 
 export type Lang = 'tr' | 'en';
 
 let lang: Lang = 'tr';
 
 export function detectLang(): Lang {
+  if (typeof navigator === 'undefined') return 'tr';
   const l = (navigator.languages?.[0] ?? navigator.language ?? 'tr').toLowerCase();
   return l.startsWith('tr') ? 'tr' : 'en';
 }
 
 export function setLang(l: Lang) {
   lang = l;
+  if (typeof document === 'undefined') return;
   document.documentElement.lang = l;
   document.title = t('title');
 }
@@ -76,6 +78,7 @@ const TR = {
   sfx: '🔔 Efektler',
   language: '🌍 Dil',
   homeScreen: '📱 Telefonda tarayıcı menüsünden “Ana Ekrana Ekle” deyip uygulama gibi oynayabilirsin. İnternetsiz de çalışır.',
+  privacy: 'Gizlilik politikası',
   reset: 'Hanı sıfırla',
   resetConfirm: 'Tüm ilerleme silinecek. Emin misin?',
   levelToast: 'Seviye {level} · {cur}/{need} ❤️ — kedileri sevdiği yerlere koy, dağınıklığı topla.',
@@ -113,10 +116,33 @@ const TR = {
   free: 'Ücretsiz',
   boughtPaper: '{name} alındı ve uygulandı!',
   boughtUpg: '{name} geliştirildi!',
-  demoTitle: 'Demo burada bitiyor',
-  demoText: 'Bu ücretsiz web demosu 4. seviyede duruyor; hanın açık kalır, kediler gelmeye devam eder. Tam sürümde 12 seviye, 4 oda, 18 kedi cinsi, 7 duvar kâğıdı ve mevsimlik etkinlikler var. Mırnav Hanı yakında App Store ve Google Play’de!',
-  demoBtn: 'Oynamaya devam et',
-  demoBanner: '🎮 Ücretsiz web demosu · Tam sürüm yakında App Store ve Google Play’de',
+  tabShop: '💎 Paketler',
+  shopSub: 'Oyun tamamen ücretsiz. Paketler isteğe bağlı; hanın gelişimine destek olur.',
+  shopWeb: '📱 Paketler App Store ve Google Play uygulamasında satın alınabilir.',
+  shopLoading: 'Mağaza yükleniyor…',
+  shopUnavailable: 'Mağazaya şu an ulaşılamıyor. İnternet bağlantını kontrol edip tekrar dene.',
+  restore: 'Satın alımları geri yükle',
+  restored: '{n} paket geri yüklendi ✓',
+  restoredNone: 'Geri yüklenecek paket bulunamadı.',
+  owned: 'Sende var ✓',
+  popular: 'En sevilen',
+  best: 'En avantajlı',
+  thanks: 'Teşekkürler! +{fish} 🐟',
+  thanksPack: 'Teşekkürler! {name} açıldı 💛',
+  pending: 'Ödeme onay bekliyor. Onaylanınca paketin gelecek.',
+  purchaseError: 'Satın alma tamamlanamadı. Ücret alınmadıysa tekrar deneyebilirsin.',
+  exclusiveLock: '❄️ Kış Masalı Paketi’ne özel',
+  supporterBadge: '💛 Han Dostu: +%25 balık, 24 saat çevrimdışı',
+  p_mh_fish_small: 'Bir Kova Balık',
+  p_mh_fish_medium: 'Balık Sepeti',
+  p_mh_fish_large: 'Balıkçı Teknesi',
+  p_mh_winter_pack: 'Kış Masalı Paketi',
+  p_mh_supporter: 'Han Dostu',
+  d_mh_fish_small: '{fish} 🐟',
+  d_mh_fish_medium: '{fish} 🐟',
+  d_mh_fish_large: '{fish} 🐟',
+  d_mh_winter_pack: 'Kuzey Işıkları duvar kâğıdı, Kar Küresi Yatağı ve {fish} 🐟',
+  d_mh_supporter: 'Kalıcı +%25 balık, 24 saat çevrimdışı kazanç ve {fish} 🐟',
   thousand: 'B',
   h: 'sa',
   m: 'dk',
@@ -181,6 +207,7 @@ const EN: Record<Key, string> = {
   sfx: '🔔 Sounds',
   language: '🌍 Language',
   homeScreen: '📱 Use “Add to Home Screen” in your browser menu to play it like an app. Works offline too.',
+  privacy: 'Privacy policy',
   reset: 'Reset the inn',
   resetConfirm: 'All progress will be deleted. Are you sure?',
   levelToast: 'Level {level} · {cur}/{need} ❤️ — seat cats in spots they love and tidy up.',
@@ -218,10 +245,33 @@ const EN: Record<Key, string> = {
   free: 'Free',
   boughtPaper: '{name} bought and applied!',
   boughtUpg: '{name} upgraded!',
-  demoTitle: 'The demo ends here',
-  demoText: 'This free web demo stops at level 4; your inn stays open and cats keep visiting. The full game has 12 levels, 4 rooms, 18 cat breeds, 7 wallpapers and seasonal events. Snowpaw Inn is coming soon to the App Store and Google Play!',
-  demoBtn: 'Keep playing',
-  demoBanner: '🎮 Free web demo · Full game coming soon to the App Store and Google Play',
+  tabShop: '💎 Packs',
+  shopSub: 'The game is completely free. Packs are optional and help the inn grow.',
+  shopWeb: '📱 Packs can be bought in the App Store and Google Play app.',
+  shopLoading: 'Loading the store…',
+  shopUnavailable: 'The store can’t be reached right now. Check your connection and try again.',
+  restore: 'Restore purchases',
+  restored: '{n} pack(s) restored ✓',
+  restoredNone: 'No packs to restore.',
+  owned: 'Owned ✓',
+  popular: 'Most loved',
+  best: 'Best value',
+  thanks: 'Thank you! +{fish} 🐟',
+  thanksPack: 'Thank you! {name} unlocked 💛',
+  pending: 'Payment is awaiting approval. Your pack will arrive once it’s approved.',
+  purchaseError: 'The purchase couldn’t be completed. If you weren’t charged, you can try again.',
+  exclusiveLock: '❄️ Winter Tale Pack exclusive',
+  supporterBadge: '💛 Inn Friend: +25% fish, 24h offline',
+  p_mh_fish_small: 'Bucket of Fish',
+  p_mh_fish_medium: 'Fish Basket',
+  p_mh_fish_large: 'Fishing Boat',
+  p_mh_winter_pack: 'Winter Tale Pack',
+  p_mh_supporter: 'Inn Friend',
+  d_mh_fish_small: '{fish} 🐟',
+  d_mh_fish_medium: '{fish} 🐟',
+  d_mh_fish_large: '{fish} 🐟',
+  d_mh_winter_pack: 'Northern Lights wallpaper, Snow Globe Bed and {fish} 🐟',
+  d_mh_supporter: 'Permanent +25% fish, 24h offline earnings and {fish} 🐟',
   thousand: 'K',
   h: 'h',
   m: 'm',
@@ -269,6 +319,7 @@ const FURN_EN: Record<string, [string, string]> = {
   sofa: ['Velvet Sofa', 'The cats sit on it. Not you.'],
   hammock: ['Window Hammock', 'A hammock on the glass. Bird-watching HQ.'],
   cocoa: ['Hot Cocoa Counter', '+6 room comfort. A November classic.'],
+  snowglobe: ['Snow Globe Bed', 'Winter Tale Pack exclusive. The snow never stops inside.'],
   igloo: ['Knitted Igloo', 'A castle of yarn. Whispers inside.'],
   fireplace: ['Stone Fireplace', 'The heart of the inn. Crackles and purrs.'],
 };
@@ -295,7 +346,7 @@ const UPG_EN: Record<string, [string, string]> = {
 
 const PAPER_EN: Record<string, string> = {
   cilek: 'Strawberry Milk', nane: 'Peppermint', kar: 'Snowflake', balik: 'Fishy Print',
-  gece: 'Midnight Blue', kalp: 'Sweethearts', altin: 'Gold Leaf',
+  gece: 'Midnight Blue', kalp: 'Sweethearts', altin: 'Gold Leaf', aurora: 'Northern Lights',
 };
 
 export const breedName = (b: BreedDef) => (lang === 'en' ? BREED_EN[b.id]?.[0] ?? b.name : b.name);
@@ -308,3 +359,8 @@ export const rarityLabel = (r: Rarity) => RARITY[lang][r];
 export const upgName = (u: UpgradeDef) => (lang === 'en' ? UPG_EN[u.id]?.[0] ?? u.name : u.name);
 export const upgDesc = (u: UpgradeDef) => (lang === 'en' ? UPG_EN[u.id]?.[1] ?? u.desc : u.desc);
 export const paperName = (w: WallpaperDef) => (lang === 'en' ? PAPER_EN[w.id] ?? w.name : w.name);
+export const productName = (id: ProductId) => t(`p_${id}` as Key);
+export const productDesc = (id: ProductId, fish: string) => t(`d_${id}` as Key, { fish });
+
+/** testler için */
+export const __DICTS = { TR, EN };

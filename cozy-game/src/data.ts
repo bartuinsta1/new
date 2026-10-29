@@ -1,4 +1,11 @@
-// Statik oyun verisi: kedi cinsleri, mobilyalar, odalar, dağınıklıklar.
+// Statik oyun verisi: kedi cinsleri, mobilyalar, odalar, dağınıklıklar, mağaza ürünleri.
+
+/** Object.fromEntries eski Android WebView'larda (Chrome < 73) yok. */
+function byId<T extends { id: string }>(list: T[]): Record<string, T> {
+  const out: Record<string, T> = {};
+  for (const x of list) out[x.id] = x;
+  return out;
+}
 
 export type Tag = 'sicak' | 'sessiz' | 'oyun' | 'manzara';
 
@@ -59,7 +66,7 @@ export const CAT_NAMES = [
 
 export type FurnitureKind =
   | 'cushion' | 'basket' | 'box' | 'windowbed' | 'tree' | 'sofa' | 'fireplace'
-  | 'radiator' | 'hammock' | 'igloo' | 'plant' | 'lamp' | 'bookshelf' | 'cocoa';
+  | 'radiator' | 'hammock' | 'igloo' | 'plant' | 'lamp' | 'bookshelf' | 'cocoa' | 'snowglobe';
 
 export interface FurnitureDef {
   id: string;
@@ -74,6 +81,8 @@ export interface FurnitureDef {
   color: string;
   accent: string;
   desc: string;
+  /** sadece bu uygulama içi ürüne sahip olanlar alabilir */
+  exclusive?: ProductId;
 }
 
 export const FURNITURE: FurnitureDef[] = [
@@ -91,10 +100,11 @@ export const FURNITURE: FurnitureDef[] = [
   { id: 'cocoa', kind: 'cocoa', name: 'Sıcak Çikolata Tezgâhı', price: 300, seats: 0, comfort: 6, tag: null, unlockLevel: 5, color: '#7a4a32', accent: '#f3e3cf', desc: 'Odaya +6 konfor. Kasım klasiği.' },
   { id: 'igloo', kind: 'igloo', name: 'Örgü İglo', price: 380, seats: 2, comfort: 5, tag: 'oyun', unlockLevel: 6, color: '#9cc3a8', accent: '#e9f3ec', desc: 'Örgüden bir kale. İçeride fısıltılar.' },
   { id: 'fireplace', kind: 'fireplace', name: 'Taş Şömine', price: 520, seats: 2, comfort: 7, tag: 'sicak', unlockLevel: 7, color: '#9a8f86', accent: '#f08a3c', desc: 'Hanın kalbi. Çıtırtılar ve mırıltılar.' },
+  { id: 'snowglobe', kind: 'snowglobe', name: 'Kar Küresi Yatağı', price: 150, seats: 2, comfort: 6, tag: 'manzara', unlockLevel: 1, color: '#cfe6f5', accent: '#8a5a3c', desc: 'Kış Masalı Paketi’ne özel. İçinde hiç durmayan bir kar.', exclusive: 'mh_winter_pack' },
 ];
 
-export const FURNITURE_BY_ID: Record<string, FurnitureDef> = Object.fromEntries(FURNITURE.map((f) => [f.id, f]));
-export const BREED_BY_ID: Record<string, BreedDef> = Object.fromEntries(BREEDS.map((b) => [b.id, b]));
+export const FURNITURE_BY_ID: Record<string, FurnitureDef> = byId(FURNITURE);
+export const BREED_BY_ID: Record<string, BreedDef> = byId(BREEDS);
 
 export interface RoomDef {
   id: string;
@@ -122,7 +132,7 @@ export const ROOMS: RoomDef[] = [
   { id: 'sera', name: 'Kış Serası', icon: '🌿', unlockLevel: 7, price: 4000, wall: '#cde6e6', wallDark: '#b4d3d3', floor: '#9b8b74', floorDark: '#877862', slots: SLOTS },
 ];
 
-export const ROOM_BY_ID: Record<string, RoomDef> = Object.fromEntries(ROOMS.map((r) => [r.id, r]));
+export const ROOM_BY_ID: Record<string, RoomDef> = byId(ROOMS);
 
 export type MessKind = 'yarn' | 'paws' | 'milk' | 'leaf' | 'fur';
 export const MESS_KINDS: MessKind[] = ['yarn', 'paws', 'milk', 'leaf', 'fur'];
@@ -154,9 +164,9 @@ export const UPGRADES: UpgradeDef[] = [
   { id: 'battaniye', icon: '🧣', name: 'Örgü Battaniye', desc: 'Kediler %10 daha uzun kalır', baseCost: 300, growth: 1.8, max: 10, unlockLevel: 4 },
   { id: 'kartpostal', icon: '💌', name: 'Kartpostal Rafı', desc: 'Veda bahşişi +%15', baseCost: 400, growth: 1.85, max: 15, unlockLevel: 5 },
 ];
-export const UPGRADE_BY_ID = Object.fromEntries(UPGRADES.map((u) => [u.id, u])) as Record<UpgradeId, UpgradeDef>;
+export const UPGRADE_BY_ID = byId(UPGRADES) as Record<UpgradeId, UpgradeDef>;
 
-export type WallPattern = 'stripes' | 'dots' | 'snow' | 'fish' | 'stars' | 'hearts' | 'diamond';
+export type WallPattern = 'stripes' | 'dots' | 'snow' | 'fish' | 'stars' | 'hearts' | 'diamond' | 'aurora';
 export interface WallpaperDef {
   id: string;
   name: string;
@@ -166,6 +176,7 @@ export interface WallpaperDef {
   /** desen rengi */
   ink: string;
   pattern: WallPattern;
+  exclusive?: ProductId;
 }
 
 export const WALLPAPERS: WallpaperDef[] = [
@@ -176,5 +187,30 @@ export const WALLPAPERS: WallpaperDef[] = [
   { id: 'gece', name: 'Gece Mavisi', price: 4500, unlockLevel: 6, wall: '#3f4a6e', ink: '#f5e27a', pattern: 'stars' },
   { id: 'kalp', name: 'Kalpli Kâğıt', price: 8000, unlockLevel: 8, wall: '#f6e0e7', ink: '#e98aa6', pattern: 'hearts' },
   { id: 'altin', name: 'Altın Varak', price: 15000, unlockLevel: 10, wall: '#5a3f2e', ink: '#d8b26a', pattern: 'diamond' },
+  { id: 'aurora', name: 'Kuzey Işıkları', price: 0, unlockLevel: 1, wall: '#1f2f4a', ink: '#7de2b8', pattern: 'aurora', exclusive: 'mh_winter_pack' },
 ];
-export const WALLPAPER_BY_ID: Record<string, WallpaperDef> = Object.fromEntries(WALLPAPERS.map((w) => [w.id, w]));
+export const WALLPAPER_BY_ID: Record<string, WallpaperDef> = byId(WALLPAPERS);
+
+/** Uygulama içi satın almalar. Kimlikler App Store Connect ve Play Console'da birebir aynı açılmalı. */
+export type ProductId = 'mh_fish_small' | 'mh_fish_medium' | 'mh_fish_large' | 'mh_winter_pack' | 'mh_supporter';
+export interface ProductDef {
+  id: ProductId;
+  kind: 'consumable' | 'nonconsumable';
+  icon: string;
+  /** satın alınca verilen balık */
+  fish: number;
+  badge?: 'popular' | 'best';
+}
+
+export const PRODUCTS: ProductDef[] = [
+  { id: 'mh_fish_small', kind: 'consumable', icon: '🐟', fish: 1200 },
+  { id: 'mh_fish_medium', kind: 'consumable', icon: '🧺', fish: 7500, badge: 'popular' },
+  { id: 'mh_fish_large', kind: 'consumable', icon: '⛵', fish: 20000, badge: 'best' },
+  { id: 'mh_winter_pack', kind: 'nonconsumable', icon: '❄️', fish: 2000 },
+  { id: 'mh_supporter', kind: 'nonconsumable', icon: '💛', fish: 3000 },
+];
+export const PRODUCT_BY_ID = byId(PRODUCTS) as Record<ProductId, ProductDef>;
+
+/** Han Dostu: kalıcı gelir çarpanı ve çevrimdışı süre */
+export const SUPPORTER_INCOME = 1.25;
+export const SUPPORTER_OFFLINE_HOURS = 24;

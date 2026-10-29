@@ -1,18 +1,20 @@
 import './style.css';
 import {
-  BREEDS, BREED_BY_ID, FURNITURE, LEVEL_HEARTS, FURNITURE_BY_ID, ROOMS, ROOM_BY_ID, TAG_INFO, UPGRADES, WALLPAPERS,
+  BREEDS, BREED_BY_ID, FURNITURE, PRODUCTS, PRODUCT_BY_ID, FURNITURE_BY_ID, ROOMS, ROOM_BY_ID, TAG_INFO, UPGRADES, WALLPAPERS,
   WALLPAPER_BY_ID, type FurnitureDef, type WallpaperDef,
 } from './data';
 import {
   bestSeatFor, buyFurniture, buyUpgrade, catAt, catchUp, catIncome, claimDaily, cleanMess, dailyAmount, dayKey,
   freeSeats, isMatch, levelOf, levelProgress, load, newGame, placeCat, removeFurniture, resetSave,
-  roomComfort, save, tick, totalIncome, unlockRoom, upg, upgradeCost, useWallpaper,
+  grantPurchase, owns, roomComfort, save, tick, totalIncome, unlockRoom, upg, upgradeCost, useWallpaper,
   type Cat, type GameEvent, type GameState, type Seat,
 } from './game';
 import { drawCat, drawEmptySlot, drawFurniture, drawMess, drawRoom, drawWall, seasonOf, seatPoints } from './draw';
 import { setMusic, setSfx, sfx, unlockAudio } from './audio';
+import { pickStore, type Purchase, type StoreProduct } from './store';
 import {
-  breedBlurb, breedName, detectLang, furnDesc, furnName, getLang, paperName, rarityLabel, roomName, setLang, t,
+  breedBlurb, breedName, detectLang, furnDesc, furnName, getLang, paperName, productDesc, productName, rarityLabel,
+  roomName, setLang, t,
   tagLabel, upgDesc, upgName, type Lang,
 } from './i18n';
 
@@ -23,10 +25,6 @@ const month = () => monthOverride ?? new Date().getMonth();
 const hourOverride = params.has('hour') ? Number(params.get('hour')) : null;
 const hour = () => hourOverride ?? new Date().getHours();
 const isFestive = () => month() === 10 || month() === 11;
-/** Ücretsiz web demosu: tam sürüm mağazalarda ücretli. */
-const DEMO = import.meta.env.VITE_DEMO === '1';
-const DEMO_MAX_HEARTS = LEVEL_HEARTS[4] - 1; // 4. seviyede durur
-let demoEndShown = false;
 /** Capacitor içinde mi (App Store / Google Play sürümü)? */
 const isNative = !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
 
@@ -62,7 +60,8 @@ function resize() {
   canvas.width = Math.round(W * DPR);
   canvas.height = Math.round(H * DPR);
 }
-new ResizeObserver(resize).observe(stage);
+if (typeof ResizeObserver !== 'undefined') new ResizeObserver(resize).observe(stage);
+else window.addEventListener('resize', () => setTimeout(resize, 50)); // Chrome < 64
 resize();
 
 const unit = () => Math.min(W * 0.22, H * 0.17);
@@ -125,7 +124,7 @@ function furnitureCanvas(f: FurnitureDef, w: number, h: number): HTMLCanvasEleme
   c.height = h * DPR;
   const g = c.getContext('2d')!;
   g.scale(DPR, DPR);
-  const tall = ['tree', 'bookshelf', 'lamp', 'fireplace', 'hammock'].includes(f.kind);
+  const tall = ['tree', 'bookshelf', 'lamp', 'fireplace', 'hammock', 'snowglobe'].includes(f.kind);
   const u = tall ? h * 0.72 : Math.min(w * 0.75, h * 1.1);
   drawFurniture(g, f, w / 2, h * 0.9, u, 0.5);
   return c;
@@ -186,7 +185,7 @@ function hitTest(px: number, py: number): Hit | null {
     const f = room.furniture[i];
     if (f) {
       const def = FURNITURE_BY_ID[f];
-      const tall = ['tree', 'bookshelf', 'lamp', 'fireplace', 'hammock', 'radiator'].includes(def.kind) ? 1.15 : 0.7;
+      const tall = ['tree', 'bookshelf', 'lamp', 'fireplace', 'hammock', 'radiator', 'snowglobe'].includes(def.kind) ? 1.15 : 0.7;
       if (px > g.x - u * 0.55 && px < g.x + u * 0.55 && py > g.y - u * tall && py < g.y + u * 0.12)
         return { kind: 'furniture', slot: i };
     } else if (Math.hypot(px - g.x, (py - g.y) * 1.6) < u * 0.45) {
@@ -429,7 +428,8 @@ function openShop(slot: number) {
     <div class="grid" id="shop-grid"></div>`);
   const grid = $('shop-grid');
   for (const f of FURNITURE) {
-    const locked = lvl < f.unlockLevel;
+    const exclusiveLocked = !!f.exclusive && !owns(state, f.exclusive);
+    const locked = lvl < f.unlockLevel || exclusiveLocked;
     const card = document.createElement('button');
     card.className = 'card' + (locked ? ' locked' : '') + (state.fish < f.price ? ' poor' : '');
     card.appendChild(furnitureCanvas(f, 150, 86));
@@ -438,8 +438,9 @@ function openShop(slot: number) {
       <div class="meta">${f.tag ? `<span>${TAG_INFO[f.tag].icon} ${tagLabel(f.tag)}</span>` : ''}${f.seats ? `<span>🐱×${f.seats}</span>` : ''}<span>✨+${f.comfort}</span></div>
       <div class="meta">${furnDesc(f)}</div>
       <div class="price">${fmt(f.price)} 🐟</div>
-      ${locked ? `<span class="lock">🔒 ${t('lvShort', { level: f.unlockLevel })}</span>` : ''}`);
+      ${exclusiveLocked ? `<span class="lock">${t('exclusiveLock')}</span>` : locked ? `<span class="lock">🔒 ${t('lvShort', { level: f.unlockLevel })}</span>` : ''}`);
     card.onclick = () => {
+      if (exclusiveLocked) { sfx('tap'); openShopTab(); return; }
       const res = buyFurniture(state, currentRoom, slot, f.id);
       if (res === 'ok') {
         sfx('buy');
@@ -538,8 +539,9 @@ function openMenu() {
       <div class="toggle">${t('language')} <div class="seg"><button data-lang="tr" class="${getLang() === 'tr' ? 'on' : ''}">TR</button><button data-lang="en" class="${getLang() === 'en' ? 'on' : ''}">EN</button></div></div>
       <label class="toggle">${t('music')} <input type="checkbox" id="opt-music" ${state.settings.music ? 'checked' : ''}></label>
       <label class="toggle">${t('sfx')} <input type="checkbox" id="opt-sfx" ${state.settings.sfx ? 'checked' : ''}></label>
-      ${DEMO ? `<div class="banner">${t('demoBanner')}</div>` : ''}
+      ${owns(state, 'mh_supporter') ? `<div class="banner">${t('supporterBadge')}</div>` : ''}
       ${isNative ? '' : `<div class="banner">${t('homeScreen')}</div>`}
+      <a class="btn ghost" href="https://bartuinsta1.github.io/new/privacy.html" target="_blank" rel="noopener">${t('privacy')}</a>
       <button class="btn ghost" id="reset-btn">${t('reset')}</button>
     </div>`);
   sheetBody.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach((b) => {
@@ -566,10 +568,14 @@ function openMenu() {
   };
   $('reset-btn').onclick = () => {
     if (confirm(t('resetConfirm'))) {
-      const lang = state.settings.lang;
+      const { lang } = state.settings;
+      const { owned, txns } = state;
       resetSave();
       state = newGame();
+      // Satın alınan paketler sıfırlamada kaybolmaz.
       state.settings.lang = lang;
+      state.owned = owned;
+      state.txns = txns;
       currentRoom = 'salon';
       selectedCat = null;
       closeSheet();
@@ -586,7 +592,10 @@ $('level-pill').onclick = () => {
   const p = levelProgress(state.hearts);
   toast(t('levelToast', { level: p.level, cur: p.cur, need: p.need }));
 };
-$('fish-pill').onclick = () => toast(t('fishToast', { rate: (totalIncome(state) * 60).toFixed(1) }));
+$('fish-pill').onclick = () => {
+  toast(t('fishToast', { rate: (totalIncome(state) * 60).toFixed(1) }));
+  if (store.kind !== 'none') { sfx('tap'); openShopTab(); }
+};
 
 function applyStaticText() {
   $('door-label').textContent = t('door');
@@ -597,17 +606,22 @@ function applyStaticText() {
 }
 
 // ---------- geliştirmeler ----------
-let upgTab: 'upg' | 'paper' = 'upg';
+type UpgTab = 'upg' | 'paper' | 'shop';
+let upgTab: UpgTab = 'upg';
+function openShopTab() {
+  upgTab = 'shop';
+  openUpgrades();
+}
 function openUpgrades() {
   if (state.tutorial === 4) advanceTutorial();
   const lvl = levelOf(state.hearts);
   openSheet(`
     <h2>${t('upgTitle')}</h2>
     <p class="sub">${t('upgSub')}</p>
-    <div class="tabs"><button data-tab="upg" class="${upgTab === 'upg' ? 'on' : ''}">${t('tabUpg')}</button><button data-tab="paper" class="${upgTab === 'paper' ? 'on' : ''}">${t('tabPaper')}</button></div>
+    <div class="tabs">${(['upg', 'paper', 'shop'] as const).map((k) => `<button data-tab="${k}" class="${upgTab === k ? 'on' : ''}">${t(k === 'upg' ? 'tabUpg' : k === 'paper' ? 'tabPaper' : 'tabShop')}</button>`).join('')}</div>
     <div id="upg-body"></div>`);
   sheetBody.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((b) => {
-    b.onclick = () => { upgTab = b.dataset.tab as 'upg' | 'paper'; sfx('tap'); openUpgrades(); };
+    b.onclick = () => { upgTab = b.dataset.tab as UpgTab; sfx('tap'); openUpgrades(); };
   });
   const body = $('upg-body');
   if (upgTab === 'upg') {
@@ -636,6 +650,8 @@ function openUpgrades() {
       };
       body.appendChild(row);
     }
+  } else if (upgTab === 'shop') {
+    renderShop(body);
   } else {
     const rs = state.rooms[currentRoom];
     body.innerHTML = `<p class="sub">${t('paperSub', { room: roomName(ROOM_BY_ID[currentRoom]) })}</p><div class="grid" id="paper-grid"></div>`;
@@ -643,17 +659,19 @@ function openUpgrades() {
     const items: (WallpaperDef | null)[] = [null, ...WALLPAPERS];
     for (const w of items) {
       const id = w ? w.id : 'default';
-      const owned = !w || state.wallpapers.includes(w.id);
+      const exclusiveLocked = !!w?.exclusive && !owns(state, w.exclusive);
+      const owned = !w || state.wallpapers.includes(w.id) || (!!w.exclusive && !exclusiveLocked);
       const applied = (rs.wallpaper ?? 'default') === id;
-      const locked = !!w && !owned && lvl < w.unlockLevel;
+      const locked = exclusiveLocked || (!!w && !owned && lvl < w.unlockLevel);
       const card = document.createElement('button');
       card.className = 'card' + (applied ? ' applied' : '') + (locked ? ' locked' : '') + (w && !owned && state.fish < w.price ? ' poor' : '');
       card.appendChild(wallCanvas(w ?? undefined, 150, 86));
       card.insertAdjacentHTML('beforeend', `
         <div class="nm">${w ? paperName(w) : t('paperDefault')}</div>
-        <div class="price">${applied ? t('applied') : owned ? t('apply') : `${fmt(w!.price)} 🐟`}</div>
-        ${locked ? `<span class="lock">🔒 ${t('lvShort', { level: w!.unlockLevel })}</span>` : ''}`);
+        <div class="price">${applied ? t('applied') : owned ? t('apply') : exclusiveLocked ? '💎' : `${fmt(w!.price)} 🐟`}</div>
+        ${exclusiveLocked ? `<span class="lock">${t('exclusiveLock')}</span>` : locked ? `<span class="lock">🔒 ${t('lvShort', { level: w!.unlockLevel })}</span>` : ''}`);
       card.onclick = () => {
+        if (exclusiveLocked) { sfx('tap'); openShopTab(); return; }
         const res = useWallpaper(state, currentRoom, id);
         if (res === 'bought' || res === 'applied') {
           sfx(res === 'bought' ? 'buy' : 'tap');
@@ -669,6 +687,103 @@ function openUpgrades() {
       grid.appendChild(card);
     }
   }
+}
+
+// ---------- mağaza (uygulama içi satın alma) ----------
+const store = pickStore();
+let storeProducts: StoreProduct[] | null = null;
+let storeError = false;
+let buying = false;
+
+function loadStore() {
+  if (store.kind === 'none') return;
+  store
+    .load()
+    .then((p) => { storeProducts = p; storeError = p.length === 0; })
+    .catch(() => { storeError = true; })
+    .finally(() => { if (!sheetWrap.hidden && upgTab === 'shop') openUpgrades(); });
+}
+
+function applyPurchase(p: Purchase, quiet = false) {
+  const g = grantPurchase(state, p.productId, p.transactionId);
+  save(state);
+  refreshHud();
+  if (!g || quiet) return g;
+  sfx('level');
+  if (g.unlocked) toast(t('thanksPack', { name: productName(g.product) }));
+  else toast(t('thanks', { fish: fmt(g.fish) }));
+  return g;
+}
+
+function renderShop(body: HTMLElement) {
+  body.className = 'stack';
+  body.innerHTML = `<p class="sub">${t('shopSub')}</p>`;
+  if (store.kind === 'none') {
+    body.insertAdjacentHTML('beforeend', `<div class="banner">${t('shopWeb')}</div>`);
+  } else if (!storeProducts && !storeError) {
+    body.insertAdjacentHTML('beforeend', `<p class="sub">${t('shopLoading')}</p>`);
+  } else if (storeError) {
+    body.insertAdjacentHTML('beforeend', `<div class="banner">${t('shopUnavailable')}</div>`);
+  }
+  for (const p of PRODUCTS) {
+    const sp = storeProducts?.find((x) => x.id === p.id);
+    const has = p.kind === 'nonconsumable' && owns(state, p.id);
+    const row = document.createElement('div');
+    row.className = 'upg iap';
+    row.dataset.product = p.id;
+    row.innerHTML = `
+      <div class="ui">${p.icon}</div>
+      <div class="ut"><b>${productName(p.id)}${p.badge ? ` <span class="tag match">${t(p.badge)}</span>` : ''}</b>${productDesc(p.id, fmt(p.fish))}</div>
+      <button class="btn ${has ? 'ghost' : 'alt'}" ${has || !sp || buying ? 'disabled' : ''}>${has ? t('owned') : sp ? sp.price : '—'}</button>`;
+    row.querySelector('button')!.onclick = () => void buy(p.id);
+    body.appendChild(row);
+  }
+  if (store.kind !== 'none') {
+    const r = document.createElement('button');
+    r.className = 'btn ghost';
+    r.id = 'restore-btn';
+    r.textContent = t('restore');
+    r.onclick = () => void restore();
+    body.appendChild(r);
+  }
+}
+
+async function buy(id: (typeof PRODUCTS)[number]['id']) {
+  if (buying) return;
+  buying = true;
+  sfx('tap');
+  try {
+    const res = await store.purchase(id);
+    if (res.ok) {
+      applyPurchase(res.purchase);
+      await res.finish();
+    } else if (res.reason === 'pending') {
+      toast(t('pending'));
+    } else if (res.reason !== 'cancelled') {
+      sfx('error');
+      toast(t('purchaseError'));
+    }
+  } finally {
+    buying = false;
+    if (!sheetWrap.hidden && upgTab === 'shop') openUpgrades();
+  }
+}
+
+async function restore() {
+  sfx('tap');
+  try {
+    const list = await store.restore();
+    let n = 0;
+    for (const p of list) {
+      const known = PRODUCT_BY_ID[p.productId as keyof typeof PRODUCT_BY_ID];
+      if (!known || owns(state, known.id)) continue;
+      if (applyPurchase(p, true)) n++;
+    }
+    toast(n ? t('restored', { n }) : t('restoredNone'));
+  } catch {
+    toast(t('shopUnavailable'));
+  }
+  if (!sheetWrap.hidden && upgTab === 'shop') openUpgrades();
 }
 
 // ---------- öğretici ----------
@@ -771,10 +886,6 @@ function frame(now: number) {
       a.since = time + Math.random() * 2;
     }
   }
-  if (DEMO && state.hearts >= DEMO_MAX_HEARTS) {
-    state.hearts = DEMO_MAX_HEARTS;
-    if (!demoEndShown && sheetWrap.hidden) showDemoEnd();
-  }
   hudTimer += dt;
   if (hudTimer > 0.25) { refreshHud(); showHint(); hudTimer = 0; }
   saveTimer += dt;
@@ -851,18 +962,6 @@ function draw() {
   for (const d of list) d.fn();
 }
 
-function showDemoEnd() {
-  demoEndShown = true;
-  sfx('level');
-  openSheet(`
-    <div class="hero">
-      <div class="big">🏔️💌</div>
-      <h2>${t('demoTitle')}</h2>
-      <p>${t('demoText')}</p>
-    </div>
-    <button class="btn" data-close style="width:100%">${t('demoBtn')}</button>`);
-}
-
 // ---------- açılış ----------
 function welcome() {
   const r = catchUp(state, Date.now(), Math.random, month());
@@ -916,10 +1015,40 @@ window.addEventListener('pagehide', () => {
 });
 
 applyStaticText();
+loadStore();
+store.onRecovered((p) => applyPurchase(p)).catch(() => undefined);
 renderAll();
 welcome();
 showHint();
 requestAnimationFrame(frame);
+
+// Cihaz duman testleri (Android emülatörü / iOS simülatörü) bu satırı günlükte arar.
+console.info('MH_READY');
+
+// Uçtan uca testler için kanca: sadece ?test=1 ile açılır.
+if (params.has('test')) {
+  (window as unknown as Record<string, unknown>).__mh = {
+    get state() { return state; },
+    get room() { return currentRoom; },
+    advance(sec: number) {
+      for (let i = 0; i < sec; i++) handleEvents(tick(state, 1, Math.random, month()));
+      refreshHud();
+      renderQueue();
+      renderRooms();
+    },
+    save: () => save(state),
+    slotPos: (slot: number) => slotGeo(slot),
+    seatPos: (room: string, slot: number, seat: number) => {
+      const g = seatGeo({ room, slot, seat });
+      return { x: g.x, y: g.y - g.size * 0.35 };
+    },
+    messPos: (id: number) => {
+      const m = state.messes.find((x) => x.id === id)!;
+      return { x: m.x * W, y: m.y * H };
+    },
+    storeKind: store.kind,
+  };
+}
 
 if ('serviceWorker' in navigator && import.meta.env.PROD && !isNative) {
   navigator.serviceWorker.register('./sw.js').catch(() => undefined);

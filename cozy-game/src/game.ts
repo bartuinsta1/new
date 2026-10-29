@@ -1,8 +1,8 @@
 // Saf oyun mantığı: DOM/canvas bilmez, test edilebilir.
 import {
   BREEDS, BREED_BY_ID, CAT_NAMES, FURNITURE_BY_ID, LEVEL_HEARTS, MAX_LEVEL, MESS_KINDS,
-  RARITY_WEIGHT, ROOMS, ROOM_BY_ID, UPGRADE_BY_ID, WALLPAPER_BY_ID, type BreedDef, type MessKind, type Tag,
-  type UpgradeId,
+  PRODUCT_BY_ID, RARITY_WEIGHT, ROOMS, ROOM_BY_ID, SUPPORTER_INCOME, SUPPORTER_OFFLINE_HOURS, UPGRADE_BY_ID,
+  WALLPAPER_BY_ID, type BreedDef, type MessKind, type ProductId, type Tag, type UpgradeId,
 } from './data';
 
 export type Rand = () => number;
@@ -54,6 +54,10 @@ export interface GameState {
   tutorial: number;
   upgrades: Partial<Record<UpgradeId, number>>;
   wallpapers: string[];
+  /** sahip olunan kalıcı uygulama içi ürünler */
+  owned: ProductId[];
+  /** işlenmiş satın alma kimlikleri: aynı işlem iki kez ödüllendirilmez */
+  txns: string[];
   settings: { music: boolean; sfx: boolean; lang: 'tr' | 'en' | null };
 }
 
@@ -90,12 +94,22 @@ export function newGame(now = Date.now()): GameState {
     tutorial: 0,
     upgrades: {},
     wallpapers: [],
+    owned: [],
+    txns: [],
     settings: { music: true, sfx: true, lang: null },
   };
 }
 
 export function upg(s: GameState, id: UpgradeId): number {
   return s.upgrades[id] ?? 0;
+}
+
+export function owns(s: GameState, id: ProductId): boolean {
+  return s.owned.includes(id);
+}
+
+export function offlineCap(s: GameState): number {
+  return owns(s, 'mh_supporter') ? SUPPORTER_OFFLINE_HOURS * 3600 : OFFLINE_CAP;
 }
 
 export function levelOf(hearts: number): number {
@@ -152,7 +166,7 @@ export function catIncome(s: GameState, cat: Cat): number {
   if (cat.room === undefined) return 0;
   const rarity = BREED_BY_ID[cat.breed]?.rarity ?? 1;
   const comfort = roomComfort(s, cat.room);
-  return BASE_INCOME * (1 + comfort * 0.08) * (isMatch(s, cat) ? 2 : 1) * (1 + 0.2 * (rarity - 1)) * (1 + 0.1 * upg(s, 'mama'));
+  return BASE_INCOME * (1 + comfort * 0.08) * (isMatch(s, cat) ? 2 : 1) * (1 + 0.2 * (rarity - 1)) * (1 + 0.1 * upg(s, 'mama')) * (owns(s, 'mh_supporter') ? SUPPORTER_INCOME : 1);
 }
 
 export function totalIncome(s: GameState): number {
@@ -264,7 +278,7 @@ export function tick(s: GameState, dt: number, rand: Rand, month: number): GameE
 
 /** Çevrimdışı geçen süreyi 5 sn adımlarla simüle eder. */
 export function catchUp(s: GameState, now: number, rand: Rand, month: number): { seconds: number; fish: number; events: GameEvent[] } {
-  const seconds = Math.min(OFFLINE_CAP, Math.max(0, (now - s.lastSeen) / 1000));
+  const seconds = Math.min(offlineCap(s), Math.max(0, (now - s.lastSeen) / 1000));
   const fishBefore = s.fish;
   const events: GameEvent[] = [];
   let left = seconds;
@@ -309,6 +323,7 @@ export function buyFurniture(s: GameState, room: string, slot: number, id: strin
   const rs = s.rooms[room];
   if (!rs || !f) return 'locked';
   if (rs.furniture[slot]) return 'occupied';
+  if (f.exclusive && !owns(s, f.exclusive)) return 'locked';
   if (levelOf(s.hearts) < f.unlockLevel) return 'level';
   if (s.fish < f.price) return 'fish';
   s.fish -= f.price;
@@ -384,6 +399,11 @@ export function useWallpaper(s: GameState, room: string, id: string): WallpaperR
   }
   const w = WALLPAPER_BY_ID[id];
   if (!w) return 'locked';
+  if (w.exclusive) {
+    if (!owns(s, w.exclusive)) return 'locked';
+    rs.wallpaper = id;
+    return 'applied';
+  }
   if (s.wallpapers.includes(id)) {
     rs.wallpaper = id;
     return 'applied';
@@ -394,6 +414,36 @@ export function useWallpaper(s: GameState, room: string, id: string): WallpaperR
   s.wallpapers.push(id);
   rs.wallpaper = id;
   return 'bought';
+}
+
+export interface Grant {
+  product: ProductId;
+  fish: number;
+  /** kalıcı ürün bu kayıtta ilk kez açıldı */
+  unlocked: boolean;
+}
+
+const TXN_MEMORY = 300;
+
+/**
+ * Mağazadan gelen bir satın almayı oyuna işler. Aynı işlem kimliği ikinci kez gelirse
+ * (yeniden başlatma, geri yükleme, mağaza tekrarı) hiçbir şey vermez ve null döner.
+ * Kalıcı ürünlerin balık hediyesi bu kayıtta yalnızca bir kez verilir.
+ */
+export function grantPurchase(s: GameState, productId: string, transactionId: string): Grant | null {
+  const p = PRODUCT_BY_ID[productId as ProductId];
+  if (!p) return null;
+  if (transactionId && s.txns.includes(transactionId)) return null;
+  if (transactionId) {
+    s.txns.push(transactionId);
+    if (s.txns.length > TXN_MEMORY) s.txns.splice(0, s.txns.length - TXN_MEMORY);
+  }
+  if (p.kind === 'nonconsumable') {
+    if (owns(s, p.id)) return { product: p.id, fish: 0, unlocked: false };
+    s.owned.push(p.id);
+  }
+  s.fish += p.fish;
+  return { product: p.id, fish: p.fish, unlocked: p.kind === 'nonconsumable' };
 }
 
 export function dayKey(d: Date): string {
@@ -437,6 +487,8 @@ export function load(storage: Pick<Storage, 'getItem'> = localStorage): GameStat
       if (rs.wallpaper && !WALLPAPER_BY_ID[rs.wallpaper]) delete rs.wallpaper;
     }
     merged.wallpapers = merged.wallpapers.filter((w) => WALLPAPER_BY_ID[w]);
+    merged.owned = merged.owned.filter((p) => PRODUCT_BY_ID[p]);
+    if (!Number.isFinite(merged.fish) || merged.fish < 0) merged.fish = 0;
     merged.guests = merged.guests.filter((c) => c.room && merged.rooms[c.room] && BREED_BY_ID[c.breed]);
     merged.queue = merged.queue.filter((c) => BREED_BY_ID[c.breed]);
     return merged;

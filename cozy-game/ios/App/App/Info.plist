@@ -65,6 +65,8 @@
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
 </dict>
 </plist>

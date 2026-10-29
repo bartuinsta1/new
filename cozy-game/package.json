@@ -1,21 +1,24 @@
 {
   "name": "mirnav-hani",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
-    "build:demo": "tsc --noEmit && VITE_DEMO=1 vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
     "cap:sync": "npm run build && cap sync",
     "android": "npm run cap:sync && cap open android",
-    "ios": "npm run cap:sync && cap open ios"
+    "ios": "npm run cap:sync && cap open ios",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:all": "npm test && npm run build && npm run test:e2e"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.3",
+    "@types/node": "^26.6.5",
+    "playwright": "^1.63.0",
     "typescript": "5.6.3",
     "vite": "5.4.10",
     "vitest": "2.1.4"
@@ -23,6 +26,7 @@
   "dependencies": {
     "@capacitor/android": "^8.5.3",
     "@capacitor/core": "^8.5.3",
-    "@capacitor/ios": "^8.5.3"
+    "@capacitor/ios": "^8.5.3",
+    "@capgo/native-purchases": "^8.9.5"
   }
 }
