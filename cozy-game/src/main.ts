@@ -764,6 +764,9 @@ async function buy(id: (typeof PRODUCTS)[number]['id']) {
       sfx('error');
       toast(t('purchaseError'));
     }
+  } catch {
+    sfx('error');
+    toast(t('purchaseError'));
   } finally {
     buying = false;
     if (!sheetWrap.hidden && upgTab === 'shop') openUpgrades();

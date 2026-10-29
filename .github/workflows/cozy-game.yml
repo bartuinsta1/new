@@ -37,6 +37,7 @@ jobs:
     name: Uçtan uca (${{ matrix.browser }})
     needs: unit
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -130,6 +131,7 @@ jobs:
     name: Android emülatör (API ${{ matrix.api }})
     needs: android
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -155,6 +157,7 @@ jobs:
           disable-animations: true
           working-directory: cozy-game
           script: bash scripts/android-smoke.sh ${{ matrix.api }} apk/app-debug.apk smoke
+        timeout-minutes: 20
       - uses: actions/upload-artifact@v5
         if: always()
         with:
@@ -165,6 +168,7 @@ jobs:
     name: iOS derleme + simülatör
     needs: unit
     runs-on: macos-15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -180,6 +184,7 @@ jobs:
           -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -n 30
         shell: bash -o pipefail {0}
       - run: bash scripts/ios-smoke.sh build/Build/Products/Debug-iphonesimulator/App.app smoke
+        timeout-minutes: 20
       - uses: actions/upload-artifact@v5
         if: always()
         with:

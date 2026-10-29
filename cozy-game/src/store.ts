@@ -115,8 +115,8 @@ class NativeStore implements Store {
   }
 
   async purchase(id: ProductId): Promise<PurchaseResult> {
-    const m = await this.plugin();
     try {
+      const m = await this.plugin();
       const t = await m.NativePurchases.purchaseProduct({
         productIdentifier: id,
         productType: m.PURCHASE_TYPE.INAPP,
