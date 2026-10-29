@@ -1,13 +1,26 @@
-# Sürekli tümleştirme: her push'ta sunucu testleri (Postgres dahil) ve iOS derleme + birim + UI testleri.
-name: CI
+# Masalcık sürekli tümleştirme: sunucu testleri (Postgres dahil) ve iOS derleme + birim + UI testleri.
+# Yalnızca Masalcık dosyaları değişince çalışır (aynı depodaki diğer projeler macOS dakikası harcamasın).
+name: Masalcik CI
 
 on:
   push:
+    paths: &paths
+      - "Masalcik/**"
+      - "MasalcikTests/**"
+      - "MasalcikUITests/**"
+      - "backend/**"
+      - "scripts/**"
+      - "project.yml"
+      - "Config.xcconfig"
+      - "StoreKit/**"
+      - "docs/appstore/**"
+      - ".github/workflows/ci.yml"
   pull_request:
+    paths: *paths
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: masalcik-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
