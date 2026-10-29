@@ -45,11 +45,11 @@ struct CharacterFace: View {
     var body: some View {
         ZStack {
             // Gözler
-            ForEach([-1.0, 1.0], id: \.self) { side in
+            ForEach([CGFloat(-1), CGFloat(1)], id: \.self) { (side: CGFloat) in
                 eye.position(x: 100 + side * eyeSpacing / 2, y: 92)
             }
             // Yanaklar
-            ForEach([-1.0, 1.0], id: \.self) { side in
+            ForEach([CGFloat(-1), CGFloat(1)], id: \.self) { (side: CGFloat) in
                 Ellipse().fill(Palette.berry.opacity(0.45))
                     .frame(width: 20, height: 12)
                     .position(x: 100 + side * (eyeSpacing / 2 + 18), y: 114)
@@ -117,7 +117,7 @@ struct RoundedStar: Shape {
         let inner = outer * innerRatio
         var verts: [CGPoint] = []
         for i in 0..<(points * 2) {
-            let a = Double(i) * .pi / Double(points) - .pi / 2
+            let a: CGFloat = CGFloat(i) * .pi / CGFloat(points) - .pi / 2
             let rad = i.isMultiple(of: 2) ? outer : inner
             verts.append(CGPoint(x: c.x + cos(a) * rad, y: c.y + sin(a) * rad))
         }

@@ -1,0 +1,54 @@
+# Masalcık yayın akışı. Kurulum (Mac): `brew install fastlane xcodegen`
+#   fastlane metadata   → App Store metinlerini docs/appstore'dan üretip doğrular (yükleme yok)
+#   fastlane beta       → derler, imzalar, TestFlight'a yükler
+#   fastlane release    → metin + ekran görüntüsü + derlemeyi incelemeye gönderir
+# Kimlik bilgileri: App Store Connect API anahtarı (önerilen) —
+#   APP_STORE_CONNECT_API_KEY_ID, APP_STORE_CONNECT_API_ISSUER_ID, APP_STORE_CONNECT_API_KEY_PATH (.p8)
+default_platform(:ios)
+
+platform :ios do
+  def api_key
+    return nil unless ENV["APP_STORE_CONNECT_API_KEY_ID"]
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+    )
+  end
+
+  desc "App Store metinlerini üret ve sınırları denetle"
+  lane :metadata do
+    sh("cd .. && python3 scripts/check_appstore.py && python3 scripts/release/export_metadata.py")
+  end
+
+  desc "Derle ve TestFlight'a yükle"
+  lane :beta do
+    metadata
+    sh("cd .. && xcodegen generate")
+    increment_build_number(build_number: ENV["BUILD_NUMBER"] || Time.now.strftime("%Y%m%d%H%M"),
+                           xcodeproj: "Masalcik.xcodeproj")
+    build_app(project: "Masalcik.xcodeproj", scheme: "Masalcik", configuration: "Release",
+              export_method: "app-store", clean: true, output_directory: "build")
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+  end
+
+  desc "Metin, ekran görüntüsü ve son derlemeyi App Review'a gönder"
+  lane :release do
+    metadata
+    deliver(
+      api_key: api_key,
+      metadata_path: "fastlane/metadata",
+      screenshots_path: "fastlane/screenshots",
+      overwrite_screenshots: true,
+      submit_for_review: true,
+      automatic_release: false,
+      force: true,
+      precheck_include_in_app_purchases: true,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        content_rights_contains_third_party_content: false,
+        export_compliance_uses_encryption: false,
+      },
+    )
+  end
+end

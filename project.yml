@@ -12,7 +12,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.10"
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: ""
     SWIFT_STRICT_CONCURRENCY: complete
@@ -35,7 +35,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.masalcik.app
-        TARGETED_DEVICE_FAMILY: "1,2"
+        # 1.0 yalnızca iPhone (iPad için 13" ekran görüntüleri gerekir; düzen hazır, 1.1 ile açılır).
+        TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Masalcık
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

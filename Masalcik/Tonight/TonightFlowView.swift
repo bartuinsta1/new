@@ -248,7 +248,7 @@ struct StoryBookWaiting: View {
     var body: some View {
         VStack(spacing: Metrics.spacingL) {
             ZStack {
-                if !reduceMotion {
+                if !reduceMotion && PerformanceBudget.current.showsFlyingStars {
                     TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
                         FlyingStars(time: ctx.date.timeIntervalSinceReferenceDate)
                     }

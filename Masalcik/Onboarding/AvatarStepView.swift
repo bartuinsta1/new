@@ -186,7 +186,7 @@ struct OnboardingFinaleView: View {
             (theme.mode == .day ? Palette.sky.opacity(0.55) : Palette.nightSky).ignoresSafeArea()
             // Yıldız patlaması
             ForEach(0..<14, id: \.self) { i in
-                let angle = Double(i) / 14 * 2 * .pi
+                let angle = CGFloat(i) / 14 * 2 * .pi
                 RoundedStar()
                     .fill([Palette.sun, Palette.berry, Palette.grass, Palette.grape, Palette.orange][i % 5])
                     .overlay(RoundedStar().stroke(theme.outline, lineWidth: 2))

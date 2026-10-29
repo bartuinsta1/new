@@ -52,6 +52,9 @@ GÜVENLİ VE GİZLİLİĞE SAYGILI
 Ücretsiz: her gün 1 kişisel masal ve kitaplıktan haftada 3 masal. Kredi ya da jeton yok.
 Masalcık Premium: günde 10'a kadar kişisel masal, tüm kitaplık ve kendi sesinizle masal. Aylık 79,99 TL ya da yıllık 449,99 TL; 7 gün ücretsiz deneme.
 
+MASAL DÜKKANI
+Bir kez alınan, hep sizde kalan paketler: "Dede Korkut'tan Esintiler" ve "Uzay Yolculuğu" masal paketleri, karakterlere "Bayram Giysileri". Premium'a dahil değildir; Aile Paylaşımı açıktır. Jeton ya da kredi yoktur. Dükkân yalnızca ebeveyn kapısının arkasındadır.
+
 Abonelik, deneme süresi bitmeden en az 24 saat önce iptal edilmezse otomatik yenilenir ve ücret Apple Hesabınızdan alınır. Aboneliği iPhone Ayarları › Apple Hesabı › Abonelikler bölümünden yönetebilir ya da iptal edebilirsiniz.
 
 Kullanım Koşulları: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
@@ -85,3 +88,5 @@ Masalcık'ın ilk sürümü: Masal Adası, her gece yeni kişisel masallar, Gece
 - Ses klonlama (Premium) ayrı ve açık bir onay ekranıyla, yalnızca ebeveyn tarafından başlatılır; ses örneği silinebilir.
 - Üçüncü taraf analitik, reklam ya da izleme SDK'sı yoktur. Uygulama içi satın alma: Masalcık Premium (aylık/yıllık, 7 gün deneme).
 - Sandbox'ta satın almayı denemek için: harita › kilit simgesi › kapı yanıtı › Hesap › Premium'u incele.
+- Tek seferlik paketler (Non-Consumable, Aile Paylaşımı açık): Hesap › Masal Dükkanı. Paket içeriği çocuk ekranlarında
+  yalnızca satın alındıktan sonra görünür; çocuğa satın alma önerilmez.

@@ -1,0 +1,5 @@
+# App Store Connect hesabı (yayın öncesi doldurun ya da ortam değişkeni verin).
+app_identifier("com.masalcik.app")
+apple_id(ENV["FASTLANE_APPLE_ID"])          # ör. ebeveyn@ornek.com
+team_id(ENV["MASALCIK_TEAM_ID"])            # Apple Developer ekip kimliği (10 karakter)
+itc_team_id(ENV["MASALCIK_ITC_TEAM_ID"])    # App Store Connect ekip kimliği (birden fazla ekip varsa)
