@@ -54,7 +54,8 @@ const toastEl = $('toast');
 
 let W = 0, H = 0, DPR = 1;
 function resize() {
-  DPR = Math.min(window.devicePixelRatio || 1, 2.5);
+  // 3x ekranlarda 2x çizmek gözle fark edilmez ama boyanan pikseli %44 azaltır (eski cihazlarda akıcılık)
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
   W = stage.clientWidth;
   H = stage.clientHeight;
   canvas.width = Math.round(W * DPR);

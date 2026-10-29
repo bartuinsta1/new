@@ -1,102 +1,105 @@
 # Mağaza yayını: App Store + Google Play
 
-**Model:** Tek seferlik ücretli uygulama, yaklaşık **25 TL**. Uygulama içi satın alma ve reklam yok. Web'de ücretsiz bir demo var (4. seviyede durur).
+**Model:** Oyun **ücretsiz**. Reklam yok. İsteğe bağlı uygulama içi paketler var.
+**Destek:** iOS 15 ve üstü (iOS 15–26, yaklaşık 6 ana sürüm), Android 7.0 ve üstü (API 24–36, 10 ana sürüm).
 
-## Fiyat
-| Mağaza | Nasıl |
-|---|---|
-| Google Play | Play Console › Monetize › Pricing. Türkiye için **24,99 TL** girilebilir; diğer ülkeler otomatik çevrilir, istersen elle ayarla. |
-| App Store | App Store Connect › Pricing and Availability. Apple sabit fiyat noktaları kullanır: Türkiye'yi **temel ülke** seç ve 25 TL'ye en yakın noktayı (ör. 24,99 TL) seç. Diğer ülkeler otomatik hesaplanır. |
+Mağaza metinleri ve görseller `fastlane/` klasöründe hazır. İstersen fastlane ile otomatik yükle, istersen elle kopyala.
 
-> Ücretli uygulama satmak için: Apple'da **Paid Apps Agreement** ile vergi ve banka bilgileri, Google'da **ödeme profili** gerekir. Geliştirici hesapları ücretlidir: Apple yıllık 99 $, Google tek seferlik 25 $.
-
-## Kimlik
-- Paket / Bundle ID: `com.mirnavhani.game` (yayından önce değiştirilecekse `capacitor.config.ts`, Android `applicationId` ve Xcode'da birlikte değiştir)
-- Kategori: Oyunlar › Simülasyon (ikincil: Gündelik)
-- Yaş: 4+ / PEGI 3 / Everyone. Şiddet, reklam ve sohbet yok.
-- Gizlilik: **Veri toplanmıyor** (App Store "Data Not Collected"; Play "No data collected").
-- Gizlilik politikası URL'si: `https://bartuinsta1.github.io/new/privacy.html`
-
-## Ekran görüntüleri
-`screenshots/` klasöründe 1290×2796 boyutunda (App Store 6,9 inç) 4 Türkçe ve 4 İngilizce görüntü var. Google Play de aynı dosyaları kabul eder.
-
-## Derleme
-```bash
-cd cozy-game
-npm ci
-npm run android   # Android Studio açılır › Build › Generate Signed Bundle (AAB)
-npm run ios       # Xcode açılır (Mac gerekir) › Signing'de takımını seç › Product › Archive
 ```
-GitHub Actions her push'ta test edilebilir bir **debug APK** üretir (Actions › Mırnav Hanı › Artifacts). Bunu telefona kurup deneyebilirsin; mağazaya yüklemek için yukarıdaki imzalı sürüm gerekir.
+fastlane/metadata/ios/{tr,en-US}/        ad, alt başlık, anahtar kelimeler, açıklama, tanıtım, URL'ler
+fastlane/screenshots/ios/{tr,en-US}/     1290×2796 (6,9" iPhone)
+fastlane/metadata/android/{tr-TR,en-US}/ başlık, kısa/uzun açıklama, sürüm notu
+  images/phoneScreenshots/               1080×1920 (Play en fazla 2:1 oran ister)
+  images/featureGraphic.png              1024×500
+  images/icon.png                        512×512
+```
+Görselleri yeniden üretmek için: `npm run build && node scripts/store-assets.mjs`
+Metin uzunlukları `tests/store-metadata.test.ts` ile denetleniyor (sınır aşılırsa test kırılır).
 
 ---
 
-## 🇹🇷 Türkçe mağaza metni
+## 1. Uygulama içi ürünler
 
-**Ad (30):** Mırnav Hanı: Kedi Pansiyonu
-**Alt başlık (30):** Karlı kasabada sıcak bir yuva
-**Anahtar kelimeler (100):** kedi,cozy,rahatlatıcı,pansiyon,idle,koleksiyon,dekorasyon,kış,sakin,tatlı,kedi oyunu,offline
+Ürün kimlikleri koddaki (`src/data.ts › PRODUCTS`) ile **birebir aynı** açılmalı.
 
-**Tanıtım metni (170):**
-İlk kar yağdı! Soğukta kalan kedilere kapını aç, sevdikleri köşeyi bul ve eski hanı kasabanın en sıcak yerine çevir.
+| Ürün kimliği | Tür (Apple / Google) | Verdiği | Önerilen fiyat |
+|---|---|---|---|
+| `mh_fish_small` | Consumable / Tüketilebilir | 1.200 🐟 | 0,99 $ (~39,99 TL) |
+| `mh_fish_medium` | Consumable / Tüketilebilir | 7.500 🐟 · "En sevilen" | 4,99 $ (~179,99 TL) |
+| `mh_fish_large` | Consumable / Tüketilebilir | 20.000 🐟 · "En avantajlı" | 9,99 $ (~399,99 TL) |
+| `mh_winter_pack` | Non-Consumable / Tek seferlik | Kuzey Işıkları duvar kâğıdı, Kar Küresi Yatağı, 2.000 🐟 | 2,99 $ (~129,99 TL) |
+| `mh_supporter` | Non-Consumable / Tek seferlik | Kalıcı +%25 balık, 24 saat çevrimdışı kazanç, 3.000 🐟 | 4,99 $ (~219,99 TL) |
 
-**Açıklama:**
-Dağ kasabasına kış geldi. Kapında üşüyen bir kedi bekliyor…
+Ekranda görünen fiyatı oyun mağazadan alıyor: hangi fiyatı girersen o görünür, para birimi de otomatik ayarlanır.
 
-Mırnav Hanı, sokak kedileri için sıcacık bir pansiyon işlettiğin rahatlatıcı bir oyun. Acele yok, süre yok, ceza yok. Sadece mırıltılar, şömine çıtırtısı ve camdan süzülen kar.
+**Ürün adları ve açıklamaları.** Apple'da ad en fazla 30, açıklama en fazla 45 karakter olabilir.
 
-🐾 18 KEDİ CİNSİNİ AĞIRLA
-Tekir, Van kedisi, Ankara, Siyam, kocaman Maine Coon… Her kedinin bir huyu var: kimi şömine başını sever, kimi pencereden kar izlemeyi, kimi karton kutuyu. Onları sevdikleri yere koy, mutluluktan mırlasınlar.
+| Kimlik | TR ad | TR açıklama | EN ad | EN açıklama |
+|---|---|---|---|---|
+| mh_fish_small | Bir Kova Balık | 1.200 balık | Bucket of Fish | 1,200 fish |
+| mh_fish_medium | Balık Sepeti | 7.500 balık | Fish Basket | 7,500 fish |
+| mh_fish_large | Balıkçı Teknesi | 20.000 balık | Fishing Boat | 20,000 fish |
+| mh_winter_pack | Kış Masalı Paketi | Kış duvar kâğıdı, Kar Küresi ve balık | Winter Tale Pack | Aurora wallpaper, Snow Globe and fish |
+| mh_supporter | Han Dostu | +%25 balık, 24 saat çevrimdışı, balık | Inn Friend | +25% fish, 24h offline, bonus fish |
 
-🛋️ HANINI DÖŞE
-Minderler, kedi ağaçları, örgü iglo, kadife kanepe, sıcak çikolata tezgâhı ve taş şömine. Salonu, Mutfağı, Çatı Katını ve Kış Serasını aç.
+**İnceleme notu** (App Review / Play inceleme ekibine):
+> The game is fully playable for free. Optional packs are in the 🛍️ button › "💎 Packs" tab (tapping the fish counter also opens it). "Restore purchases" is at the bottom of the same tab. No account or login is required.
 
-✨ TOPARLA, GELİŞTİR, KOLEKSİYON YAP
-Yün yumaklarını ve karlı pati izlerini topla. Hanını geliştir, duvar kâğıtlarını değiştir, kedi albümünü doldur.
-
-❄️ MEVSİMLER VE GERÇEK ZAMAN
-Pencere gerçek saate göre gündüz, akşam ya da gece görünür. Kasım'da İlk Kar Festivali başlar ve nadir Kartopu kedisi kapını çalar.
-
-🌙 SEN YOKKEN DE AÇIK
-Han sen yokken de işler. Döndüğünde misafirlerin bahşişleri seni bekler.
-
-• Tek seferlik ödeme: reklam yok, uygulama içi satın alma yok
-• İnternetsiz oynanır
-• Hiçbir veri toplanmaz
-• Türkçe ve İngilizce
+### Teknik ayrıntılar (koddaki karşılıkları)
+- **Sağlam teslimat:** Ödül önce oyuna işlenip kaydediliyor, işlem mağazada ancak ondan sonra kapatılıyor (`autoFinishTransactions: false`). Uygulama arada kapanırsa yarım kalan işlem bir sonraki açılışta tamamlanıyor (`getUnfinishedTransactions`).
+- **Çift ödül koruması:** Aynı işlem kimliği iki kez ödül vermiyor (`grantPurchase` › `txns`).
+- **Geri yükleme:** Tek seferlik paketler mağazadan geri yükleniyor. "Hanı sıfırla" satın alımları silmiyor.
+- **Bekleyen ödemeler:** Ask to Buy ve Play'deki bekleyen ödemeler onaylanınca dinleyici paketi teslim ediyor.
+- **Doğrulama:** Sunucusuz, cihaz üzerinde. Tek oyunculu ve çevrimdışı bir oyun için yeterli. StoreKit 2 işlemleri zaten Apple imzalı (JWS); doğrulanamayanları eklenti eliyor.
 
 ---
 
-## 🇬🇧 English store text
+## 2. Google Play Console
 
-**Name (30):** Snowpaw Inn: Cozy Cat Hotel
-**Subtitle (30):** A warm home in a snowy town
-**Keywords (100):** cat,cozy,relaxing,idle,inn,hotel,collect,decorate,winter,cute,kitten,offline,calm,pet
+1. **Uygulama oluştur:** ad "Mırnav Hanı: Kedi Pansiyonu", varsayılan dil Türkçe, tür Oyun, **Ücretsiz**.
+2. **Paket adı:** `com.mirnavhani.game`. İlk yüklemeden sonra değiştirilemez.
+3. **İmza anahtarı** (bir kez yap, dosyayı ve şifreleri güvenli bir yerde sakla):
+   ```bash
+   keytool -genkey -v -keystore mirnav-release.jks -alias mirnav -keyalg RSA -keysize 2048 -validity 10000
+   ```
+   GitHub › Settings › Secrets and variables › Actions altına şu sırları ekle:
+   - `ANDROID_KEYSTORE_BASE64` (değeri: `base64 -w0 mirnav-release.jks`)
+   - `ANDROID_KEYSTORE_PASSWORD`
+   - `ANDROID_KEY_ALIAS`
+   - `ANDROID_KEY_PASSWORD`
 
-**Promotional text (170):**
-The first snow has fallen! Open your door to cats out in the cold, find each one's favorite spot, and turn an old inn into the warmest place in town.
+   Bundan sonra CI her push'ta **imzalı AAB** üretir (Actions › Artifacts › `mirnav-hani-release-aab`). Play App Signing'i açık bırak.
+4. **Ürünler:** Monetize › Products › In-app products altında yukarıdaki 5 ürünü aç.
+   - Not: Ürün oluşturabilmek için önce satın alma yetkisi olan bir AAB'nin herhangi bir test kanalına yüklenmiş olması gerekir. Önce 5. adımı yap.
+5. **Test:** Testing › Internal testing'e AAB'yi yükle. Lisans test kullanıcılarını (Setup › License testing) ekleyerek gerçek para ödemeden satın almayı dene.
+6. **App content:**
+   - **Gizlilik politikası:** `https://bartuinsta1.github.io/new/privacy.html`
+   - **Reklam:** Hayır
+   - **Veri güvenliği:** "Veri toplanmıyor / paylaşılmıyor". Satın almaları Google Play işler; uygulama veri göndermez.
+   - **Hedef kitle:** 13+ öner. Uygulama içi satın alma olduğu için "çocuklara yönelik" (Families) programına girmemek inceleme yükünü azaltır.
+   - **İçerik derecelendirmesi (IARC):** şiddet yok, kumar yok, kullanıcı etkileşimi yok, **dijital satın alma: Evet** → PEGI 3 / Everyone beklenir.
+7. **Mağaza kaydı:** `fastlane/metadata/android/` içeriğini gir ya da `fastlane supply` ile yükle.
+8. **Hedef SDK:** 36 (Android 16). Google'ın 2026 şartını karşılıyor.
 
-**Description:**
-Winter has come to the mountain town, and a shivering cat is waiting at your door…
+## 3. App Store Connect
 
-Snowpaw Inn is a relaxing game about running a cozy inn for stray cats. No rush, no timers, no penalties. Just purring, a crackling fire and snow drifting past the window.
+1. **Apple Developer'da App ID:** `com.mirnavhani.game`. In-App Purchase yeteneği varsayılan olarak açık.
+2. **Yeni uygulama:** ad "Mırnav Hanı: Kedi Pansiyonu", birincil dil Türkçe, SKU `mirnav-hani`.
+3. **Fiyat:** Ücretsiz. **Uygulama içi satın almalar** bölümünde 5 ürünü aç (yukarıdaki tablo). Ürün başına 1 inceleme ekran görüntüsü gerekir: mağaza sekmesinin görüntüsü yeterli.
+4. **Paid Applications Agreement** + vergi ve banka bilgileri. Ücretsiz uygulamada bile satın alma için zorunlu.
+5. **Gizlilik:** "Data Not Collected". `PrivacyInfo.xcprivacy` hazır (izleme yok, toplanan veri yok).
+6. **Yaş derecelendirmesi:** tüm sorulara "Yok" → 4+. "In-App Purchases" bilgisi otomatik görünür.
+7. **Derleme (Mac + Xcode 16 ya da üstü):**
+   ```bash
+   cd cozy-game && npm ci && npm run ios
+   ```
+   Xcode'da: App › Signing & Capabilities › Team seç › **+ Capability › In-App Purchase**. Ardından Product › Archive › Distribute › App Store Connect.
+8. **Sandbox testi:** Users and Access › Sandbox altında test hesabı aç, TestFlight sürümüyle satın almayı dene.
+9. **Kayıt metinleri:** `fastlane/metadata/ios/` içeriğini gir ya da `fastlane deliver` ile yükle. Ekran görüntüleri `fastlane/screenshots/ios/` içinde.
 
-🐾 HOST 18 CAT BREEDS
-Tabbies, Van cats, Angoras, Siamese, a giant fluffy "Big Bear"… Every cat has a favorite kind of spot: by the fire, at the window watching snow, or inside a cardboard box. Seat them where they love to be and watch them purr.
-
-🛋️ DECORATE YOUR INN
-Cushions, cat trees, a knitted igloo, a velvet sofa, a hot cocoa counter and a stone fireplace. Open the Living Room, Kitchen, Attic and Winter Greenhouse.
-
-✨ TIDY, UPGRADE, COLLECT
-Sweep up yarn balls and snowy paw prints. Upgrade the inn, swap wallpapers and fill your cat album.
-
-❄️ SEASONS & REAL TIME
-The window follows your real clock: day, dusk and starry night. In November the First Snow Festival begins, and the rare Snowball cat may visit.
-
-🌙 OPEN WHILE YOU'RE AWAY
-The inn keeps running while you're away, and grateful guests leave tips for when you return.
-
-• One-time purchase: no ads, no in-app purchases
-• Plays offline
-• No data collected
-• English and Turkish
+## 4. Yayın öncesi kontrol listesi
+- [ ] CI yeşil: birim, uçtan uca (Chromium/WebKit/Firefox), Android emülatör (API 28/31/35), iOS simülatör.
+- [ ] İki mağazada 5 ürün açık ve kimlikler birebir aynı.
+- [ ] Sandbox ve lisans testiyle her ürün en az bir kez satın alındı. Geri yükleme denendi.
+- [ ] Gizlilik politikası adresi açılıyor (GitHub Pages: Settings › Pages › Source: `gh-pages`).
+- [ ] Sürüm: `package.json › version` (sürüm adı); Android sürüm kodu CI çalışma numarası; iOS build numarası Xcode'da her yüklemede artırılır.

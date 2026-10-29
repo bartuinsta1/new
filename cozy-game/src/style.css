@@ -169,7 +169,8 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; }
 .pv small { font-size: 10px; }
 #level-pill { flex: 0.85; }
 .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-.tabs button { flex: 1; min-width: 0; padding: 9px 4px; border-radius: 12px; background: var(--panel-2); font-weight: 800; font-size: 13px; line-height: 1.2; }
+.tabs button { flex: 1; min-width: 0; padding: 9px 4px; border-radius: 12px; background: var(--panel-2); font-weight: 800; font-size: 13px; line-height: 1.2; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 360px) { .tabs button { font-size: 12px; padding: 8px 2px; } }
 .tabs button.on { background: var(--ink); color: var(--panel); }
 .upg { display: flex; gap: 12px; align-items: center; background: #fff; border-radius: 16px; padding: 10px 12px; box-shadow: 0 2px 0 var(--line); }
 .upg .ui { font-size: 30px; width: 44px; text-align: center; flex: none; }

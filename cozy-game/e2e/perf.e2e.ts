@@ -8,7 +8,9 @@ import { BROWSER, closeBrowser, closeSheet, open, richState } from './helpers';
 afterAll(closeBrowser);
 
 describe('performans', () => {
-  it('dolu bir odada kareler akıcı (60 fps hedefi)', async () => {
+  // Kare hızı yalnızca Chromium'da (Android WebView motoru) anlamlı: Linux'ta başsız WebKit/Firefox
+  // pikselleri yazılımla boyar, iPhone'daki GPU hızlandırmayı yansıtmaz. Motor bağımsız ölçüt aşağıda.
+  it.runIf(BROWSER === 'chromium')('dolu bir odada kareler akıcı (60 fps hedefi)', async () => {
     const { page, close } = await open({ state: richState() });
     await closeSheet(page);
     const frames = await page.evaluate(

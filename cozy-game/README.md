@@ -31,15 +31,24 @@ Kanca: *"Neko Atsume'nin kedi toplama keyfi + toparlamanın tatmini + kışın i
 
 Pencere gerçek saate göre gündüz, akşam ya da gece görünür; dışarısı mevsime göre karlı ya da yapraklıdır.
 
-## Sürümler ve fiyat
+## Sürümler ve gelir modeli
 
 | Sürüm | Nerede | Fiyat |
 |---|---|---|
-| Tam sürüm (iOS + Android) | App Store, Google Play (Capacitor) | Tek seferlik ~25 TL, reklam ve uygulama içi satın alma yok |
-| Web demosu | https://bartuinsta1.github.io/new/ | Ücretsiz, 4. seviyede durur ve mağazaya yönlendirir |
+| Uygulama (iOS + Android) | App Store, Google Play (Capacitor 8) | **Ücretsiz**, reklam yok, isteğe bağlı paketler |
+| Web | https://bartuinsta1.github.io/new/ | Ücretsiz, tam oyun; paketler yalnızca uygulamada |
 
-Diller: Türkçe ve İngilizce (telefonun diline göre otomatik; ayarlardan değiştirilebilir). İngilizce adı **Snowpaw Inn**.
-Mağaza metinleri, fiyatlandırma adımları ve yayın kontrol listesi: [`store/README.md`](store/README.md).
+**Paketler** (🛍️ › 💎 Paketler ya da balık sayacına dokun):
+- 3 balık paketi: 1.200, 7.500 ve 20.000 🐟.
+- **Kış Masalı Paketi:** Kuzey Işıkları duvar kâğıdı, Kar Küresi Yatağı ve 2.000 🐟.
+- **Han Dostu:** kalıcı +%25 balık, 24 saat çevrimdışı kazanç ve 3.000 🐟.
+
+Satın almalar kayda işlenmeden mağazada kapatılmıyor, yarım kalanlar açılışta tamamlanıyor ve "Hanı sıfırla" paketleri silmiyor.
+
+**Desteklenen sürümler:** iOS 15 ve üstü (yaklaşık son 6 ana sürüm), Android 7.0 ve üstü (API 24–36, son 10 ana sürüm). Eski motorlarda olmayan `roundRect`, `Object.fromEntries` ve `ResizeObserver` için yedekler var. Derleme hedefi Chrome 64 / Safari 15.
+
+Diller: Türkçe ve İngilizce (telefonun diline göre; ayarlardan değiştirilebilir). İngilizce adı **Snowpaw Inn**.
+Mağaza adımları, ürün kimlikleri ve kontrol listesi: [`store/README.md`](store/README.md).
 
 ## Teknik
 
@@ -54,7 +63,7 @@ npm install
 npm run dev         # telefondan aynı ağdaki IP ile açılabilir
 npm test
 npm run build       # tam sürüm (dist/)
-npm run build:demo  # web demosu (4. seviye sınırı)
+npm run test:e2e    # uçtan uca testler (önce build); E2E_BROWSER=webkit|firefox
 npm run android     # Android Studio'da açar
 npm run ios         # Xcode'da açar (Mac)
 ```
@@ -62,13 +71,22 @@ npm run ios         # Xcode'da açar (Mac)
 - Yerel uygulama: Capacitor 8 (`android/`, `ios/`). İkonlar ve açılış ekranı `assets/` içinden üretilir.
 - GitHub Actions (`.github/workflows/cozy-game.yml`) her push'ta şunları yapar:
   - testleri çalıştırır,
-  - web demosunu `gh-pages` dalına yayınlar,
-  - indirilebilir bir debug APK üretir,
-  - iOS'un derlendiğini kontrol eder.
+  - Chromium, WebKit (iOS motoru) ve Firefox'ta uçtan uca testleri çalıştırır,
+  - web sürümünü `gh-pages` dalına yayınlar,
+  - debug APK ve release AAB üretir (imza sırları varsa imzalı),
+  - APK'yı Android 9, 12 ve 15 emülatörlerinde açıp kontrol eder,
+  - iOS'u derler ve kurulu en eski ve en yeni iOS simülatöründe açar.
 
 Test için URL parametreleri: `?month=10` (Kasım), `?hour=21` (gece).
 
+## Testler
+
+| Katman | Ne test ediliyor |
+|---|---|
+| Birim (Vitest, 50 test) | Oyun mantığı, satın alma hakları ve çift ödül koruması, eski kayıtların yüklenmesi, bozuk kayıt, veri tutarlılığı, iki dilin eşleşmesi, tüm çizimler (NaN ve negatif yarıçap denetimi), ekonomi dengesi (bot), mağaza metni sınırları |
+| Uçtan uca (Playwright, 25 test) | İlk oyun akışı, kalıcılık ve çevrimdışı kazanç, odalar, geliştirmeler, duvar kâğıtları, dil değiştirme, satın alma (sahte mağaza: satın alma, iptal, geri yükleme, sıfırlama), eski motor benzetimi, 6 ekran boyutu, erişilebilirlik, internetsiz açılış, kare süresi, bellek, paket boyutu |
+| Cihaz (CI) | Android 9, 12 ve 15 emülatörü; iOS simülatörü (kurulu en eski ve en yeni sürüm) |
+
 ## Sonraki adımlar
-- Geliştirici hesapları: Apple yıllık 99 $, Google tek seferlik 25 $. Ücretli uygulama için vergi ve banka bilgileri gerekli.
-- İmzalı sürümler: Android için keystore, iOS için Apple sertifikası (`store/README.md`).
-- Mağaza ekran görüntüleri: oyundan alınabilir (`?month=10&hour=21` ile karlı gece).
+- Mağaza hesapları ve ürünlerin açılması: [`store/README.md`](store/README.md)
+- Android imza anahtarını GitHub sırlarına ekle; iOS için Xcode'da takımını seç.
