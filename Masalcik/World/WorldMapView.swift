@@ -185,6 +185,7 @@ struct WorldMapView: View {
         model.listenedStories = child?.listenedStoryCount ?? 0
         model.hasValueTopics = !(child?.values.isEmpty ?? true)
         model.isPremium = family?.entitlement?.isPremium ?? false
+        model.ownedPacks = Set(family?.entitlement?.ownedProductIDs ?? [])
     }
 
     private func presentPending() {

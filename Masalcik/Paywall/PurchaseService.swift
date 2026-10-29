@@ -49,6 +49,8 @@ protocol PurchaseService: AnyObject {
     func purchase(_ productID: String) async throws -> PurchaseResult
     /// "Satın alımları geri yükle": App Store ile eşitler, geçerli işlemleri sunucuda doğrular.
     func restore() async throws -> EntitlementDTO
+    /// Masal Dükkanı paketlerinin App Store fiyatları (kimlik → yerel biçimli fiyat). Bulunamayan paket listede olmaz.
+    func packPrices(_ ids: [String]) async throws -> [String: String]
 }
 
 /// StoreKit 2 + sunucu doğrulaması. Her işlem sunucuya JWS olarak gider (`/entitlements/verify`); sunucu Apple
@@ -134,6 +136,16 @@ final class StoreKitPurchaseService: PurchaseService {
         }
     }
 
+    func packPrices(_ ids: [String]) async throws -> [String: String] {
+        let list = try await Product.products(for: ids)
+        var out: [String: String] = [:]
+        for product in list where product.type == .nonConsumable {
+            loaded[product.id] = product
+            out[product.id] = product.displayPrice
+        }
+        return out
+    }
+
     static func days(_ period: Product.SubscriptionPeriod) -> Int {
         switch period.unit {
         case .day: period.value
@@ -171,6 +183,11 @@ final class MockPurchaseService: PurchaseService {
         if let restoreResult { return try restoreResult.get() }
         throw PurchaseError.nothingToRestore
     }
+
+    var packPriceList: [String: String] = [
+        "masalcik.pack.dedekorkut": "₺59,99", "masalcik.pack.space": "₺59,99", "masalcik.pack.outfits.bayram": "₺39,99",
+    ]
+    func packPrices(_ ids: [String]) async throws -> [String: String] { packPriceList.filter { ids.contains($0.key) } }
 
     static let turkishCatalog: [PaywallProduct] = [
         PaywallProduct(id: PremiumProductID.yearly, period: .year, displayPrice: "₺449,99", price: Decimal(string: "449.99")!,

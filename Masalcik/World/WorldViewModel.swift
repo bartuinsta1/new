@@ -14,6 +14,8 @@ final class WorldViewModel {
     var listenedStories = 0
     var hasValueTopics = false
     var isPremium = false
+    /// Sahip olunan Masal Dükkanı paketleri.
+    var ownedPacks: Set<String> = []
 
     @ObservationIgnored private let api: StoryAPI
     @ObservationIgnored private var hasGreeted = false
@@ -31,11 +33,15 @@ final class WorldViewModel {
 
     /// Bölgenin masal kartları: en fazla 6 (§3.2). Ücretsiz olanlar önce.
     func stories(for region: Region) -> [LibraryItemDTO] {
-        Array(library.filter { $0.region == region }.sorted { $0.isFree && !$1.isFree }.prefix(6))
+        Array(library.filter { $0.region == region && PackVisibility.isVisible($0, ownedPacks: ownedPacks) }
+            .sorted { $0.isFree && !$1.isFree }.prefix(6))
     }
 
     /// Ücretli masal, premium değilse "uyuyan kart" olarak gösterilir.
-    func isSleeping(_ item: LibraryItemDTO) -> Bool { !item.isFree && !isPremium }
+    func isSleeping(_ item: LibraryItemDTO) -> Bool {
+        if item.packId != nil { return !PackVisibility.isPlayableWithoutPremium(item, ownedPacks: ownedPacks) }
+        return !item.isFree && !isPremium
+    }
 
     func greetIfNeeded(isBedtimeNear: Bool) {
         if isBedtimeNear && !hasNudgedBedtime {

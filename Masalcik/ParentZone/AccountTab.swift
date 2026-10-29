@@ -47,6 +47,12 @@ struct AccountTab: View {
                     Button { showsPaywall = true } label: { Label("Premium'u incele", systemImage: "star.circle.fill") }
                         .accessibilityIdentifier("account.showPaywall")
                 }
+                NavigationLink {
+                    ShopView(family: family)
+                } label: {
+                    Label("Masal Dükkanı", systemImage: "bag.fill")
+                }
+                .accessibilityIdentifier("account.shop")
                 Button { Task { await restore() } } label: {
                     if restoring { ProgressView() } else { Text("Satın alımları geri yükle") }
                 }

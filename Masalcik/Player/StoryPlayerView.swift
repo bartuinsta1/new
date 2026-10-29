@@ -211,7 +211,7 @@ struct LibraryStoryPlayerContainer: View {
             story.isLibraryStory = true
             context.insert(story)
             play(story)
-        } catch let error as APIError where error == .weeklyLimitReached || error == .premiumRequired {
+        } catch let error as APIError where error == .weeklyLimitReached || error == .premiumRequired || error == .packRequired {
             blocked = error
         } catch {
             // Çevrimdışı ve indirilmemiş: güvenli yerel masal (sahte içerik) — çocuk hata görmez.

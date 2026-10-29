@@ -341,7 +341,9 @@ private struct LibraryOfferView: View {
             if PaywallPolicy.canOffer(family: families.first) { ForParentsLink() }
         }
         .task {
-            items = ((try? await appState.api.library()) ?? []).filter(\.isFree).prefix(4).map { $0 }
+            let owned = Set(families.first?.entitlement?.ownedProductIDs ?? [])
+            items = ((try? await appState.api.library()) ?? [])
+                .filter { PackVisibility.isPlayableWithoutPremium($0, ownedPacks: owned) }.prefix(4).map { $0 }
         }
     }
 }

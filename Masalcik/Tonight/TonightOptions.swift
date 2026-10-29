@@ -47,8 +47,12 @@ enum TonightOptions {
     /// Gece ve çocuğa göre sabit tohum.
     static func seed(date: Date, childID: UUID, calendar: Calendar = .current) -> UInt64 {
         let c = calendar.dateComponents([.year, .month, .day], from: date)
-        let day = UInt64((c.year ?? 0) * 10_000 + (c.month ?? 0) * 100 + (c.day ?? 0))
-        let childBits = childID.uuid.0 ^ childID.uuid.5 ^ childID.uuid.10 ^ childID.uuid.15
+        let year: Int = c.year ?? 0
+        let month: Int = c.month ?? 0
+        let dayOfMonth: Int = c.day ?? 0
+        let day = UInt64(year * 10_000 + month * 100 + dayOfMonth)
+        let u = childID.uuid
+        let childBits: UInt8 = u.0 ^ u.5 ^ u.10 ^ u.15
         return day &* 1_000_003 &+ UInt64(childBits)
     }
 }
