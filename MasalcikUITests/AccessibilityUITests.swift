@@ -6,9 +6,16 @@ final class AccessibilityUITests: MasalcikUITestCase {
     ///   sabit boyuttadır (`masalFont(scales: false)`: 64–96 pt dokunma alanına sığsın, düzen bozulmasın).
     ///   Bu ekranlarda yalnızca `.dynamicType` bulgusu yok sayılır; ebeveyn ekranları (Paywall) tam denetlenir.
     private func audit(fixedTypeAllowed: Bool = false) throws {
+        var findings: [String] = []
         try app.performAccessibilityAudit(for: .all) { issue in
-            fixedTypeAllowed && issue.auditType == .dynamicType
+            if fixedTypeAllowed && issue.auditType == .dynamicType { return true }
+            // Bulguyu öğe bilgisiyle raporla: hangi düğme/metin olduğu CI özetinde görünsün.
+            let el = issue.element
+            findings.append("\(issue.compactDescription) — id: \(el?.identifier ?? "-"), label: \(el?.label ?? "-"), "
+                            + "type: \(el.map { String(describing: $0.elementType.rawValue) } ?? "-"), frame: \(el?.frame ?? .zero)")
+            return true
         }
+        for finding in findings { XCTFail(finding) }
     }
 
     func testHaritaDenetimi() throws {
