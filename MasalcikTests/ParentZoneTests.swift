@@ -59,7 +59,7 @@ private final class EraseAPI: StoryAPI, @unchecked Sendable {
 @MainActor
 struct ParentZoneTests {
     private func seeded() -> ModelContext {
-        PersistenceController(inMemory: true, seed: true).container.mainContext
+        TestStore.context(seed: true)
     }
 
     @Test func aktifCocukSecimi() throws {

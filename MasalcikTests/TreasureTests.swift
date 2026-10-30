@@ -62,7 +62,7 @@ struct RewardEngineTests {
     }
 
     private func setup() -> (ModelContext, ChildProfile) {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         let child = ChildProfile(name: "Ayşe", age: 5)
         ctx.insert(child)
         return (ctx, child)
@@ -132,7 +132,7 @@ struct RewardEngineTests {
 @MainActor
 struct LibraryShelvesTests {
     @Test func raflarFavoriBenimKitaplik() {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         func make(_ id: String, played: Int, fav: Bool = false, library: Bool = false, at: TimeInterval) -> Story {
             let s = Story(id: id, title: id, region: .starHill, mood: .calm, characters: [.yildiz], durationMinutes: 5,
                           isLibraryStory: library, isFavorite: fav, lastPlayedAt: Date(timeIntervalSince1970: at), playCount: played)
