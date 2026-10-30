@@ -39,7 +39,13 @@ final class OnboardingModel {
     private(set) var hasPassedParentGate = false
 
     // Ebeveyn bilgisi
-    var childCount = 1 { didSet { childCount = min(max(childCount, 1), AppConfig.maxChildProfiles) } }
+    var childCount = 1 {
+        didSet {
+            // @Observable altında didSet içinde koşulsuz atama kendini sonsuza dek tetikler; yalnızca sınır dışıysa düzelt.
+            let clamped = min(max(childCount, 1), AppConfig.maxChildProfiles)
+            if clamped != childCount { childCount = clamped }
+        }
+    }
     var bedtime: Bedtime = .default
 
     // Çocuk
