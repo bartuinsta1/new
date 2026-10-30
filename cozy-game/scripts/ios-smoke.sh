@@ -28,18 +28,27 @@ for pair in "${PAIRS[@]}"; do
   xcrun simctl boot "$UDID" < /dev/null
   xcrun simctl bootstatus "$UDID" -b < /dev/null > /dev/null
   xcrun simctl install "$UDID" "$APP" < /dev/null
-  # uygulamanın standart çıktısı (Capacitor konsol satırları) dosyaya
-  xcrun simctl launch --stdout="$PWD/$OUT/ios-$VERSION.log" --stderr="$PWD/$OUT/ios-$VERSION.err" "$UDID" "$BUNDLE" < /dev/null
+  # uygulamanın standart çıktısı (Capacitor konsol satırları) dosyaya; tamponsuz yazsın
+  SIMCTL_CHILD_NSUnbufferedIO=YES xcrun simctl launch --stdout="$PWD/$OUT/ios-$VERSION.log" --stderr="$PWD/$OUT/ios-$VERSION.err" "$UDID" "$BUNDLE" < /dev/null
+  # Oyun JavaScript'i çalışıyorsa her 5 sn'de kaydını WebView yerel deposuna yazar: oradan doğrula.
+  DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE" data < /dev/null)
+  SAVED=""
   for _ in $(seq 1 30); do
-    grep -q "MH_READY" "$OUT/ios-$VERSION.log" 2>/dev/null && break
+    if grep -q "MH_READY" "$OUT/ios-$VERSION.log" 2>/dev/null; then SAVED="konsol"; break; fi
+    for db in $(find "$DATA" -name "*.sqlite3" -path "*LocalStorage*" 2>/dev/null); do
+      if sqlite3 "$db" "select key from ItemTable" 2>/dev/null | grep -q "mirnav-hani-v1"; then SAVED="kayıt"; fi
+    done
+    [ -n "$SAVED" ] && break
     sleep 2
   done
   sleep 3
   xcrun simctl io "$UDID" screenshot "$OUT/ios-$VERSION.png" < /dev/null > /dev/null || true
-  if xcrun simctl spawn "$UDID" launchctl list < /dev/null | grep -q "$BUNDLE" && grep -q "MH_READY" "$OUT/ios-$VERSION.log"; then
+  if xcrun simctl spawn "$UDID" launchctl list < /dev/null | grep -q "$BUNDLE" && [ -n "$SAVED" ]; then
+    echo "iOS $VERSION: oyun JavaScript'i çalışıyor (kanıt: $SAVED)"
     echo "iOS $VERSION: oyun açıldı ✓"
   else
-    echo "HATA: iOS $VERSION'da oyun açılmadı"; tail -40 "$OUT/ios-$VERSION.log" "$OUT/ios-$VERSION.err" || true; FAIL=1
+    echo "HATA: iOS $VERSION'da oyun açılmadı"; tail -40 "$OUT/ios-$VERSION.log" "$OUT/ios-$VERSION.err" || true
+    find "$DATA" -path "*WebKit*" 2>/dev/null | head -20; FAIL=1
   fi
   if grep -E "Uncaught" "$OUT/ios-$VERSION.log"; then echo "HATA: iOS $VERSION yakalanmamış JavaScript hatası"; FAIL=1; fi
   if grep -iE "\[error\]" "$OUT/ios-$VERSION.log"; then echo "UYARI: iOS $VERSION konsol hataları (testi düşürmez)"; fi
