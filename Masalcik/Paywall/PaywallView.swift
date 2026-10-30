@@ -318,15 +318,22 @@ private struct PlanCard: View {
     let savingsPercent: Int?
     let action: () -> Void
     @Environment(\.theme) private var theme
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
+        // Büyük yazı boyutlarında fiyat başlığın altına iner; satır sıkışıp metin kırpılmasın.
+        let large = typeSize >= .xxLarge
+        let row = large ? AnyLayout(VStackLayout(alignment: .leading, spacing: Metrics.spacingS))
+                        : AnyLayout(HStackLayout(spacing: Metrics.spacingM))
+        let title = large ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+                          : AnyLayout(HStackLayout(spacing: Metrics.spacingS))
         Button(action: action) {
-            HStack(spacing: Metrics.spacingM) {
+            row {
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                     .font(.system(size: 26, weight: .bold))
                     .foregroundStyle(isSelected ? Palette.grape : theme.secondaryInk)
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: Metrics.spacingS) {
+                    title {
                         if product.period == .year { Text("Yıllık") } else { Text("Aylık") }
                         if product.period == .year {
                             Text("En avantajlı")
@@ -351,13 +358,14 @@ private struct PlanCard: View {
                 }
                 .masalFont(.caption)
                 .foregroundStyle(theme.secondaryInk)
-                Spacer(minLength: 0)
+                .fixedSize(horizontal: false, vertical: true)
+                if !large { Spacer(minLength: 0) }
                 Text(verbatim: product.displayPrice)
                     .masalFont(.headline)
                     .foregroundStyle(theme.ink)
             }
             .padding(Metrics.spacingM)
-            .frame(maxWidth: .infinity, minHeight: Metrics.minTapTarget)
+            .frame(maxWidth: .infinity, minHeight: Metrics.minTapTarget, alignment: .leading)
             .background(RoundedRectangle(cornerRadius: Metrics.cardRadius).fill(theme.surface))
             .overlay(RoundedRectangle(cornerRadius: Metrics.cardRadius)
                 .stroke(isSelected ? Palette.grape : theme.outline, lineWidth: isSelected ? 4 : 2))

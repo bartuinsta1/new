@@ -116,7 +116,7 @@ struct ParentGate: View {
             Text("Ebeveyn Köşesi")
                 .masalFont(.title)
                 .foregroundStyle(theme.ink)
-                .kerning(0)   // Baloo çift aralığı kapalı: çizilen genişlik denetimin ölçtüğüyle aynı olur (yoksa "kırpık" sayılır)
+                .tracking(0.2)   // Baloo'nun kerning'li genişliği denetimin ölçtüğünden ~1 pt dar; yoksa "kırpık" sayılır
             Text("Devam etmek için bir yetişkinin yanıtlaması gerekiyor.")
                 .masalFont(.body)
                 .foregroundStyle(theme.secondaryInk)
