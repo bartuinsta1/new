@@ -36,6 +36,8 @@ describe('ilk oyun akışı', () => {
     const before = await fish(page);
     await mh(page, 'g.advance(60)');
     expect(await fish(page)).toBeGreaterThan(before);
+    // oyunun rastgele ürettiği dağınıklıklar dokunuşları yakalar (öncelikleri var): testi belirlenimci yap
+    await mh(page, '(g.state.messes.length = 0, g.state.messTimer = 1e9, 0)');
 
     // boş alana dokun → dükkân → karton kutu al
     await tapCanvas(page, await mh(page, 'g.slotPos(0)'));
