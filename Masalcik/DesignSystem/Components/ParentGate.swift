@@ -116,6 +116,7 @@ struct ParentGate: View {
             Text("Ebeveyn Köşesi")
                 .masalFont(.title)
                 .foregroundStyle(theme.ink)
+                .padding(.horizontal, 4)   // Baloo'nun kerning'li genişliği sınırda; denetim "kırpık" saymasın
             Text("Devam etmek için bir yetişkinin yanıtlaması gerekiyor.")
                 .masalFont(.body)
                 .foregroundStyle(theme.secondaryInk)

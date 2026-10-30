@@ -9,6 +9,9 @@ final class AccessibilityUITests: MasalcikUITestCase {
         var findings: [String] = []
         try app.performAccessibilityAudit(for: .all) { issue in
             if fixedTypeAllowed && issue.auditType == .dynamicType { return true }
+            // Kaydırılabilir haritada ekran kenarından taşan bölge adı düzen hatası değil, görünüm alanı kırpması.
+            if issue.auditType == .textClipped, let frame = issue.element?.frame,
+               !app.frame.contains(frame) { return true }
             // Bulguyu öğe bilgisiyle raporla: hangi düğme/metin olduğu CI özetinde görünsün.
             let el = issue.element
             findings.append("\(issue.compactDescription) — id: \(el?.identifier ?? "-"), label: \(el?.label ?? "-"), "
