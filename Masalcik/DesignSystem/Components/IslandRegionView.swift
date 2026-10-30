@@ -84,6 +84,8 @@ struct RegionLabel: View {
             .padding(.horizontal, 12).padding(.vertical, 4)
             .background(Capsule().fill(theme.mode == .day ? Color.white : Palette.moon))
             .overlay(Capsule().strokeBorder(theme.outline, lineWidth: 2))
+            // Bölge düğmesi aynı adı zaten okuyor; VoiceOver adı iki kez söylemesin.
+            .accessibilityHidden(true)
     }
 }
 

@@ -76,7 +76,9 @@ struct StepDots: View {
             }
         }
         .animation(Motion.daySpring, value: current)
+        .frame(minHeight: Metrics.minTapTarget)   // yanındaki düğmelerle aynı satır yüksekliği; erişilebilirlik çerçevesi de büyür
         .accessibilityElement()
+        .accessibilityAddTraits(.isStaticText)
         .accessibilityLabel(Text("Adım \(current) / \(total)"))
     }
 }

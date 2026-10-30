@@ -269,10 +269,12 @@ private struct ComparisonCard: View {
         GridRow {
             title.masalFont(.body).foregroundStyle(theme.ink).fixedSize(horizontal: false, vertical: true)
             Group {
-                if let free { free } else { Text(verbatim: "—").accessibilityLabel(Text("Yok")) }
+                if let free { free } else { Text("Yok") }
             }
             .masalFont(.caption).foregroundStyle(theme.secondaryInk).multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
             premium.masalFont(.caption).foregroundStyle(theme.ink).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         // Not: GridRow'a değiştirici eklenmez (Grid satırı tanımaz, tek hücreye çöker).
     }
