@@ -5,13 +5,13 @@ final class AccessibilityUITests: MasalcikUITestCase {
     /// - Parameter fixedTypeAllowed: çocuk ekranlarındaki iri düğme yazıları ve ebeveyn kapısı tuş takımı bilerek
     ///   sabit boyuttadır (`masalFont(scales: false)`: 64–96 pt dokunma alanına sığsın, düzen bozulmasın).
     ///   Bu ekranlarda yalnızca `.dynamicType` bulgusu yok sayılır; ebeveyn ekranları (Paywall) tam denetlenir.
-    private func audit(fixedTypeAllowed: Bool = false) throws {
+    private func audit(fixedTypeAllowed: Bool = false, scaledMap: Bool = false) throws {
         var findings: [String] = []
         try app.performAccessibilityAudit(for: .all) { issue in
             if fixedTypeAllowed && issue.auditType == .dynamicType { return true }
-            // Kaydırılabilir haritada ekran kenarından taşan bölge adı düzen hatası değil, görünüm alanı kırpması.
-            if issue.auditType == .textClipped, let frame = issue.element?.frame,
-               !self.app.frame.contains(frame) { return true }
+            // Harita `scaleEffect` ile yakınlaştırılır; denetim bölge adlarını ölçeksiz yazı boyutuyla ölçüp
+            // "kırpık" sayar (adlar VoiceOver'dan gizli, bölge düğmesi okur). Yalnızca harita testinde yok sayılır.
+            if scaledMap && issue.auditType == .textClipped { return true }
             // Bulguyu öğe bilgisiyle raporla: hangi düğme/metin olduğu CI özetinde görünsün.
             let el = issue.element
             findings.append("\(issue.compactDescription) — id: \(el?.identifier ?? "-"), label: \(el?.label ?? "-"), "
@@ -24,7 +24,7 @@ final class AccessibilityUITests: MasalcikUITestCase {
     func testHaritaDenetimi() throws {
         launch()
         XCTAssertTrue(app.buttons["map.parentZone"].waitForExistence(timeout: 10))
-        try audit(fixedTypeAllowed: true)
+        try audit(fixedTypeAllowed: true, scaledMap: true)
     }
 
     func testEbeveynKapisiDenetimi() throws {
