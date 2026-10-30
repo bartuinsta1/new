@@ -102,7 +102,7 @@ struct TonightFlowTests {
     }
 
     @Test func secimlerdenOynaticiya() async throws {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         let child = makeChild(ctx)
         let api = RecordingAPI()
         let model = TonightModel(api: api, context: ctx, child: child, settings: nil, isBedtimeNear: true, language: .tr)
@@ -131,7 +131,7 @@ struct TonightFlowTests {
     }
 
     @Test func pamukSecsinTekDokunus() async {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         let model = TonightModel(api: MockStoryAPI(paragraphDelay: .zero, language: .tr), context: ctx, child: makeChild(ctx),
                                  settings: nil, isBedtimeNear: false, language: .tr)
         model.begin()
@@ -144,7 +144,7 @@ struct TonightFlowTests {
     }
 
     @Test func agYoksaYerelGuvenliMasal() async {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         let model = TonightModel(api: FailingAPI(error: .offline), context: ctx, child: makeChild(ctx),
                                  settings: nil, isBedtimeNear: false, language: .tr)
         model.begin(); model.letPamukChoose()
@@ -156,7 +156,7 @@ struct TonightFlowTests {
     }
 
     @Test func limitDolundaKitaplikOnerisiSatinAlmaYok() async {
-        let ctx = PersistenceController(inMemory: true).container.mainContext
+        let ctx = TestStore.context()
         let model = TonightModel(api: FailingAPI(error: .dailyLimitReached), context: ctx, child: makeChild(ctx),
                                  settings: nil, isBedtimeNear: false, language: .tr)
         model.begin(); model.letPamukChoose()

@@ -63,6 +63,13 @@ supabase secrets set APPLE_BUNDLE_ID=com.masalcik.app
 supabase secrets set APPSTORE_ENVIRONMENTS=Production,Sandbox   # App Review sandbox'ta satın alır
 ```
 
+## Masal Dükkanı (tek seferlik paketler)
+
+Katalog `_shared/packs.ts` (fiyat App Store'dan). `GET /library/packs` katalog + sahiplik; paket masalları
+(`pack_id`) yalnızca paketi alana açılır (402 `pack_required`), Premium'a dahil değildir ve haftalık hakkı harcamaz.
+Satın alma `POST /entitlements/verify` ile doğrulanır (Non-Consumable işlem → `purchases` tablosu; yanıtta
+`owned_products`). İade bildirimi sahipliği kaldırır; geri yükleme sahipliği yeni hesaba taşır.
+
 ## Kalıcılık (Postgres)
 
 `SUPABASE_DB_URL` tanımlıysa (Supabase Edge Functions bunu kendiliğinden verir) tüm depolar Postgres'tedir

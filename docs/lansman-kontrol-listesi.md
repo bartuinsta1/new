@@ -2,9 +2,10 @@
 
 Kod 12 adımda tamamlandı; aşağıdakiler **yayından önce** yapılmalı. (✗ = yapılmadı, bu ortamda yapılamadı.)
 
-## Derleme ve test (Mac gerekli)
-- ✗ `xcodegen generate` → derleme hatalarını toplu düzelt (Swift kodu hiç derlenmedi)
-- ✗ `⌘U`: birim + UI testleri; snapshot referanslarını kaydet (iPhone 15 / iOS 17.5) ve gözle kontrol et
+## Derleme ve test
+- ✓ GitHub Actions CI (`.github/workflows/ci.yml`): her push'ta macOS'ta Xcode ile derleme + birim + UI testleri,
+  sunucu testleri (gerçek Postgres dahil) ve paylaşım sayfası tarayıcı testleri
+- ✗ Snapshot referanslarını bir kez kaydet (iPhone 16 Pro simülatörü) ve gözle kontrol et — CI'da şimdilik atlanıyor
 - ✗ Gerçek cihazda Release: açılış < 2 sn, ilk ses < 15 sn, harita 60 fps (Instruments)
 - ✗ App Store ekran görüntülerini gerçek uygulama görüntüleriyle yeniden üret (yerleşim: `preview.html?screen=appstore`)
 
@@ -16,8 +17,11 @@ Kod 12 adımda tamamlandı; aşağıdakiler **yayından önce** yapılmalı. (�
 - ✗ Supabase Storage'da **özel** `audio` kovasını oluştur (ses dosyaları imzalı URL ile)
 - ✗ Hız sınırlayıcı hâlâ bellek içi (isolate başına); trafik artınca Postgres/Redis'e taşınmalı
 - ✗ Apple Root CA G3 parmak izini apple.com'dan teyit et (`APPLE_ROOT_CA_G3_SHA256`)
-- ✗ App Store Connect: ürünler (`masalcik.premium.monthly/yearly`, 7 gün deneme), Server Notifications V2 URL,
-  Kids kategorisi, gizlilik etiketi (`docs/appstore/gizlilik-etiketi.md`)
+- ✗ App Store Connect: abonelikler (`masalcik.premium.monthly/yearly`, 7 gün deneme), **tek seferlik paketler**
+  (`masalcik.pack.dedekorkut`, `masalcik.pack.space`, `masalcik.pack.outfits.bayram` — Non-Consumable, Aile Paylaşımı
+  açık; önerilen fiyat 59,99 / 59,99 / 39,99 TL), Server Notifications V2 URL, Kids kategorisi, gizlilik etiketi
+- ✓ Gizlilik bildirimi (`Masalcik/Resources/PrivacyInfo.xcprivacy`), uygulama simgesi (1024 px, saydamlık yok)
+- ✓ fastlane: `fastlane metadata` / `beta` / `release` (metinler `docs/appstore`'dan üretilir)
 - ✗ Associated Domains (`applinks:masalcik.app`) + AASA'da TEAMID; `AppConfig.appStoreURL` gerçek kimlik
 
 ## İçerik ve ses

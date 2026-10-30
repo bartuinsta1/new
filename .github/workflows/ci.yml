@@ -14,6 +14,7 @@ on:
       - "Config.xcconfig"
       - "StoreKit/**"
       - "docs/appstore/**"
+      - "web/**"
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
@@ -26,6 +27,7 @@ on:
       - "Config.xcconfig"
       - "StoreKit/**"
       - "docs/appstore/**"
+      - "web/**"
       - ".github/workflows/ci.yml"
   workflow_dispatch:
 
@@ -67,6 +69,19 @@ jobs:
         run: ./scripts/test-pg.sh
       - name: App Store metin sınırları
         run: python3 ../scripts/check_appstore.py
+
+  web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Playwright (Chromium)
+        run: npm install --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - name: Paylaşım sayfası tarayıcı testleri
+        run: node --test web/tests/share.test.mjs
 
   ios:
     runs-on: macos-15

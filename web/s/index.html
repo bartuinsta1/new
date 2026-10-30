@@ -100,7 +100,9 @@ function render(data) {
   applyLang(lang);
   // Önizlemede yalnızca ilk iki paragraf: masalın tamamı uygulamada (paylaşılan içerik en az tutulur).
   const shown = data.paragraphs.slice(0, 2), faded = data.paragraphs.slice(2, 3);
-  const store = esc(data.app_store_url);
+  // Yalnızca App Store bağlantısı (javascript:/başka alan adı olmasın — sunucu verisine de körü körüne güvenme).
+  const STORE_FALLBACK = "https://apps.apple.com/tr/app/masalcik/id0000000000";
+  const store = esc(/^https:\/\/apps\.apple\.com\//.test(String(data.app_store_url)) ? data.app_store_url : STORE_FALLBACK);
   document.getElementById("content").innerHTML = `
     <section class="card">
       <h1>${esc(data.title)}</h1>
