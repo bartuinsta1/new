@@ -40,6 +40,9 @@ final class AccessibilityUITests: MasalcikUITestCase {
         app.tabBars.buttons["Hesap"].tap()
         app.buttons["account.showPaywall"].tap()
         XCTAssertTrue(app.buttons["paywall.purchase"].waitForExistence(timeout: 3))
+        // Ürünler yüklenip plan kartları yerleşmeden denetlenirse düzen denetim sırasında değişir.
+        let plan = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'paywall.plan.'")).firstMatch
+        XCTAssertTrue(plan.waitForExistence(timeout: 5))
         try audit()
     }
 

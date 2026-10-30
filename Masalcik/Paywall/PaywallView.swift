@@ -334,7 +334,7 @@ private struct PlanCard: View {
                     .foregroundStyle(isSelected ? Palette.grape : theme.secondaryInk)
                 VStack(alignment: .leading, spacing: 2) {
                     title {
-                        if product.period == .year { Text("Yıllık") } else { Text("Aylık") }
+                        (product.period == .year ? Text("Yıllık") : Text("Aylık")).masalFont(.headline)
                         if product.period == .year {
                             Text("En avantajlı")
                                 .masalFont(.caption)
