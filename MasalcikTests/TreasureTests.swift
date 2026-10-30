@@ -45,7 +45,7 @@ struct RewardRulesTests {
         #expect(RewardRules.outfitsEarned(consecutiveNights: 6) == 0)
         #expect(RewardRules.outfitsEarned(consecutiveNights: 7) == 1)
         #expect(RewardRules.outfitsEarned(consecutiveNights: 14) == 2)
-        #expect(Set(Outfit.all.map(\.character)).count == Outfit.all.count)   // her karaktere bir kıyafet
+        #expect(Set(Outfit.earnable.map(\.character)).count == Outfit.earnable.count)   // her karaktere bir kazanılan kıyafet
     }
 }
 

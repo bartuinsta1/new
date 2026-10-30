@@ -7,8 +7,7 @@ import SwiftData
 @MainActor
 struct ModelTests {
     @Test func aileSilinceHerSeySilinir() throws {
-        let controller = PersistenceController(inMemory: true, seed: true)
-        let ctx = controller.container.mainContext
+        let ctx = TestStore.context(seed: true)
         #expect(try ctx.fetchCount(FetchDescriptor<ChildProfile>()) == 1)
         #expect(try ctx.fetchCount(FetchDescriptor<StoryParagraph>()) == 2)
 
@@ -27,8 +26,8 @@ struct ModelTests {
     }
 
     @Test func istekProfildenKurulur() throws {
-        let controller = PersistenceController(inMemory: true, seed: true)
-        let child = try #require(try controller.container.mainContext.fetch(FetchDescriptor<ChildProfile>()).first)
+        let ctx = TestStore.context(seed: true)
+        let child = try #require(try ctx.fetch(FetchDescriptor<ChildProfile>()).first)
         let req = StoryEngineClient.makeRequest(child: child, settings: AppSettings(), region: .starHill, mood: .calm)
         #expect(req.childName == "Ayşe")
         #expect(req.companionCharacter == .findik)

@@ -104,8 +104,7 @@ struct OnboardingTests {
     }
 
     @Test func kayitVeKutlama() throws {
-        let container = PersistenceController(inMemory: true).container
-        let ctx = container.mainContext
+        let ctx = TestStore.context()
         let m = modelAtChildInfo()
         m.bedtime = Bedtime(hour: 19, minute: 30)
         m.childCount = 2
@@ -140,8 +139,7 @@ struct OnboardingTests {
     }
 
     @Test func yarimKalanKayitTemizlenir() throws {
-        let container = PersistenceController(inMemory: true).container
-        let ctx = container.mainContext
+        let ctx = TestStore.context()
         ctx.insert(Family(hasCompletedOnboarding: false))
         try ctx.save()
 

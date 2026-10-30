@@ -174,14 +174,18 @@ enum DataEraser {
     /// Cihazdaki tüm kayıtlar + indirilmiş ses dosyaları + ayar önbellekleri.
     @MainActor
     static func eraseLocal(context: ModelContext, fileManager: FileManager = .default) throws {
-        try context.delete(model: Family.self)
-        try context.delete(model: ChildProfile.self)
-        try context.delete(model: Story.self)
-        try context.delete(model: StoryParagraph.self)
-        try context.delete(model: RecurringCharacter.self)
-        try context.delete(model: Sticker.self)
-        try context.delete(model: AppSettings.self)
-        try context.delete(model: Entitlement.self)
+        // Toplu `delete(model:)` bellek içi depoda ve ilişkilerde güvenilir değil; nesneleri tek tek siliyoruz.
+        func purge<T: PersistentModel>(_ type: T.Type) throws {
+            for object in try context.fetch(FetchDescriptor<T>()) { context.delete(object) }
+        }
+        try purge(StoryParagraph.self)
+        try purge(Story.self)
+        try purge(RecurringCharacter.self)
+        try purge(Sticker.self)
+        try purge(ChildProfile.self)
+        try purge(Family.self)
+        try purge(AppSettings.self)
+        try purge(Entitlement.self)
         try context.save()
         let audio = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appending(path: "Audio")
         try? fileManager.removeItem(at: audio)
