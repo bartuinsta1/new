@@ -20,7 +20,18 @@ set +e
 xcodebuild test "${ARGS[@]}" "${SEL[@]}" -resultBundlePath "build/$KIND.xcresult" > "build/$KIND.log" 2>&1
 STATUS=$?
 set -e
-# Özet: derleme hataları, başarısız testler ve sonuç satırı
-grep -E "error:|✘|failed|Failing tests|\*\* (TEST|BUILD)" "build/$KIND.log" | head -300 || true
-tail -5 "build/$KIND.log"
+# Özet: derleme hataları ve başarısız testler (CoreData simülatör gürültüsü hariç)
+grep -E "error:|\*\* (TEST|BUILD)" "build/$KIND.log" | grep -v "CoreData" | sort -u | head -80 || true
+echo "---- Test özeti ----"
+xcrun xcresulttool get test-results summary --path "build/$KIND.xcresult" --format json 2>/dev/null > "build/$KIND-summary.json" || true
+python3 - "build/$KIND-summary.json" <<'PY' || true
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(0)
+print(f"Sonuç: {d.get('result')}  geçen: {d.get('passedTests')}  kalan: {d.get('failedTests')}  atlanan: {d.get('skippedTests')}")
+for f in d.get("testFailures", [])[:60]:
+    print(f"✘ {f.get('targetName','')}/{f.get('testName','')}: {f.get('failureText','')[:300]}")
+PY
 exit $STATUS
