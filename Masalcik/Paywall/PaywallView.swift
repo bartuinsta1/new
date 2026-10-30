@@ -244,8 +244,35 @@ private struct NoticeBox: Identifiable {
 /// Ücretsiz ve Premium'da neler olduğu — yan yana, abartısız.
 private struct ComparisonCard: View {
     @Environment(\.theme) private var theme
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    private struct Feature: Identifiable {
+        let id: Int
+        let title: Text
+        let free: Text
+        let premium: Text
+    }
+
+    private var features: [Feature] {
+        [
+            Feature(id: 0, title: Text("Kişisel masal"), free: Text("Günde 1"), premium: Text("Günde 10'a kadar")),
+            Feature(id: 1, title: Text("Hazır kitaplık"), free: Text("Haftada 3 masal"), premium: Text("Tüm masallar")),
+            Feature(id: 2, title: Text("Sizin sesinizle masal"), free: Text("Yok"), premium: Text("Var")),
+            Feature(id: 3, title: Text("Masal Adası, ninni, uyku zamanlayıcı, Hazine Sandığı"), free: Text("Var"), premium: Text("Var")),
+        ]
+    }
 
     var body: some View {
+        Group {
+            // Büyük yazı boyutlarında üç sütun sığmaz: her özellik alt alta "Ücretsiz / Premium" satırlarıyla gösterilir.
+            if typeSize >= .xxLarge { stacked } else { grid }
+        }
+        .padding(Metrics.spacingM)
+        .background(RoundedRectangle(cornerRadius: Metrics.cardRadius).fill(theme.surface))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.cardRadius).stroke(theme.outline, lineWidth: Metrics.outlineWidth))
+    }
+
+    private var grid: some View {
         Grid(alignment: .leading, horizontalSpacing: Metrics.spacingS, verticalSpacing: Metrics.spacingS) {
             GridRow {
                 Color.clear.frame(height: 1).gridCellUnsizedAxes([.horizontal, .vertical])
@@ -255,28 +282,33 @@ private struct ComparisonCard: View {
                     .gridColumnAlignment(.center)
             }
             Divider()
-            row(Text("Kişisel masal"), free: Text("Günde 1"), premium: Text("Günde 10'a kadar"))
-            row(Text("Hazır kitaplık"), free: Text("Haftada 3 masal"), premium: Text("Tüm masallar"))
-            row(Text("Sizin sesinizle masal"), free: nil, premium: Text("Var"))
-            row(Text("Masal Adası, ninni, uyku zamanlayıcı, Hazine Sandığı"), free: Text("Var"), premium: Text("Var"))
+            ForEach(features) { f in
+                GridRow {
+                    f.title.masalFont(.body).foregroundStyle(theme.ink).fixedSize(horizontal: false, vertical: true)
+                    f.free.masalFont(.caption).foregroundStyle(theme.secondaryInk).multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                    f.premium.masalFont(.caption).foregroundStyle(theme.ink).multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                // Not: GridRow'a değiştirici eklenmez (Grid satırı tanımaz, tek hücreye çöker).
+            }
         }
-        .padding(Metrics.spacingM)
-        .background(RoundedRectangle(cornerRadius: Metrics.cardRadius).fill(theme.surface))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.cardRadius).stroke(theme.outline, lineWidth: Metrics.outlineWidth))
     }
 
-    private func row(_ title: Text, free: Text?, premium: Text) -> some View {
-        GridRow {
-            title.masalFont(.body).foregroundStyle(theme.ink).fixedSize(horizontal: false, vertical: true)
-            Group {
-                if let free { free } else { Text("Yok") }
-            }
-            .masalFont(.caption).foregroundStyle(theme.secondaryInk).multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
-            premium.masalFont(.caption).foregroundStyle(theme.ink).multilineTextAlignment(.center)
+    private var stacked: some View {
+        VStack(alignment: .leading, spacing: Metrics.spacingM) {
+            ForEach(features) { f in
+                VStack(alignment: .leading, spacing: 4) {
+                    f.title.masalFont(.bodyBold).foregroundStyle(theme.ink)
+                    (Text("Ücretsiz") + Text(verbatim: ": ") + f.free)
+                        .masalFont(.caption).foregroundStyle(theme.secondaryInk)
+                    (Text(verbatim: "Premium: ") + f.premium)
+                        .masalFont(.caption).foregroundStyle(theme.ink)
+                }
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        // Not: GridRow'a değiştirici eklenmez (Grid satırı tanımaz, tek hücreye çöker).
     }
 }
 
