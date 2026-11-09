@@ -94,7 +94,7 @@ private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Int
             Image(background, contentDescription = null, contentScale = ContentScale.Crop, modifier = GlanceModifier.fillMaxSize())
         }
         when {
-            size.width >= LARGE.width && size.height >= LARGE.height -> Column(
+            size.width >= WordWidget.LARGE.width && size.height >= WordWidget.LARGE.height -> Column(
                 modifier = GlanceModifier.fillMaxSize().padding(12.dp),
                 verticalAlignment = Alignment.Bottom,
             ) {
@@ -108,7 +108,7 @@ private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Int
                 Spacer(GlanceModifier.height(6.dp))
                 Card { Text("“${w.oneLiner}”", maxLines = 2, style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Ink)) }
             }
-            size.width >= MEDIUM.width -> Row(
+            size.width >= WordWidget.MEDIUM.width -> Row(
                 modifier = GlanceModifier.fillMaxSize().padding(10.dp),
                 horizontalAlignment = Alignment.End,
                 verticalAlignment = Alignment.CenterVertically,
