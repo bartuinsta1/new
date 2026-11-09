@@ -47,4 +47,11 @@ class DailyTest {
         assertEquals(14, recent.map { it.no }.toSet().size)
         assertEquals(Daily.today(content, LocalDate.of(2026, 11, 9)), recent.first())
     }
+
+    @Test fun kirpmaAltaYakin() {
+        // 1080 kare → orta widget (2.1:1): 514 yükseklik, (1080-514)*0.8 = 453 aşağıdan başlar
+        assertTrue(Content.cropRect(1080, 1080, 2.1f)!!.contentEquals(intArrayOf(0, 453, 1080, 514)))
+        assertTrue(Content.cropRect(1080, 540, 1f)!!.contentEquals(intArrayOf(270, 0, 540, 540)))
+        assertEquals(null, Content.cropRect(1080, 1080, 1f))
+    }
 }

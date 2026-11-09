@@ -54,14 +54,27 @@ object Content {
     }
 
     /** Görseli en büyük kenarı ~maxPx olacak şekilde küçülterek yükler (widget bitmap sınırı için). */
-    fun bitmap(context: Context, path: String, maxPx: Int = 720): Bitmap? = runCatching {
+    /** [aspect] (genişlik/yükseklik) verilirse o orana kırpar; dikeyde alta yakın (karakterler karenin altında). */
+    fun bitmap(context: Context, path: String, maxPx: Int = 720, aspect: Float? = null): Bitmap? = runCatching {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         context.assets.open(path).use { BitmapFactory.decodeStream(it, null, bounds) }
         var sample = 1
         while (maxOf(bounds.outWidth, bounds.outHeight) / (sample * 2) >= maxPx) sample *= 2
         val opts = BitmapFactory.Options().apply { inSampleSize = sample }
-        context.assets.open(path).use { BitmapFactory.decodeStream(it, null, opts) }
+        val full = context.assets.open(path).use { BitmapFactory.decodeStream(it, null, opts) }!!
+        val r = aspect?.let { cropRect(full.width, full.height, it) } ?: return@runCatching full
+        Bitmap.createBitmap(full, r[0], r[1], r[2], r[3])
     }.getOrNull()
+
+    /** [x, y, genişlik, yükseklik] ya da oran zaten tutuyorsa null. iOS: Content.cropRect ile aynı. */
+    fun cropRect(w: Int, h: Int, aspect: Float): IntArray? {
+        val ratio = w.toFloat() / h
+        return when {
+            ratio > aspect -> { val cw = Math.round(h * aspect); intArrayOf(Math.round((w - cw) / 2f), 0, cw, h) }
+            ratio < aspect -> { val ch = Math.round(w / aspect); intArrayOf(0, Math.round((h - ch) * 0.8f), w, ch) }
+            else -> null
+        }
+    }
 
     fun instagramUrl(context: Context, word: Word): String = word.reel ?: get(context).instagram
 }

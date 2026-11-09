@@ -50,7 +50,9 @@ enum Content {
     }
 
     /// Görseli istenen en büyük kenara küçülterek yükler (widget'ın bellek sınırı ~30 MB).
-    static func image(_ path: String, maxPixel: CGFloat = 900) -> UIImage? {
+    /// `aspect` (genişlik/yükseklik) verilirse görsel o orana kırpılır; dikeyde alta yakın hizalanır, çünkü
+    /// sahnelerdeki karakterler hep altyazı kartının hemen üstünde, karenin alt kısmında durur.
+    static func image(_ path: String, maxPixel: CGFloat = 900, aspect: CGFloat? = nil) -> UIImage? {
         guard let url = imageURL(path), let src = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
         let opts: [CFString: Any] = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
@@ -58,7 +60,20 @@ enum Content {
             kCGImageSourceThumbnailMaxPixelSize: maxPixel,
         ]
         guard let cg = CGImageSourceCreateThumbnailAtIndex(src, 0, opts as CFDictionary) else { return nil }
-        return UIImage(cgImage: cg)
+        guard let aspect, let rect = cropRect(width: CGFloat(cg.width), height: CGFloat(cg.height), aspect: aspect),
+              let cropped = cg.cropping(to: rect) else { return UIImage(cgImage: cg) }
+        return UIImage(cgImage: cropped)
+    }
+
+    static func cropRect(width w: CGFloat, height h: CGFloat, aspect: CGFloat) -> CGRect? {
+        if w / h > aspect {             // fazla geniş: yatayda ortala
+            let cw = (h * aspect).rounded()
+            return CGRect(x: ((w - cw) / 2).rounded(), y: 0, width: cw, height: h)
+        } else if w / h < aspect {      // fazla uzun: dikeyde %80 aşağıda
+            let ch = (w / aspect).rounded()
+            return CGRect(x: 0, y: ((h - ch) * 0.8).rounded(), width: w, height: ch)
+        }
+        return nil
     }
 
     static func instagramURL(for word: Word) -> URL {

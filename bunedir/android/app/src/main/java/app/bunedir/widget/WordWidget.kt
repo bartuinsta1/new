@@ -63,9 +63,14 @@ class WordWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val content = Content.get(context)
         val entry = Daily.entry(content)
-        val bitmap = Content.bitmap(context, entry.image)
+        val square = Content.bitmap(context, entry.image, aspect = 1f)
+        val wide = Content.bitmap(context, entry.image, aspect = 2.1f)
         val open = Intent(Intent.ACTION_VIEW, Uri.parse("bunedir://word/${entry.word.no}"), context, MainActivity::class.java)
-        provideContent { WidgetBody(entry, bitmap?.let { ImageProvider(it) }, open) }
+        provideContent {
+            val size = LocalSize.current
+            val isWide = size.width >= MEDIUM.width && size.height < LARGE.height
+            WidgetBody(entry, (if (isWide) wide else square)?.let { ImageProvider(it) }, open)
+        }
     }
 }
 

@@ -35,9 +35,10 @@ struct PaperCard<Inner: View>: View {
 struct SceneBackground: View {
     let path: String
     var maxPixel: CGFloat = 900
+    var aspect: CGFloat? = nil
 
     var body: some View {
-        if let img = Content.image(path, maxPixel: maxPixel) {
+        if let img = Content.image(path, maxPixel: maxPixel, aspect: aspect) {
             Image(uiImage: img).resizable().scaledToFill()
         } else {
             LinearGradient(colors: [Theme.sky, Theme.sky, Theme.grass], startPoint: .top, endPoint: .bottom)

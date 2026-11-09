@@ -48,7 +48,7 @@ struct WordWidgetView: View {
             .padding(family.isAccessory ? 0 : 12)
             .widgetURL(URL(string: "bunedir://word/\(word.no)"))
             .containerBackground(for: .widget) {
-                if family.isAccessory { Color.clear } else { SceneBackground(path: entry.daily.image) }
+                if family.isAccessory { Color.clear } else { SceneBackground(path: entry.daily.image, aspect: family == .systemMedium ? 2.1 : 1) }
             }
     }
 
