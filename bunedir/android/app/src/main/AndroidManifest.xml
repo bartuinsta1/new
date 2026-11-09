@@ -39,5 +39,19 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/word_widget_info" />
         </receiver>
+
+        <!-- İlham klavyesi: yazılanı yalnızca cihazda okur, kaydetmez, göndermez. -->
+        <service
+            android:name=".keyboard.MuseKeyboardService"
+            android:exported="true"
+            android:label="@string/keyboard_name"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
     </application>
 </manifest>

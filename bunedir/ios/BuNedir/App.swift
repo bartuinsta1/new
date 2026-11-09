@@ -27,6 +27,7 @@ struct BuNedirApp: App {
 final class Route {
     var tab: Tab = .today
     var openWord: Word?
+    var openEntry: DictEntry?
 
     enum Tab: Hashable { case today, words, quiz, gift }
 
@@ -35,6 +36,9 @@ final class Route {
         if url.host == "word", let no = Int(url.lastPathComponent), let w = Content.word(no: no) {
             tab = .today
             openWord = w == Daily.today() ? nil : w
+        } else if url.host == "dict", let e = Lexicon.entry(id: url.lastPathComponent) {
+            tab = .today
+            openEntry = e
         } else if url.host == "gift" {
             tab = .gift
         }
@@ -48,11 +52,12 @@ struct RootView: View {
         @Bindable var route = route
         TabView(selection: $route.tab) {
             TodayView().tabItem { Label("Bugün", systemImage: "sun.max") }.tag(Route.Tab.today)
-            ArchiveView().tabItem { Label("Kelimeler", systemImage: "square.grid.2x2") }.tag(Route.Tab.words)
+            WordsTab().tabItem { Label("Kelimeler", systemImage: "character.book.closed") }.tag(Route.Tab.words)
             QuizView().tabItem { Label("Hatırla", systemImage: "brain.head.profile") }.tag(Route.Tab.quiz)
             GiftView().tabItem { Label("2 Ay Hediye", systemImage: "gift") }.tag(Route.Tab.gift)
         }
         .tint(Theme.accent)
         .sheet(item: $route.openWord) { WordDetailView(word: $0, showsClose: true) }
+        .sheet(item: $route.openEntry) { DictEntryView(entry: $0, showsClose: true) }
     }
 }

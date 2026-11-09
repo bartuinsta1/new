@@ -3,4 +3,6 @@
     <string name="app_name">Bu Nedir?</string>
     <string name="widget_name">Günün Kelimesi</string>
     <string name="widget_description">Her gün bir kelime, hikâyesiyle. Arka plan gün boyu değişir; arada eski kelimeleri hatırlatır.</string>
+    <string name="keyboard_name">Bu Nedir? İlham Klavyesi</string>
+    <string name="keyboard_subtype">Türkçe</string>
 </resources>

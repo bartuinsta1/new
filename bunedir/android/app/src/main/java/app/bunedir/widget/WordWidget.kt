@@ -40,6 +40,7 @@ import androidx.glance.unit.ColorProvider
 import app.bunedir.MainActivity
 import app.bunedir.data.Content
 import app.bunedir.data.Daily
+import app.bunedir.data.Lexicon
 
 private val Paper = ColorProvider(Color(0xFFF4EEE1))
 private val Ink = ColorProvider(Color(0xFF2B2622))
@@ -62,10 +63,11 @@ class WordWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val content = Content.get(context)
-        val entry = Daily.entry(content)
+        val entry = Daily.entry(content, Lexicon.dailyPool(Lexicon.get(context)))
         val square = Content.bitmap(context, entry.image, aspect = 1f)
         val wide = Content.bitmap(context, entry.image, aspect = 2.1f)
-        val open = Intent(Intent.ACTION_VIEW, Uri.parse("bunedir://word/${entry.word.no}"), context, MainActivity::class.java)
+        val link = entry.dict?.let { "bunedir://dict/${it.id}" } ?: "bunedir://word/${entry.word.no}"
+        val open = Intent(Intent.ACTION_VIEW, Uri.parse(link), context, MainActivity::class.java)
         provideContent {
             val size = LocalSize.current
             val isWide = size.width >= MEDIUM.width && size.height < LARGE.height
@@ -77,14 +79,20 @@ class WordWidget : GlanceAppWidget() {
 @Composable
 private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Intent) {
     val size = LocalSize.current
-    val w = entry.word
-    val label = when (entry.daysAgo) {
-        0 -> "GÜNÜN KELİMESİ"
-        1 -> "HATIRLA · DÜN"
-        7 -> "HATIRLA · GEÇEN HAFTA"
+    val d = entry.dict
+    val title = d?.word ?: entry.word.word
+    val origin = d?.origin ?: entry.word.origin
+    val meaning = d?.meaning ?: entry.word.meaning
+    val story = if (d == null) entry.word.story else null
+    val oneLiner = if (d == null) entry.word.oneLiner else null
+    val label = when {
+        entry.kind == Daily.Kind.DICTIONARY -> "SÖZLÜKTEN"
+        entry.daysAgo == 0 -> "GÜNÜN KELİMESİ"
+        entry.daysAgo == 1 -> "HATIRLA · DÜN"
+        entry.daysAgo == 7 -> "HATIRLA · GEÇEN HAFTA"
         else -> "HATIRLA · ${entry.daysAgo} GÜN ÖNCE"
     }
-    val labelColor = if (entry.kind == Daily.Kind.REVIEW) Review else InkSoft
+    val labelColor = if (entry.kind == Daily.Kind.TODAY) InkSoft else Review
 
     Box(
         modifier = GlanceModifier.fillMaxSize().cornerRadius(16.dp).background(Color(0xFFD9E3E8))
@@ -100,13 +108,17 @@ private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Int
             ) {
                 Card {
                     Text(label, style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold, color = labelColor))
-                    Text(w.word, maxLines = 1, style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
-                    Text("${w.origin} · ${w.meaning}", maxLines = 3, style = TextStyle(fontSize = 12.sp, color = Ink))
-                    Spacer(GlanceModifier.height(4.dp))
-                    Text(w.story, maxLines = 4, style = TextStyle(fontSize = 11.sp, color = InkSoft))
+                    Text(title, maxLines = 1, style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
+                    Text("$origin · $meaning", maxLines = 3, style = TextStyle(fontSize = 12.sp, color = Ink))
+                    if (story != null) {
+                        Spacer(GlanceModifier.height(4.dp))
+                        Text(story, maxLines = 4, style = TextStyle(fontSize = 11.sp, color = InkSoft))
+                    }
                 }
-                Spacer(GlanceModifier.height(6.dp))
-                Card { Text("“${w.oneLiner}”", maxLines = 2, style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Ink)) }
+                if (oneLiner != null) {
+                    Spacer(GlanceModifier.height(6.dp))
+                    Card { Text("“$oneLiner”", maxLines = 2, style = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Ink)) }
+                }
             }
             size.width >= WordWidget.MEDIUM.width -> Row(
                 modifier = GlanceModifier.fillMaxSize().padding(10.dp),
@@ -117,8 +129,8 @@ private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Int
                 Box(GlanceModifier.width((size.width.value * 0.58f).dp)) {
                     Card {
                         Text(label, style = TextStyle(fontSize = 9.sp, fontWeight = FontWeight.Bold, color = labelColor))
-                        Text(w.word, maxLines = 1, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
-                        Text(w.meaning, maxLines = 3, style = TextStyle(fontSize = 11.sp, color = Ink))
+                        Text(title, maxLines = 1, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
+                        Text(meaning, maxLines = 3, style = TextStyle(fontSize = 11.sp, color = Ink))
                     }
                 }
             }
@@ -129,8 +141,8 @@ private fun WidgetBody(entry: Daily.Entry, background: ImageProvider?, open: Int
             ) {
                 Card(centered = true) {
                     Text(label, maxLines = 1, style = TextStyle(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = labelColor))
-                    Text(w.word, maxLines = 1, style = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
-                    Text(w.origin, maxLines = 1, style = TextStyle(fontSize = 9.sp, color = InkSoft))
+                    Text(title, maxLines = 1, style = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Accent))
+                    Text(origin, maxLines = 1, style = TextStyle(fontSize = 9.sp, color = InkSoft))
                 }
             }
         }

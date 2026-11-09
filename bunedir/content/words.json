@@ -13,7 +13,12 @@
       "story": "Osmanlı'da bazı cami avlularında sadaka taşları vardı. Veren gece gelip parayı bırakır, ihtiyacı olan sabah gelip yalnızca ihtiyacı kadarını alırdı. Veren kime verdiğini, alan kimden aldığını bilmezdi.",
       "cover": "covers/01.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "iyilik yap",
+        "yardım ettim",
+        "sadaka"
+      ]
     },
     {
       "no": 2,
@@ -25,7 +30,11 @@
       "story": "Yumurtadan çıkan yavru kaplumbağalar kumdan başlarını kaldırır ve ufuktaki en parlak ışığa yürür. Ay, denizin üstüne gümüş bir yol serer; yavrular o yolu izleyerek ilk kez dalgalara kavuşur.",
       "cover": "covers/02.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "ay ışığı denize",
+        "denizde ay"
+      ]
     },
     {
       "no": 3,
@@ -37,7 +46,11 @@
       "story": "Büyük İskender, fıçısının önünde güneşlenen Diyojen'e gelip \"Benden ne dilersen iste\" der. Diyojen başını kaldırır: \"Gölge etme, başka ihsan istemem.\"",
       "cover": "covers/03.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kimseye muhtaç",
+        "minnet etmem"
+      ]
     },
     {
       "no": 4,
@@ -49,7 +62,11 @@
       "story": "Vampir yarasalar iki gece aç kalırsa ölür. Gece doymuş dönen yarasa, avlanamayan komşusuna kendi payından kusarak yiyecek verir. Ertesi gece belki de sıra ondadır.",
       "cover": "covers/04.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kendim yemeden",
+        "önce sen"
+      ]
     },
     {
       "no": 5,
@@ -61,7 +78,12 @@
       "story": "Kiraz, erik, şeftali, kayısı. Dördü de çiçek açar ama aynı gün değil. Erik erken davranır, şeftali biraz bekler; hiçbiri ötekine geç kaldı demez. Bahar hepsine yetecek kadar uzundur.",
       "cover": "covers/05.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kıyasla",
+        "herkesin zamanı",
+        "geç kaldım hayatta"
+      ]
     },
     {
       "no": 6,
@@ -73,7 +95,12 @@
       "story": "Bazı bambular dikildikten sonra yıllarca toprağın üstünde hiçbir şey göstermez. Bahçıvan her gün sular, bekler. Beşinci yıl bambu birkaç haftada metrelerce boy atar; meğer bunca zaman kök salıyormuş.",
       "cover": "covers/06.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "acele etme",
+        "sabırla",
+        "yavaş ol"
+      ]
     },
     {
       "no": 7,
@@ -90,7 +117,12 @@
         "scenes/07-3.jpg",
         "scenes/07-4.jpg"
       ],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "evimiz",
+        "yuva kur",
+        "huzurlu ev"
+      ]
     },
     {
       "no": 8,
@@ -102,7 +134,12 @@
       "story": "Deniz samurları uyurken birbirlerinin elini tutar. Akıntı onları ayırmasın diye yan yana süzülür, bazen yosunlara sarılırlar. Sabah uyandıklarında hâlâ birliktedirler.",
       "cover": "covers/08.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "alıştım",
+        "alışkanlık",
+        "yakınlık"
+      ]
     },
     {
       "no": 9,
@@ -120,7 +157,12 @@
         "scenes/09-4.jpg",
         "scenes/09-5.jpg"
       ],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "yardımlaş",
+        "el ele",
+        "birlikte başar"
+      ]
     },
     {
       "no": 10,
@@ -132,7 +174,12 @@
       "story": "Su yumuşaktır; eli tutsan avucundan kayar. Ama yüzyıllar boyunca sabırla akan bir dere, en sert kayaları oyar, kanyonlar açar. Kızmadan, bağırmadan, durmadan.",
       "cover": "covers/10.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "yumuşak huy",
+        "öfkelenme",
+        "sakin ol"
+      ]
     },
     {
       "no": 11,
@@ -144,7 +191,11 @@
       "story": "En büyük fırtınada bile dalgalar ancak birkaç metre derine iner. Gemiler sallanırken biraz aşağıda balıklar hiçbir şey olmamış gibi yüzmeye devam eder.",
       "cover": "covers/11.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "iç huzur",
+        "fırtına"
+      ]
     },
     {
       "no": 12,
@@ -156,7 +207,12 @@
       "story": "Kuşlar güneşi görünce ötmez; güneş doğmadan, hava hâlâ karanlıkken ötmeye başlarlar. Sabahın geleceğinden o kadar emindirler ki, ışığı beklemezler.",
       "cover": "covers/12.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "eminim",
+        "içim rahat",
+        "kesin olacak"
+      ]
     },
     {
       "no": 13,
@@ -168,7 +224,11 @@
       "story": "Karahindiba tohumlarını tek tek taşımaz, toprağa gömmez. Her birine küçük bir paraşüt verir ve rüzgârın eline bırakır. Nereye düşeceklerini bilmez; ama her baharda yine çiçek açar.",
       "cover": "covers/13.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "rüzgara bırak",
+        "elimden geleni yaptım"
+      ]
     },
     {
       "no": 14,
@@ -180,7 +240,11 @@
       "story": "Tarlada başakları izleyene bir şey çarpar: Boş başaklar dimdik durur, rüzgârda kibirle sallanır. Dolu başaklar ise ağırlaştıkça başını eğer.",
       "cover": "covers/14.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "alçakgönüllü",
+        "kendini beğen"
+      ]
     },
     {
       "no": 15,
@@ -192,7 +256,12 @@
       "story": "Mayıs sineği yıllarca suyun altında yaşar, sonra kanatlanıp yalnızca bir gün uçar. O tek günde güneşi görür, dans eder, yaşamını tamamlar. Ne dünü düşünür ne yarını.",
       "cover": "covers/15.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "anı yaşa",
+        "bugünü yaşa",
+        "şimdiyi yaşa"
+      ]
     },
     {
       "no": 16,
@@ -204,7 +273,11 @@
       "story": "İstiridyenin içine bir kum tanesi girer. Çıkaramaz; acıtır. İstiridye bağırmaz, onu katman katman sarar. Yıllar sonra kabuğun içinde bir inci parlar.",
       "cover": "covers/16.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "şikayet etme",
+        "güzel sabır"
+      ]
     },
     {
       "no": 17,
@@ -216,7 +289,12 @@
       "story": "Ayçiçeği gençken güneşi takip eder; sabah doğuya, akşam batıya döner. Olgunlaşınca dönmeyi bırakır ve yüzünü sabaha, doğuya sabitler. Artık ışığın nereden geleceğini bilir.",
       "cover": "covers/17.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "olgunlaş",
+        "büyüdüm",
+        "akıllandım"
+      ]
     },
     {
       "no": 18,
@@ -228,7 +306,11 @@
       "story": "Leylek kış gelince binlerce kilometre öteye göç eder. Bahar gelince aynı köye, aynı damın üstündeki aynı yuvaya döner. Köylüler onu görünce baharın geldiğini bilir.",
       "cover": "covers/18.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kavuş",
+        "dönüş"
+      ]
     },
     {
       "no": 19,
@@ -240,7 +322,11 @@
       "story": "Somon nehirde doğar, denize iner, okyanusta yıllar geçirir. Sonra bir gün akıntıya karşı yüzmeye başlar; şelaleleri atlar, doğduğu o küçük dereyi bulana kadar durmaz.",
       "cover": "covers/19.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "geri dönülmez",
+        "eski evimiz"
+      ]
     },
     {
       "no": 20,
@@ -252,7 +338,11 @@
       "story": "İstanbul'da eski camilerin, çeşmelerin duvarlarına küçük kuş evleri oyulurdu. Kubbeli, pencereli, saray gibi. Kimse kuşların teşekkür etmesini beklemezdi.",
       "cover": "covers/20.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "yufka yürek",
+        "ince düşün"
+      ]
     },
     {
       "no": 21,
@@ -264,7 +354,11 @@
       "story": "Ahilik zamanında Anadolu çarşılarında esnaf, sabah siftahını yaptıktan sonra gelen müşteriyi \"Ben siftahımı yaptım, komşuma buyur\" diyerek yandaki dükkâna gönderirdi.",
       "cover": "covers/21.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "siftah",
+        "esnaf"
+      ]
     },
     {
       "no": 22,
@@ -276,7 +370,11 @@
       "story": "2011'de Japonya'yı büyük bir deprem ve tsunami vurdu. Yıkıntılar arasında insanlar su ve yiyecek için sakince sıraya girdi; kimse kimseyi itmedi, kimse fazlasını almadı.",
       "cover": "covers/22.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "onurla katlan",
+        "deprem"
+      ]
     },
     {
       "no": 23,
@@ -288,7 +386,11 @@
       "story": "Japon çay töreninde ev sahibi her misafiri hayatında bir kez göreceğini bilerek ağırlar. Aynı kişiler yarın yine gelse de o gün, o ışık, o sohbet bir daha olmayacaktır.",
       "cover": "covers/23.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "bir daha olmayacak",
+        "bu an"
+      ]
     },
     {
       "no": 24,
@@ -300,7 +402,12 @@
       "story": "Eski Japonya'da köylüler yırtılan giysiyi atmazdı. Yamanın üstüne yama, sökükün üstüne dikiş ekler, kuşaklar boyu kullanırdı. Bugün o yamalı kumaşlar müzelerde sergileniyor.",
       "cover": "covers/24.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "israf",
+        "çöpe atma",
+        "yazık oldu"
+      ]
     },
     {
       "no": 25,
@@ -312,7 +419,11 @@
       "story": "Japonya'da salgından çok önce de hasta olan insanlar maske takardı. Kendisi için değil, trende yanında oturan yabancı hastalanmasın diye.",
       "cover": "covers/25.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "empati",
+        "düşünceli"
+      ]
     },
     {
       "no": 26,
@@ -324,7 +435,11 @@
       "story": "Korelilerin çocuklarına öğrettiği ilk şeylerden biri odaya girince bir an durmaktır: Kim yorgun, kim sevinçli, kim sessizlik istiyor? Konuşmadan önce bakmak.",
       "cover": "covers/26.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "ortamı okumak",
+        "sezmek"
+      ]
     },
     {
       "no": 27,
@@ -336,7 +451,12 @@
       "story": "İsveç'te dilden dile dolaşan bir hikâyeye göre, Viking'ler ateşin başında tek bir boynuz kupayı elden ele gezdirirdi. Herkes yalnızca bir yudum alırdı ki son kişiye de kalsın.",
       "cover": "covers/27.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "ne az ne çok",
+        "kararında",
+        "dengeli"
+      ]
     },
     {
       "no": 28,
@@ -348,7 +468,12 @@
       "story": "Japonların çok sevdiğim bir kelimesi var: Rafta bekleyen, yatağın yanında kule olmuş kitaplar. Hepsi \"bir gün\" diye alınmış, hepsi sırasını bekliyor.",
       "cover": "covers/28.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "okunmamış kitap",
+        "kitap biriktir",
+        "kitap aldım"
+      ]
     },
     {
       "no": 29,
@@ -360,7 +485,11 @@
       "story": "Finlandiya'da kış aylarca sürer; güneş neredeyse hiç doğmaz. Finler buna rağmen her sabah karı küreyip yola çıkar. Yorgunluk geçmez; sadece yürümeye devam edilir.",
       "cover": "covers/29.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "yılma",
+        "dayanıklı"
+      ]
     },
     {
       "no": 30,
@@ -372,7 +501,11 @@
       "story": "Anlatılır ki bir antropolog çocuklara bir yarış önermiş: Ağacın dibindeki meyve sepetine ilk koşan hepsini alacak. Çocuklar el ele tutuşup birlikte koşmuş ve meyveleri paylaşmış.",
       "cover": "covers/30.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "biz olduğumuz",
+        "birlikte varız"
+      ]
     },
     {
       "no": 31,
@@ -384,7 +517,11 @@
       "story": "Eski Hawaii'de bir ailede kırgınlık olunca herkes bir araya oturur, sırayla konuşurdu. Kimse suçlanmaz; amaç haklı çıkmak değil, ipleri yeniden düğümlemekti.",
       "cover": "covers/31.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "barışalım",
+        "özür dilerim"
+      ]
     },
     {
       "no": 32,
@@ -396,7 +533,11 @@
       "story": "Avustralya'nın yerli halklarından biri, nehrin kıyısında saatlerce sessizce oturmayı bilir. Konuşmazlar, acele etmezler; suyun, rüzgârın ve birbirlerinin söylediklerini dinlerler.",
       "cover": "covers/32.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "dinle beni",
+        "sessizce dinle"
+      ]
     },
     {
       "no": 33,
@@ -408,7 +549,13 @@
       "story": "Portekiz kıyılarında kadınlar, denize açılan balıkçıların dönüşünü kayalıklarda beklerdi. Ufka bakar, şarkı söyler, bekledikleri gelmese de ertesi akşam yine gelirlerdi.",
       "cover": "covers/33.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "özle",
+        "özlü",
+        "uzaklardasın",
+        "burnumda tüt"
+      ]
     },
     {
       "no": 34,
@@ -420,7 +567,11 @@
       "story": "Yunanistan'da bir usta sandalyeyi bitirdiğinde altına kimsenin görmeyeceği bir oyma yapardı. Neden diye sorulunca: \"Ben bilirim\" derdi.",
       "cover": "covers/34.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "ruhumu kattım",
+        "sevgiyle yaptım"
+      ]
     },
     {
       "no": 35,
@@ -432,7 +583,11 @@
       "story": "İspanya'da yemek bitince kimse kalkmaz. Kahveler gelir, hikâyeler anlatılır, kahkahalar uzar. Bazen yemekten daha uzun sürer bu sofra sohbeti.",
       "cover": "covers/35.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "sofrada sohbet",
+        "yemekten sonra"
+      ]
     },
     {
       "no": 36,
@@ -444,7 +599,11 @@
       "story": "İspanyolcada bir hayvanın yorulduğunda dönüp güç topladığı yere querencia denir. Fırtınalı bir gecede yuvasına sığınan bir kuş gibi; dışarısı ne kadar karışık olsa da orası sakindir.",
       "cover": "covers/36.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "güvende hissed",
+        "kendimi evimde"
+      ]
     },
     {
       "no": 37,
@@ -456,7 +615,11 @@
       "story": "Eskiden Anadolu'da uzun kış gecelerinde gençler bir evde toplanırdı. Türküler söylenir, bilmeceler sorulur, büyüklerden dinlenen hikâyeler anlatılırdı. Kar dışarıda kalırdı.",
       "cover": "covers/37.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "sohbet gecesi",
+        "dost meclisi"
+      ]
     },
     {
       "no": 38,
@@ -468,7 +631,11 @@
       "story": "Yazar Stephen Covey metroda çocuklarının taşkınlığına ses etmeyen bir babaya sinirlenir. Uyarınca adam kendine gelir: \"Annelerini bir saat önce kaybettik, ne diyeceğimi bilemiyorum.\" O an her şey değişir.",
       "cover": "covers/38.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "iyi düşün",
+        "yanlış anlama"
+      ]
     },
     {
       "no": 39,
@@ -480,7 +647,11 @@
       "story": "Arapların cömertliğiyle meşhur Hâtem-i Tâî'ye bir gece misafirler gelir. Evde ikram edecek hiçbir şey yoktur; Hâtem en değerli atını kesip sofra kurar.",
       "cover": "covers/39.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "ikram",
+        "eli açık"
+      ]
     },
     {
       "no": 40,
@@ -492,7 +663,12 @@
       "story": "Müzikte bir işaret vardır: es. Çalmamayı, susmayı söyler. Bir orkestra şefi bir keresinde \"En zor nota, çalınmayandır\" demiş.",
       "cover": "covers/40.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "sus",
+        "susmak",
+        "sessiz kal"
+      ]
     },
     {
       "no": 41,
@@ -504,7 +680,11 @@
       "story": "Japonların bizde tek kelimeyle karşılığı olmayan bir sözü var: Ormanda yürürken yaprakların arasından toprağa düşen o dans eden ışık lekeleri.",
       "cover": "covers/41.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "yaprakların arası",
+        "güneş süzül"
+      ]
     },
     {
       "no": 42,
@@ -516,7 +696,11 @@
       "story": "Bir bal arısı bütün ömrü boyunca ancak bir çay kaşığının on ikide biri kadar bal yapar. Hiçbir arı o kavanozu görmez; yine de her gün çiçek çiçek dolaşır.",
       "cover": "covers/42.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "karşılıksız",
+        "gönülden"
+      ]
     },
     {
       "no": 43,
@@ -528,7 +712,11 @@
       "story": "Göçmen kuşlar neden V şeklinde uçar? Öndeki kuş rüzgârı yarar, arkadakiler daha az yorulur. Öndeki yorulunca geri çekilir, başka biri öne geçer. Kimse yalnız bırakılmaz.",
       "cover": "covers/43.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "başkasını düşün",
+        "fedakar"
+      ]
     },
     {
       "no": 44,
@@ -540,7 +728,11 @@
       "story": "Mısırlı şarkıcı Ümmü Gülsüm'ün konserleri saatlerce sürerdi. Tek bir dizeyi defalarca tekrar eder, salon her seferinde yeniden coşardı; dinleyenler kendinden geçerdi.",
       "cover": "covers/44.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "müzik beni",
+        "şarkıyla coş"
+      ]
     },
     {
       "no": 45,
@@ -552,7 +744,11 @@
       "story": "Bir ağacın gövdesine bakarak hangi yılların zor geçtiğini görebilirsiniz. Kurak yıllar ince, sık halkalar bırakır. Ağaç o yılları da yaşamış, büyümeye devam etmiştir.",
       "cover": "covers/45.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "dayanıyorum",
+        "yıkılmadım"
+      ]
     },
     {
       "no": 46,
@@ -564,7 +760,10 @@
       "story": "Eskiden Anadolu'da bakırcılar çarşısında çekiç sesi hiç dinmezdi. Ustalar gürültünün içinde çalışır, sohbet eder, çırak yetiştirirdi. Huzuru sessizlikte değil, işin ve insanların içinde bulurlardı.",
       "cover": "covers/46.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kalabalığın içinde"
+      ]
     },
     {
       "no": 47,
@@ -576,7 +775,11 @@
       "story": "1982'de Japonya'da bir devlet kurumu, yorgun şehirlilere bir öneri getirdi: Ormana gidin, hiçbir şey yapmayın. Koşmayın, hedef koymayın; yalnızca dinleyin, koklayın, bakın.",
       "cover": "covers/47.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "orman",
+        "ağaçların arası"
+      ]
     },
     {
       "no": 48,
@@ -588,7 +791,11 @@
       "story": "Uzun bir kuraklıktan sonra ilk damla düşer. Toprak, sakladığı yağları ve kokuları havaya bırakır. İnsanlar camları açar, derin bir nefes alır.",
       "cover": "covers/48.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "toprak kokusu",
+        "yağmur kokusu"
+      ]
     },
     {
       "no": 49,
@@ -600,7 +807,11 @@
       "story": "İngilizcede neredeyse unutulmuş bir kelime var: Karlı bir sabah bankta oturan yaşlı bir adamın yüzüne vuran o ince güneş. Hava soğuktur ama yüz ısınır.",
       "cover": "covers/49.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "kış güneşi",
+        "güneşlen"
+      ]
     },
     {
       "no": 50,
@@ -612,7 +823,11 @@
       "story": "Dünyanın en özlü kelimesi olarak anılır. İki insan karşılıklı durur; ikisi de konuşmak ister, ikisi de diğerinin başlamasını bekler. Ve o bakış uzar.",
       "cover": "covers/50.jpg",
       "scenes": [],
-      "reel": null
+      "reel": null,
+      "triggers": [
+        "bakıştık",
+        "ilk adımı"
+      ]
     }
   ]
 }

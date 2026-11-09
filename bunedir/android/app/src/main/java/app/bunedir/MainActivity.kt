@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.lifecycleScope
 import app.bunedir.data.Content
+import app.bunedir.data.Lexicon
 import app.bunedir.ui.BuNedirApp
 import app.bunedir.widget.WidgetRefresh
 import kotlinx.coroutines.launch
@@ -15,12 +16,13 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     /** Widget'tan ya da bildirimden gelen bunedir://word/9 bağlantısı. */
     private val openWord = mutableStateOf<Int?>(null)
+    private val openDict = mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         handle(intent)
-        setContent { BuNedirApp(openWord) }
+        setContent { BuNedirApp(openWord, openDict) }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -39,6 +41,9 @@ class MainActivity : ComponentActivity() {
         if (uri.scheme == "bunedir" && uri.host == "word") {
             val no = uri.lastPathSegment?.toIntOrNull() ?: return
             if (Content.get(this).words.any { it.no == no }) openWord.value = no
+        } else if (uri.scheme == "bunedir" && uri.host == "dict") {
+            val id = uri.lastPathSegment ?: return
+            if (Lexicon.get(this).any { it.id == id }) openDict.value = id
         }
     }
 }

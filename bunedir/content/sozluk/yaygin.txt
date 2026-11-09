@@ -1,0 +1,19 @@
+# Gündelik kelimeler: sözlükte durur ama klavye bunlar için "bu budur / buna X denir" demez.
+Özlem, Sevinç, Umut, Güven, Barış, Dostluk, Kardeşlik, Yardımlaşma, Paylaşmak, Hayat, Zaman, Vakit, An, Ömür, Can, Nefes, Ruh
+Zihin, Fikir, Akıl, Hafıza, Merak, Hayret, Hayran, Acayip, Garip, Kimsesiz, Yalnızlık, Sessizlik, Kahkaha, Gülümseme, Merhaba
+Sarılmak, Kavuşmak, Ayrılık, Yol, Yolcu, Göç, Ocak, Yuva, Vatan, Memleket, Komşu, Misafir, Sofra, Selam, Bayram, Düğün, Cenaze
+Mezar, Rüzgâr, Gül, Bülbül, Lâle, Bahar, Bahçe, Papatya, Leylak, Hasat, Başak, Dünya, Âlem, Hak, Hayır, Helal, Niyet, Arzu, Dua
+Âmin, İnşallah, Maşallah, Teşekkür, Hürmet, Sabır, Şükür, Aşk, Sevda, Neşe, Keder, Dert, Hüzün, Endişe, Kaygı, Gurur, Kibir, Af
+Pişman, Keşke, Eyvah, Aferin, Masum, Mahcup, Rüya, Hayal, Kader, Nasip, Kısmet, Şafak, Sema, Nur, Mehtap, Hilal, Masal, Türkü
+Ninni, Ozan, Atasözü, Deyim, Bilmece, Nasihat, Öğüt, Bilge, Erdem, Uğur, Dilek, Fal, Kucak, Yurt, Kandil, Sahur, İftar, Müjde
+Sohbet, Muhabbet, Heyecan, Telaş, Ilık, Gölge, Çınar, Gönül, Merhamet, Şefkat, Cesaret, Emanet, Sanat, Kalem, Mizah, Lezzet
+Kanaat, Vefa, Edep, Nezaket, Huzur, Hasret, Gurbet, Bahtiyar, Mesut, Memnun, Hayırlı, Bereket, Nimet, Hakikat, Yemin, Ümit
+Minnet, Hatıra, Kâinat, Hayat ağacı, Tan, Mana, Han, Uğurlu, Biricik, Komşuluk, Arkadaşlık, Kardeşlik, Sabırsızlık, Ayaz
+Gün ışığı, Gün batımı, Esinti, Pınar, Meltem, Poyraz, Lodos, Kırağı, Çisenti, Sağanak, Alacakaranlık, Yolcu, Konak, Bostan
+Rahmet, Şifa, Deva, Dert ortağı, Yarim, Yâr, Ahbap, Mekân, Hane, Sefer, Mesafe, Seyahat, Hicret, Muhacir, Hemşehri, Vicdan
+Mizaç, Tabiat, Ahlâk, Samimiyet, Pişman, Tövbe, Haysiyet, Şeref, Asalet, Cesaret, Ahenk, Zarafet, Muhteşem, Neşe, Raks
+Nağme, Tebessüm, Dua, Rüya, Kader, Sema, Deryâ, Nur, Ziya, İlham, Hayal, Cemiyet, Meclis, Gıybet, Fitne, Riya, Nostalji, Karma
+Melankoli, Fal, Çaput bağlamak, Kahkaha, Afacan, Yaramaz, Haylaz, Şımarık, Uçarı, Gamsız, Tasasız, Candan, Yürekten
+Anı, Anmak, Ezber, Bilgelik, Özveri, Fedakârlık, Hamarat, Becerikli, Uğur, Dilek, Telve, Köz, Kor, Kıvılcım, Okşamak, Kucak
+Sırdaş, Yoldaş, Gönüllü, Kır çiçeği, Gelincik, Hanımeli, Ihlamur, Harman, Değirmen, Gonca, Nihal, Çemen, Gülistan, Ebedî, Fâni
+Hayırlı olsun, Kolay gelsin, Geçmiş olsun, Hoşça kal, Başın sağ olsun, Ellerine sağlık, Hayran, Hayranlık, Emel, Murat, Ahit

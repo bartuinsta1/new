@@ -6,6 +6,10 @@ struct TodayView: View {
         NavigationStack {
             WordDetailView(word: Daily.today(), label: "Günün kelimesi")
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        NavigationLink { KeyboardGuideView() } label: { Image(systemName: "keyboard") }
+                            .accessibilityLabel("İlham klavyesi")
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showSettings = true } label: { Image(systemName: "gearshape") }
                             .accessibilityLabel("Ayarlar")
@@ -100,52 +104,22 @@ struct WordDetailView: View {
     }
 }
 
-struct ArchiveView: View {
-    private let columns = [GridItem(.adaptive(minimum: 104), spacing: 10)]
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 14) {
-                    ForEach(Content.words) { w in
-                        NavigationLink(value: w) {
-                            VStack(spacing: 4) {
-                                SceneBackground(path: w.cover, maxPixel: 400)
-                                    .frame(height: 170).clipped()
-                                    .overlay(alignment: .topLeading) {
-                                        if w == Daily.today() {
-                                            Text("BUGÜN").font(Theme.body(9, weight: .bold)).padding(4)
-                                                .background(Theme.accent).foregroundStyle(.white).padding(4)
-                                        }
-                                    }
-                                Text(String(format: "%02d · %@", w.no, w.word)).font(Theme.body(12, weight: .semibold))
-                                    .foregroundStyle(Theme.ink).lineLimit(1).minimumScaleFactor(0.7)
-                            }
-                        }
-                        .accessibilityLabel("\(w.no). \(w.word)")
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("Kelimeler")
-            .navigationDestination(for: Word.self) { WordDetailView(word: $0) }
-        }
-    }
-}
-
-/// "Hatırla": son iki haftanın kelimelerinden anlam → kelime eşleştirme. Yanlışta doğru cevap gösterilir.
+/// "Hatırla": son iki haftanın bölüm kelimeleri ve "sözlükten" kelimeleri üzerinden anlam → kelime testi.
 struct QuizView: View {
     @AppStorage("quiz.streak") private var streak = 0
     @AppStorage("quiz.best") private var best = 0
     @State private var question = QuizView.makeQuestion()
-    @State private var picked: Word?
+    @State private var picked: DictEntry?
 
-    struct Question { let answer: Word; let options: [Word] }
+    struct Question { let answer: DictEntry; let options: [DictEntry] }
 
-    static func makeQuestion() -> Question {
-        var pool = Daily.recentWords(days: 14)
-        if pool.count < 3 { pool = Content.words }
+    static func makeQuestion(date: Date = .now) -> Question {
+        let today = Daily.dayIndex(for: date)
+        let episodes = Daily.recentWords(days: 14, from: date).compactMap { w in Lexicon.entries.first { $0.episode == w.no } }
+        let dictionary = (0..<14).map { Daily.dictionary(forDay: today - $0) }
+        let pool = episodes + dictionary
         let answer = pool.randomElement()!
-        let others = Content.words.filter { $0 != answer }.shuffled().prefix(2)
+        let others = Lexicon.dailyPool.filter { $0 != answer }.shuffled().prefix(2)
         return Question(answer: answer, options: ([answer] + others).shuffled())
     }
 
@@ -167,18 +141,18 @@ struct QuizView: View {
                     .frame(maxWidth: .infinity)
                 }
 
-                ForEach(question.options) { w in
-                    Button { choose(w) } label: {
-                        Text(w.word).font(Theme.word(20)).frame(maxWidth: .infinity).padding(.vertical, 6)
+                ForEach(question.options) { e in
+                    Button { choose(e) } label: {
+                        Text(e.word).font(Theme.word(20)).frame(maxWidth: .infinity).padding(.vertical, 6)
                     }
                     .buttonStyle(.bordered)
-                    .tint(color(for: w))
+                    .tint(color(for: e))
                     .disabled(picked != nil)
                 }
 
                 if let picked {
                     VStack(spacing: 10) {
-                        Text(picked == question.answer ? "Doğru! " + question.answer.oneLiner : "Doğrusu: \(question.answer.word)")
+                        Text(picked == question.answer ? "Doğru! \(question.answer.word) · \(question.answer.origin)" : "Doğrusu: \(question.answer.word) (\(question.answer.origin))")
                             .font(Theme.body(15, weight: .semibold)).multilineTextAlignment(.center)
                         Button("Sıradaki") { question = Self.makeQuestion(); self.picked = nil }
                             .buttonStyle(.borderedProminent)
@@ -191,15 +165,15 @@ struct QuizView: View {
         }
     }
 
-    private func color(for w: Word) -> Color {
+    private func color(for e: DictEntry) -> Color {
         guard let picked else { return Theme.ink }
-        if w == question.answer { return .green }
-        return w == picked ? Theme.review : Theme.ink.opacity(0.4)
+        if e == question.answer { return .green }
+        return e == picked ? Theme.review : Theme.ink.opacity(0.4)
     }
 
-    private func choose(_ w: Word) {
-        picked = w
-        if w == question.answer { streak += 1; best = max(best, streak) } else { streak = 0 }
+    private func choose(_ e: DictEntry) {
+        picked = e
+        if e == question.answer { streak += 1; best = max(best, streak) } else { streak = 0 }
     }
 }
 
@@ -219,6 +193,9 @@ struct SettingsView: View {
                             ForEach(6..<23, id: \.self) { Text(String(format: "%02d:00", $0)).tag($0) }
                         }
                     }
+                }
+                Section("İlham klavyesi") {
+                    NavigationLink("Klavyeyi aç ve dene") { KeyboardGuideView() }
                 }
                 Section("Widget nasıl eklenir?") {
                     Text("Ana ekranda boş bir yere basılı tut → sol üstteki + → \"Bu Nedir?\" → boyut seç. Kilit ekranı için kilit ekranına basılı tut → Özelleştir → Kilit Ekranı → widget alanı.")

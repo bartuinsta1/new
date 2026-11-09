@@ -32,34 +32,52 @@ struct WordWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: WordEntry
 
-    private var word: Word { entry.daily.word }
-    private var isReview: Bool { entry.daily.kind == .review }
+    /// Kartta gösterilecek kelime: bölüm kelimesi ya da (15:00 diliminde) sözlükten bir kelime.
+    private struct Shown {
+        let title: String, origin: String, meaning: String
+        let story: String?, oneLiner: String?
+        let url: URL
+    }
+
+    private var shown: Shown {
+        if let d = entry.daily.dict {
+            return Shown(title: d.word, origin: d.origin, meaning: d.meaning, story: nil, oneLiner: nil,
+                         url: URL(string: "bunedir://dict/\(d.id)")!)
+        }
+        let w = entry.daily.word
+        return Shown(title: w.word, origin: w.origin, meaning: w.meaning, story: w.story, oneLiner: w.oneLiner,
+                     url: URL(string: "bunedir://word/\(w.no)")!)
+    }
+
+    private var labelColor: Color { entry.daily.kind == .today ? Theme.ink.opacity(0.55) : Theme.review }
     private var label: String {
-        switch entry.daily.daysAgo {
-        case 0: "Günün kelimesi"
-        case 1: "Hatırla · dün"
-        case 7: "Hatırla · geçen hafta"
-        default: "Hatırla · \(entry.daily.daysAgo) gün önce"
+        switch (entry.daily.kind, entry.daily.daysAgo) {
+        case (.dictionary, _): "Sözlükten"
+        case (_, 0): "Günün kelimesi"
+        case (_, 1): "Hatırla · dün"
+        case (_, 7): "Hatırla · geçen hafta"
+        case (_, let n): "Hatırla · \(n) gün önce"
         }
     }
 
     var body: some View {
         content
             .padding(family.isAccessory ? 0 : 12)
-            .widgetURL(URL(string: "bunedir://word/\(word.no)"))
+            .widgetURL(shown.url)
             .containerBackground(for: .widget) {
                 if family.isAccessory { Color.clear } else { SceneBackground(path: entry.daily.image, aspect: family == .systemMedium ? 2.1 : 1) }
             }
     }
 
     @ViewBuilder private var content: some View {
+        let s = shown
         switch family {
         case .accessoryInline:
-            Text("\(word.word): \(word.meaning)")
+            Text("\(s.title): \(s.meaning)")
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 1) {
-                Text(word.word).font(Theme.word(15)).widgetAccentable()
-                Text(word.meaning).font(.caption2).lineLimit(3)
+                Text(s.title).font(Theme.word(15)).widgetAccentable()
+                Text(s.meaning).font(.caption2).lineLimit(3)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         case .systemSmall:
@@ -67,9 +85,9 @@ struct WordWidgetView: View {
                 Spacer()
                 PaperCard(tilt: -1.5, padding: 8) {
                     VStack(spacing: 2) {
-                        Text(label.uppercased()).font(Theme.body(8, weight: .semibold)).foregroundStyle(isReview ? Theme.review : Theme.ink.opacity(0.55))
-                        Text(word.word).font(Theme.word(20)).foregroundStyle(Theme.accent).minimumScaleFactor(0.5).lineLimit(1)
-                        Text(word.origin).font(Theme.body(9)).foregroundStyle(Theme.ink.opacity(0.7)).lineLimit(1)
+                        Text(label.uppercased()).font(Theme.body(8, weight: .semibold)).foregroundStyle(labelColor)
+                        Text(s.title).font(Theme.word(20)).foregroundStyle(Theme.accent).minimumScaleFactor(0.5).lineLimit(1)
+                        Text(s.origin).font(Theme.body(9)).foregroundStyle(Theme.ink.opacity(0.7)).lineLimit(1)
                     }
                 }
             }
@@ -78,10 +96,10 @@ struct WordWidgetView: View {
                 Spacer(minLength: 120)
                 PaperCard(tilt: 1, padding: 10) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(label.uppercased()).font(Theme.body(9, weight: .semibold)).foregroundStyle(isReview ? Theme.review : Theme.ink.opacity(0.55))
-                        Text(word.word).font(Theme.word(22)).foregroundStyle(Theme.accent).minimumScaleFactor(0.6).lineLimit(1)
-                        Text(word.meaning).font(Theme.body(11)).foregroundStyle(Theme.ink).lineLimit(3)
-                        Text(word.origin).font(Theme.body(9)).foregroundStyle(Theme.ink.opacity(0.6))
+                        Text(label.uppercased()).font(Theme.body(9, weight: .semibold)).foregroundStyle(labelColor)
+                        Text(s.title).font(Theme.word(22)).foregroundStyle(Theme.accent).minimumScaleFactor(0.6).lineLimit(1)
+                        Text(s.meaning).font(Theme.body(11)).foregroundStyle(Theme.ink).lineLimit(3)
+                        Text(s.origin).font(Theme.body(9)).foregroundStyle(Theme.ink.opacity(0.6))
                     }
                 }
             }
@@ -90,14 +108,18 @@ struct WordWidgetView: View {
                 Spacer()
                 PaperCard(tilt: -1, padding: 12) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(label.uppercased()).font(Theme.body(10, weight: .semibold)).foregroundStyle(isReview ? Theme.review : Theme.ink.opacity(0.55))
-                        Text(word.word).font(Theme.word(30)).foregroundStyle(Theme.accent).minimumScaleFactor(0.5).lineLimit(1)
-                        Text("\(word.origin) · \(word.meaning)").font(Theme.body(12)).foregroundStyle(Theme.ink).lineLimit(3)
-                        Text(word.story).font(Theme.body(11, weight: .regular)).foregroundStyle(Theme.ink.opacity(0.8)).lineLimit(5)
+                        Text(label.uppercased()).font(Theme.body(10, weight: .semibold)).foregroundStyle(labelColor)
+                        Text(s.title).font(Theme.word(30)).foregroundStyle(Theme.accent).minimumScaleFactor(0.5).lineLimit(1)
+                        Text("\(s.origin) · \(s.meaning)").font(Theme.body(12)).foregroundStyle(Theme.ink).lineLimit(3)
+                        if let story = s.story {
+                            Text(story).font(Theme.body(11, weight: .regular)).foregroundStyle(Theme.ink.opacity(0.8)).lineLimit(5)
+                        }
                     }
                 }
-                PaperCard(tilt: 1.5, padding: 6) {
-                    Text("“\(word.oneLiner)”").font(Theme.body(11, weight: .semibold)).foregroundStyle(Theme.ink).lineLimit(2)
+                if let line = s.oneLiner {
+                    PaperCard(tilt: 1.5, padding: 6) {
+                        Text("“\(line)”").font(Theme.body(11, weight: .semibold)).foregroundStyle(Theme.ink).lineLimit(2)
+                    }
                 }
             }
         }
@@ -114,7 +136,7 @@ struct BuNedirWidget: Widget {
             WordWidgetView(entry: entry)
         }
         .configurationDisplayName("Günün Kelimesi")
-        .description("Her gün bir kelime, hikâyesiyle. Arka plan gün boyu değişir; arada eski kelimeleri hatırlatır.")
+        .description("Her gün bir kelime, hikâyesiyle. Arka plan gün boyu değişir; öğleden sonra 1000 kelimelik sözlükten bir kelime, akşam eski kelimeleri hatırlatır.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .accessoryRectangular, .accessoryInline])
         .contentMarginsDisabled()
     }

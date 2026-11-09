@@ -6,6 +6,12 @@ iOS (App Store) ve Android (Google Play).
 - **Widget her gün bir kelime gösterir.** Arka plan, o bölümün video sahneleri arasında gün boyu (3 saatte bir) değişir.
 - **Öğretmeye devam eder:** saat 12:00'de dünün, 18:00'de 3 gün öncesinin, 21:00'de geçen haftanın kelimesini
   "Hatırla" kartı olarak geri getirir (aralıklı tekrar). Uygulama hiç açılmasa da çalışır.
+- **1000 kelimelik hafıza:** 50 bölüm + 955 kelime (122 Japonca; Arapça/Farsça kökenli, Anadolu Türkçesi ve
+  dünya dillerinden). Uygulamada aramalı sözlük; widget her öğleden sonra (15:00) sözlükten bir kelime gösterir.
+- **İlham klavyesi (iOS klavye eklentisi + Android klavye):** Hangi uygulamada yazılırsa yazılsın klavyenin üstündeki
+  şerit konuşur: "özledim" → *Buna "saudade" denir*, "lagom" → *Bu budur: Lagom*, boştayken bir tek söz.
+  **Yazılanlar cihazdan çıkmaz:** iOS'ta "Tam Erişim" istenmez (ağ yok), Android'de klavye hiçbir şey kaydetmez/göndermez.
+  Başka uygulamalardaki *gelen* mesajları okumak her iki mağazada da mümkün/izinli değil; bu yüzden klavye yolu seçildi.
 - **Uygulama:** Günün kelimesi (sahneler, anlam, kısa hikâye, tek söz, "Instagram'da izle"), 50 kelimelik arşiv,
   "Hatırla" testi, isteğe bağlı günlük bildirim.
 - **2 ay hediye:** E-postayla (parolasız, 6 haneli kod) kaydolan herkes, yakında çıkacak diğer uygulamamızda
@@ -14,7 +20,8 @@ iOS (App Store) ve Android (Google Play).
 
 ```
 bunedir/
-  content/          words.json (50 kelime) + covers/ (kapak kareleri) + scenes/ (videodan sahneler) + test-vectors.json
+  content/          words.json (50 bölüm) + covers/ + scenes/ + sozluk/*.tsv (sözlük kaynakları)
+                    + dictionary.json (üretilir) + test-vectors.json + muse-vectors.json (üretilir)
   scripts/          extract-scenes.mjs (video → sahne), check-content.mjs (doğrula), lib/daily.mjs (kuralın referansı)
   ios/              SwiftUI uygulama + WidgetKit eklentisi (XcodeGen)
   android/          Compose uygulama + Glance widget + WorkManager
@@ -41,6 +48,20 @@ bunedir/
 Günün kelimesi herkeste aynıdır: `words.json` → `epoch` gününden beri geçen gün sayısı mod kelime sayısı
 (1 Ocak 2026 = 1. kelime). Instagram'da "bugünün kelimesi" diye paylaşılabilir.
 
+## Sözlüğe kelime eklemek
+
+`content/sozluk/*.tsv` dosyalarına `kelime | köken | anlam | tetikleyiciler` satırı ekleyin (ayrıntı: `content/sozluk/README.md`).
+Tetikleyiciler, klavyenin "buna X denir" demesi için Türkçe köklerdir (`özle` → özledim, özlem…).
+Gündelik kelimeler (`yaygin.txt`) sözlükte durur ama klavye onlar için konuşmaz.
+
+```bash
+node scripts/build-dictionary.mjs && node scripts/check-content.mjs   # sözlüğü ve test vektörlerini üret
+```
+
+Klavye kuralı (`scripts/lib/muse.mjs`): yalnızca bir kelime bitince (boşluk/noktalama) son cümleye bakar; önce sözlükteki
+bir kelimenin kendisi ("bu budur"), yoksa tetikleyici ("buna X denir"). iOS (`Shared/Lexicon.swift`) ve Android
+(`data/Lexicon.kt`) aynı `muse-vectors.json` ile test edilir.
+
 ## iOS
 
 ```bash
@@ -49,6 +70,7 @@ cd ios && brew install xcodegen && xcodegen generate && open BuNedir.xcodeproj
 - `Config.local.xcconfig` (git'e girmez): `BUNEDIR_SUPABASE_URL`, `BUNEDIR_SUPABASE_ANON_KEY`, `DEVELOPMENT_TEAM`.
   Boşsa hediye ekranı "çok yakında" der; uygulamanın geri kalanı çalışır.
 - Bundle ID'ler: `app.bunedir.ios`, `app.bunedir.ios.widget` (değiştirmek için `project.yml`).
+- Klavye: `BuNedirKeyboard` eklentisi (`app.bunedir.ios.keyboard`), Türkçe Q düzeni, `RequestsOpenAccess = false`.
 - Widget: küçük, orta, büyük + kilit ekranı (dikdörtgen, satır içi). Dokununca o kelimenin sayfası açılır (`bunedir://word/9`).
 - Testler: `./ci-test.sh` (JS ile aynı test vektörleri).
 

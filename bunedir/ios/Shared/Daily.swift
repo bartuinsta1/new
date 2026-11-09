@@ -6,14 +6,19 @@ enum Daily {
     static let slotsPerDay = 24 / slotHours
     /// dilim → kaç gün önceki kelime tekrar edilir (aralıklı tekrar)
     static let reviewSlots: [Int: Int] = [4: 1, 6: 3, 7: 7]
+    /// 15:00 dilimi: 1000 kelimelik sözlükten günün kelimesi.
+    static let dictionarySlot = 5
 
-    enum Kind: String, Sendable { case today, review }
+    enum Kind: String, Sendable { case today, review, dictionary }
 
     struct Entry: Equatable, Sendable {
         let kind: Kind
+        /// Bölüm kelimesi (arka plan sahnesi bundan gelir).
         let word: Word
         let daysAgo: Int
         let image: String
+        /// Yalnızca .dictionary için: sözlükten gösterilecek kelime.
+        var dict: DictEntry? = nil
     }
 
     private static func mod(_ a: Int, _ n: Int) -> Int { ((a % n) + n) % n }
@@ -41,12 +46,19 @@ enum Daily {
         words[mod(day, words.count)]
     }
 
-    static func entry(day: Int, slot: Int, words: [Word] = Content.words) -> Entry {
+    static func dictionary(forDay day: Int, pool: [DictEntry] = Lexicon.dailyPool) -> DictEntry {
+        pool[mod(day, pool.count)]
+    }
+
+    static func entry(day: Int, slot: Int, words: [Word] = Content.words, pool: [DictEntry] = Lexicon.dailyPool) -> Entry {
         let ago = reviewSlots[slot] ?? 0
         let w = word(forDay: day - ago, words: words)
         let imgs = w.images
-        return Entry(kind: ago > 0 ? .review : .today, word: w, daysAgo: ago,
-                     image: imgs[mod(day * slotsPerDay + slot, imgs.count)])
+        let image = imgs[mod(day * slotsPerDay + slot, imgs.count)]
+        if slot == dictionarySlot {
+            return Entry(kind: .dictionary, word: w, daysAgo: 0, image: image, dict: dictionary(forDay: day, pool: pool))
+        }
+        return Entry(kind: ago > 0 ? .review : .today, word: w, daysAgo: ago, image: image)
     }
 
     static func entry(at date: Date, calendar: Calendar = .current) -> Entry {

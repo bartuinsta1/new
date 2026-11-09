@@ -46,6 +46,11 @@ import androidx.core.content.ContextCompat
 import app.bunedir.data.Account
 import app.bunedir.data.Content
 import app.bunedir.data.Daily
+import app.bunedir.data.DictEntry
+import app.bunedir.data.Lexicon
+import app.bunedir.data.Muse
+import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
 import app.bunedir.data.Reminders
 import app.bunedir.data.TrialCode
 import app.bunedir.data.Word
@@ -62,11 +67,13 @@ private val colors = lightColorScheme(primary = Accent, onPrimary = Color.White,
 private enum class Tab(val title: String) { TODAY("Bugün"), WORDS("Kelimeler"), QUIZ("Hatırla"), GIFT("2 Ay Hediye") }
 
 @Composable
-fun BuNedirApp(openWord: MutableState<Int?>) {
+fun BuNedirApp(openWord: MutableState<Int?>, openDict: MutableState<String?>) {
     val context = LocalContext.current
     val content = remember { Content.get(context) }
+    val lexicon = remember { Lexicon.get(context) }
     var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
     var detail by remember { mutableStateOf<Word?>(null) }
+    var dictDetail by remember { mutableStateOf<DictEntry?>(null) }
     var settings by remember { mutableStateOf(false) }
 
     LaunchedEffect(openWord.value) {
@@ -74,6 +81,15 @@ fun BuNedirApp(openWord: MutableState<Int?>) {
             tab = Tab.TODAY
             detail = content.words.first { it.no == no }.takeIf { it != Daily.today(content) }
             openWord.value = null
+        }
+    }
+    LaunchedEffect(openDict.value) {
+        openDict.value?.let { id ->
+            tab = Tab.TODAY
+            val e = lexicon.first { it.id == id }
+            val ep = e.episode
+            if (ep != null) detail = content.words.first { it.no == ep } else dictDetail = e
+            openDict.value = null
         }
     }
 
@@ -84,7 +100,7 @@ fun BuNedirApp(openWord: MutableState<Int?>) {
                     Tab.entries.forEach { t ->
                         NavigationBarItem(
                             selected = tab == t,
-                            onClick = { tab = t; detail = null },
+                            onClick = { tab = t; detail = null; dictDetail = null },
                             icon = {
                                 Icon(when (t) {
                                     Tab.TODAY -> Icons.Filled.Star
@@ -101,10 +117,15 @@ fun BuNedirApp(openWord: MutableState<Int?>) {
         ) { pad ->
             Box(Modifier.padding(pad).fillMaxSize()) {
                 val shown = detail
+                val shownDict = dictDetail
                 when {
                     shown != null -> WordScreen(shown, null, onBack = { detail = null })
+                    shownDict != null -> DictScreen(shownDict) { dictDetail = null }
                     tab == Tab.TODAY -> WordScreen(Daily.today(content), "GÜNÜN KELİMESİ", onSettings = { settings = true })
-                    tab == Tab.WORDS -> ArchiveScreen(content.words, Daily.today(content)) { detail = it }
+                    tab == Tab.WORDS -> WordsScreen(content.words, lexicon, Daily.today(content), openWord = { detail = it }, openEntry = { e ->
+                        val ep = e.episode
+                        if (ep != null) detail = content.words.first { it.no == ep } else dictDetail = e
+                    })
                     tab == Tab.QUIZ -> QuizScreen()
                     tab == Tab.GIFT -> GiftScreen()
                 }
@@ -179,6 +200,65 @@ private fun WordScreen(word: Word, label: String?, onBack: (() -> Unit)? = null,
 private fun SectionTitle(t: String) = Text(t, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Ink.copy(alpha = 0.5f))
 
 @Composable
+private fun WordsScreen(words: List<Word>, lexicon: List<DictEntry>, today: Word, openWord: (Word) -> Unit, openEntry: (DictEntry) -> Unit) {
+    var mode by rememberSaveable { mutableIntStateOf(0) }
+    Column(Modifier.fillMaxSize()) {
+        TabRow(selectedTabIndex = mode, containerColor = Paper) {
+            androidx.compose.material3.Tab(mode == 0, { mode = 0 }, text = { Text("Sözlük · ${lexicon.size}") })
+            androidx.compose.material3.Tab(mode == 1, { mode = 1 }, text = { Text("Hikâyeler · ${words.size}") })
+        }
+        if (mode == 0) LexiconList(lexicon, openEntry) else ArchiveScreen(words, today, openWord)
+    }
+}
+
+@Composable
+private fun LexiconList(lexicon: List<DictEntry>, open: (DictEntry) -> Unit) {
+    var query by rememberSaveable { mutableStateOf("") }
+    var family by rememberSaveable { mutableStateOf(Lexicon.Family.ALL) }
+    val results = remember(query, family) { Lexicon.search(lexicon, query, family) }
+    Column(Modifier.fillMaxSize()) {
+        OutlinedTextField(query, { query = it }, placeholder = { Text("Kelime ya da anlam ara") }, singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
+        Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Lexicon.Family.entries.forEach { f -> FilterChip(family == f, { family = f }, label = { Text(f.title) }) }
+        }
+        Text("${results.size} kelime", fontSize = 12.sp, color = Ink.copy(alpha = 0.5f), modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+        androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxSize()) {
+            items(results.size, key = { results[it].id }) { i ->
+                val e = results[i]
+                Column(Modifier.fillMaxWidth().clickable { open(e) }.padding(horizontal = 16.dp, vertical = 10.dp)) {
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(e.word, fontSize = 18.sp, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, color = Accent)
+                        Spacer(Modifier.width(8.dp))
+                        Text(e.origin + if (e.episode != null) " · ▶ hikâye" else "", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Ink.copy(alpha = 0.5f))
+                    }
+                    Text(e.meaning, fontSize = 14.sp, color = Ink, maxLines = 2)
+                }
+                HorizontalDivider(color = Ink.copy(alpha = 0.08f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun DictScreen(e: DictEntry, onBack: () -> Unit) {
+    val context = LocalContext.current
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        Row(Modifier.fillMaxWidth()) { IconButton(onBack) { Icon(Icons.Filled.ArrowBack, "Geri", tint = Ink) } }
+        PaperCard(Modifier.fillMaxWidth(), tilt = -1f) {
+            Text(e.origin.uppercase(java.util.Locale("tr")), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Ink.copy(alpha = 0.5f))
+            Text(e.word, fontSize = 34.sp, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, color = Accent, textAlign = TextAlign.Center)
+            Text("buna denir.", fontSize = 15.sp, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, color = Ink)
+        }
+        Text(e.meaning, fontSize = 19.sp, color = Ink, textAlign = TextAlign.Center)
+        OutlinedButton({
+            val text = "${e.word} (${e.origin}): ${e.meaning}\n${Content.get(context).instagram}"
+            context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), null))
+        }, Modifier.fillMaxWidth()) { Text("Paylaş") }
+    }
+}
+
+@Composable
 private fun ArchiveScreen(words: List<Word>, today: Word, open: (Word) -> Unit) {
     LazyVerticalGrid(GridCells.Adaptive(104.dp), contentPadding = PaddingValues(16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         items(words, key = { it.no }) { w ->
@@ -197,16 +277,20 @@ private fun ArchiveScreen(words: List<Word>, today: Word, open: (Word) -> Unit) 
 private fun QuizScreen() {
     val context = LocalContext.current
     val content = remember { Content.get(context) }
+    val lexicon = remember { Lexicon.get(context) }
+    val pool = remember { Lexicon.dailyPool(lexicon) }
     val prefs = remember { context.getSharedPreferences("quiz", 0) }
     var streak by remember { mutableIntStateOf(prefs.getInt("streak", 0)) }
     var best by remember { mutableIntStateOf(prefs.getInt("best", 0)) }
-    fun newQuestion(): Pair<Word, List<Word>> {
-        val pool = Daily.recentWords(content, 14).ifEmpty { content.words }
-        val answer = pool.random()
-        return answer to (listOf(answer) + content.words.filter { it != answer }.shuffled().take(2)).shuffled()
+    fun newQuestion(): Pair<DictEntry, List<DictEntry>> {
+        val today = Daily.dayIndex(java.time.LocalDate.now(), content.epoch)
+        val episodes = Daily.recentWords(content, 14).mapNotNull { w -> lexicon.firstOrNull { it.episode == w.no } }
+        val dictionary = (0 until 14).map { Daily.dictionaryForDay(pool, today - it) }
+        val answer = (episodes + dictionary).random()
+        return answer to (listOf(answer) + pool.filter { it != answer }.shuffled().take(2)).shuffled()
     }
     var q by remember { mutableStateOf(newQuestion()) }
-    var picked by remember { mutableStateOf<Word?>(null) }
+    var picked by remember { mutableStateOf<DictEntry?>(null) }
 
     Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row { Text("🔥 $streak seri", fontWeight = FontWeight.SemiBold); Spacer(Modifier.weight(1f)); Text("En iyi: $best") }
@@ -232,7 +316,7 @@ private fun QuizScreen() {
             ) { Text(w.word, fontSize = 20.sp, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, color = color) }
         }
         picked?.let {
-            Text(if (it == q.first) "Doğru! ${q.first.oneLiner}" else "Doğrusu: ${q.first.word}", fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(if (it == q.first) "Doğru! ${q.first.word} · ${q.first.origin}" else "Doğrusu: ${q.first.word} (${q.first.origin})", fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             Button({ q = newQuestion(); picked = null }, Modifier.fillMaxWidth()) { Text("Sıradaki") }
         }
     }
@@ -343,6 +427,20 @@ private fun SettingsDialog(onDismiss: () -> Unit) {
                         FilterChip(hour == h, { hour = h; Reminders.set(context, true, h) }, label = { Text("%02d".format(h)) })
                     }
                 }
+                Text("İlham klavyesi", fontWeight = FontWeight.Bold)
+                Text("Nerede yazarsan yaz, klavyenin üstündeki şerit seninle konuşur: \"özledim\" yazınca \"Buna saudade denir\" der. Yazdıkların cihazdan çıkmaz.", fontSize = 13.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton({ context.startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)) }) { Text("1 · Aç") }
+                    OutlinedButton({ context.getSystemService(InputMethodManager::class.java).showInputMethodPicker() }) { Text("2 · Seç") }
+                }
+                var trial by remember { mutableStateOf("") }
+                OutlinedTextField(trial, { trial = it }, placeholder = { Text("Dene: Seni çok özledim ") }, modifier = Modifier.fillMaxWidth())
+                val prepared = remember { Muse.prepare(Lexicon.get(context)) }
+                val sug = Muse.suggest(prepared, trial)
+                Text(
+                    sug?.let { (if (it.kind == Muse.Kind.WORD) "Bu budur: " else "Buna denir: ") + "${it.entry.word} — ${it.entry.meaning}" } ?: Muse.idleLine(Content.get(context)),
+                    fontSize = 13.sp, color = Accent,
+                )
                 Text("Widget eklemek için: ana ekranda boş bir yere basılı tut → Widget'lar → \"Bu Nedir?\". Widget gün boyu sahneyi değiştirir; öğlen, akşam ve gece önceki kelimeleri hatırlatır.", fontSize = 13.sp)
                 TextButton({ context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Content.get(context).instagram))) }) {
                     Text("Instagram: @bu.nedir1")

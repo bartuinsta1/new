@@ -28,6 +28,7 @@ targets:
         buildPhase: resources
     dependencies:
       - target: BuNedirWidget
+      - target: BuNedirKeyboard
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.bunedir.ios
@@ -66,6 +67,32 @@ targets:
       properties:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  BuNedirKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: BuNedirKeyboard
+      - path: Shared
+      - path: ../content
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.bunedir.ios.keyboard
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: "Bu Nedir?"
+    info:
+      path: BuNedirKeyboard/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: tr-TR
+            # Tam Erişim yok: yazılanlar cihazdan çıkmaz, ağ erişimi yok.
+            RequestsOpenAccess: false
   BuNedirTests:
     type: bundle.unit-test
     platform: iOS

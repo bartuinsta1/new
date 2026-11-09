@@ -25,6 +25,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
+      - name: Sözlük (1000 kelime) güncel mi
+        run: node scripts/build-dictionary.mjs --check
       - name: İçerik doğrulama + test vektörleri güncel mi
         run: node scripts/check-content.mjs --check
       - name: Günün kelimesi kuralı

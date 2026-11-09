@@ -8,7 +8,8 @@
       "kind": "today",
       "no": 1,
       "daysAgo": 0,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
@@ -17,7 +18,8 @@
       "kind": "today",
       "no": 1,
       "daysAgo": 0,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
@@ -26,7 +28,8 @@
       "kind": "today",
       "no": 1,
       "daysAgo": 0,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
@@ -35,7 +38,8 @@
       "kind": "today",
       "no": 1,
       "daysAgo": 0,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
@@ -44,16 +48,18 @@
       "kind": "review",
       "no": 50,
       "daysAgo": 1,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
       "day": 0,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 1,
       "daysAgo": 0,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": "liminal"
     },
     {
       "date": "2026-01-01",
@@ -62,7 +68,8 @@
       "kind": "review",
       "no": 48,
       "daysAgo": 3,
-      "image": "covers/48.jpg"
+      "image": "covers/48.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-01",
@@ -71,7 +78,8 @@
       "kind": "review",
       "no": 44,
       "daysAgo": 7,
-      "image": "covers/44.jpg"
+      "image": "covers/44.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -80,7 +88,8 @@
       "kind": "today",
       "no": 2,
       "daysAgo": 0,
-      "image": "covers/02.jpg"
+      "image": "covers/02.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -89,7 +98,8 @@
       "kind": "today",
       "no": 2,
       "daysAgo": 0,
-      "image": "covers/02.jpg"
+      "image": "covers/02.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -98,7 +108,8 @@
       "kind": "today",
       "no": 2,
       "daysAgo": 0,
-      "image": "covers/02.jpg"
+      "image": "covers/02.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -107,7 +118,8 @@
       "kind": "today",
       "no": 2,
       "daysAgo": 0,
-      "image": "covers/02.jpg"
+      "image": "covers/02.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -116,16 +128,18 @@
       "kind": "review",
       "no": 1,
       "daysAgo": 1,
-      "image": "covers/01.jpg"
+      "image": "covers/01.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
       "day": 1,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 2,
       "daysAgo": 0,
-      "image": "covers/02.jpg"
+      "image": "covers/02.jpg",
+      "dictId": "kansha"
     },
     {
       "date": "2026-01-02",
@@ -134,7 +148,8 @@
       "kind": "review",
       "no": 49,
       "daysAgo": 3,
-      "image": "covers/49.jpg"
+      "image": "covers/49.jpg",
+      "dictId": null
     },
     {
       "date": "2026-01-02",
@@ -143,7 +158,8 @@
       "kind": "review",
       "no": 45,
       "daysAgo": 7,
-      "image": "covers/45.jpg"
+      "image": "covers/45.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -152,7 +168,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -161,7 +178,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -170,7 +188,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -179,7 +198,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -188,16 +208,18 @@
       "kind": "review",
       "no": 49,
       "daysAgo": 1,
-      "image": "covers/49.jpg"
+      "image": "covers/49.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
       "day": 49,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": "friolero"
     },
     {
       "date": "2026-02-19",
@@ -206,7 +228,8 @@
       "kind": "review",
       "no": 47,
       "daysAgo": 3,
-      "image": "covers/47.jpg"
+      "image": "covers/47.jpg",
+      "dictId": null
     },
     {
       "date": "2026-02-19",
@@ -215,7 +238,8 @@
       "kind": "review",
       "no": 43,
       "daysAgo": 7,
-      "image": "covers/43.jpg"
+      "image": "covers/43.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -224,7 +248,8 @@
       "kind": "today",
       "no": 13,
       "daysAgo": 0,
-      "image": "covers/13.jpg"
+      "image": "covers/13.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -233,7 +258,8 @@
       "kind": "today",
       "no": 13,
       "daysAgo": 0,
-      "image": "covers/13.jpg"
+      "image": "covers/13.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -242,7 +268,8 @@
       "kind": "today",
       "no": 13,
       "daysAgo": 0,
-      "image": "covers/13.jpg"
+      "image": "covers/13.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -251,7 +278,8 @@
       "kind": "today",
       "no": 13,
       "daysAgo": 0,
-      "image": "covers/13.jpg"
+      "image": "covers/13.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -260,16 +288,18 @@
       "kind": "review",
       "no": 12,
       "daysAgo": 1,
-      "image": "covers/12.jpg"
+      "image": "covers/12.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
       "day": 312,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 13,
       "daysAgo": 0,
-      "image": "covers/13.jpg"
+      "image": "covers/13.jpg",
+      "dictId": "rayiha-i-tayyibe"
     },
     {
       "date": "2026-11-09",
@@ -278,7 +308,8 @@
       "kind": "review",
       "no": 10,
       "daysAgo": 3,
-      "image": "covers/10.jpg"
+      "image": "covers/10.jpg",
+      "dictId": null
     },
     {
       "date": "2026-11-09",
@@ -287,7 +318,8 @@
       "kind": "review",
       "no": 6,
       "daysAgo": 7,
-      "image": "covers/06.jpg"
+      "image": "covers/06.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -296,7 +328,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -305,7 +338,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -314,7 +348,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -323,7 +358,8 @@
       "kind": "today",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -332,16 +368,18 @@
       "kind": "review",
       "no": 49,
       "daysAgo": 1,
-      "image": "covers/49.jpg"
+      "image": "covers/49.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
       "day": -1,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 50,
       "daysAgo": 0,
-      "image": "covers/50.jpg"
+      "image": "covers/50.jpg",
+      "dictId": "kotodama"
     },
     {
       "date": "2025-12-31",
@@ -350,7 +388,8 @@
       "kind": "review",
       "no": 47,
       "daysAgo": 3,
-      "image": "covers/47.jpg"
+      "image": "covers/47.jpg",
+      "dictId": null
     },
     {
       "date": "2025-12-31",
@@ -359,7 +398,8 @@
       "kind": "review",
       "no": 43,
       "daysAgo": 7,
-      "image": "covers/43.jpg"
+      "image": "covers/43.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -368,7 +408,8 @@
       "kind": "today",
       "no": 25,
       "daysAgo": 0,
-      "image": "covers/25.jpg"
+      "image": "covers/25.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -377,7 +418,8 @@
       "kind": "today",
       "no": 25,
       "daysAgo": 0,
-      "image": "covers/25.jpg"
+      "image": "covers/25.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -386,7 +428,8 @@
       "kind": "today",
       "no": 25,
       "daysAgo": 0,
-      "image": "covers/25.jpg"
+      "image": "covers/25.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -395,7 +438,8 @@
       "kind": "today",
       "no": 25,
       "daysAgo": 0,
-      "image": "covers/25.jpg"
+      "image": "covers/25.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -404,16 +448,18 @@
       "kind": "review",
       "no": 24,
       "daysAgo": 1,
-      "image": "covers/24.jpg"
+      "image": "covers/24.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
       "day": 424,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 25,
       "daysAgo": 0,
-      "image": "covers/25.jpg"
+      "image": "covers/25.jpg",
+      "dictId": "tartle"
     },
     {
       "date": "2027-03-01",
@@ -422,7 +468,8 @@
       "kind": "review",
       "no": 22,
       "daysAgo": 3,
-      "image": "covers/22.jpg"
+      "image": "covers/22.jpg",
+      "dictId": null
     },
     {
       "date": "2027-03-01",
@@ -431,7 +478,8 @@
       "kind": "review",
       "no": 18,
       "daysAgo": 7,
-      "image": "covers/18.jpg"
+      "image": "covers/18.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -440,7 +488,8 @@
       "kind": "today",
       "no": 40,
       "daysAgo": 0,
-      "image": "covers/40.jpg"
+      "image": "covers/40.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -449,7 +498,8 @@
       "kind": "today",
       "no": 40,
       "daysAgo": 0,
-      "image": "covers/40.jpg"
+      "image": "covers/40.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -458,7 +508,8 @@
       "kind": "today",
       "no": 40,
       "daysAgo": 0,
-      "image": "covers/40.jpg"
+      "image": "covers/40.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -467,7 +518,8 @@
       "kind": "today",
       "no": 40,
       "daysAgo": 0,
-      "image": "covers/40.jpg"
+      "image": "covers/40.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -476,16 +528,18 @@
       "kind": "review",
       "no": 39,
       "daysAgo": 1,
-      "image": "covers/39.jpg"
+      "image": "covers/39.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
       "day": 789,
       "slot": 5,
-      "kind": "today",
+      "kind": "dictionary",
       "no": 40,
       "daysAgo": 0,
-      "image": "covers/40.jpg"
+      "image": "covers/40.jpg",
+      "dictId": "monozukuri"
     },
     {
       "date": "2028-02-29",
@@ -494,7 +548,8 @@
       "kind": "review",
       "no": 37,
       "daysAgo": 3,
-      "image": "covers/37.jpg"
+      "image": "covers/37.jpg",
+      "dictId": null
     },
     {
       "date": "2028-02-29",
@@ -503,7 +558,8 @@
       "kind": "review",
       "no": 33,
       "daysAgo": 7,
-      "image": "covers/33.jpg"
+      "image": "covers/33.jpg",
+      "dictId": null
     }
   ]
 }
