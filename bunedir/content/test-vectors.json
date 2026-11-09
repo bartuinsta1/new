@@ -1,0 +1,509 @@
+{
+  "note": "scripts/check-content.mjs üretir; elle düzenlemeyin",
+  "vectors": [
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 0,
+      "kind": "today",
+      "no": 1,
+      "daysAgo": 0,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 1,
+      "kind": "today",
+      "no": 1,
+      "daysAgo": 0,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 2,
+      "kind": "today",
+      "no": 1,
+      "daysAgo": 0,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 3,
+      "kind": "today",
+      "no": 1,
+      "daysAgo": 0,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 4,
+      "kind": "review",
+      "no": 50,
+      "daysAgo": 1,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 5,
+      "kind": "today",
+      "no": 1,
+      "daysAgo": 0,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 6,
+      "kind": "review",
+      "no": 48,
+      "daysAgo": 3,
+      "image": "covers/48.jpg"
+    },
+    {
+      "date": "2026-01-01",
+      "day": 0,
+      "slot": 7,
+      "kind": "review",
+      "no": 44,
+      "daysAgo": 7,
+      "image": "covers/44.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 0,
+      "kind": "today",
+      "no": 2,
+      "daysAgo": 0,
+      "image": "covers/02.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 1,
+      "kind": "today",
+      "no": 2,
+      "daysAgo": 0,
+      "image": "covers/02.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 2,
+      "kind": "today",
+      "no": 2,
+      "daysAgo": 0,
+      "image": "covers/02.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 3,
+      "kind": "today",
+      "no": 2,
+      "daysAgo": 0,
+      "image": "covers/02.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 4,
+      "kind": "review",
+      "no": 1,
+      "daysAgo": 1,
+      "image": "covers/01.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 5,
+      "kind": "today",
+      "no": 2,
+      "daysAgo": 0,
+      "image": "covers/02.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 6,
+      "kind": "review",
+      "no": 49,
+      "daysAgo": 3,
+      "image": "covers/49.jpg"
+    },
+    {
+      "date": "2026-01-02",
+      "day": 1,
+      "slot": 7,
+      "kind": "review",
+      "no": 45,
+      "daysAgo": 7,
+      "image": "covers/45.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 0,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 1,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 2,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 3,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 4,
+      "kind": "review",
+      "no": 49,
+      "daysAgo": 1,
+      "image": "covers/49.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 5,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 6,
+      "kind": "review",
+      "no": 47,
+      "daysAgo": 3,
+      "image": "covers/47.jpg"
+    },
+    {
+      "date": "2026-02-19",
+      "day": 49,
+      "slot": 7,
+      "kind": "review",
+      "no": 43,
+      "daysAgo": 7,
+      "image": "covers/43.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 0,
+      "kind": "today",
+      "no": 13,
+      "daysAgo": 0,
+      "image": "covers/13.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 1,
+      "kind": "today",
+      "no": 13,
+      "daysAgo": 0,
+      "image": "covers/13.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 2,
+      "kind": "today",
+      "no": 13,
+      "daysAgo": 0,
+      "image": "covers/13.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 3,
+      "kind": "today",
+      "no": 13,
+      "daysAgo": 0,
+      "image": "covers/13.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 4,
+      "kind": "review",
+      "no": 12,
+      "daysAgo": 1,
+      "image": "covers/12.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 5,
+      "kind": "today",
+      "no": 13,
+      "daysAgo": 0,
+      "image": "covers/13.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 6,
+      "kind": "review",
+      "no": 10,
+      "daysAgo": 3,
+      "image": "covers/10.jpg"
+    },
+    {
+      "date": "2026-11-09",
+      "day": 312,
+      "slot": 7,
+      "kind": "review",
+      "no": 6,
+      "daysAgo": 7,
+      "image": "covers/06.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 0,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 1,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 2,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 3,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 4,
+      "kind": "review",
+      "no": 49,
+      "daysAgo": 1,
+      "image": "covers/49.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 5,
+      "kind": "today",
+      "no": 50,
+      "daysAgo": 0,
+      "image": "covers/50.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 6,
+      "kind": "review",
+      "no": 47,
+      "daysAgo": 3,
+      "image": "covers/47.jpg"
+    },
+    {
+      "date": "2025-12-31",
+      "day": -1,
+      "slot": 7,
+      "kind": "review",
+      "no": 43,
+      "daysAgo": 7,
+      "image": "covers/43.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 0,
+      "kind": "today",
+      "no": 25,
+      "daysAgo": 0,
+      "image": "covers/25.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 1,
+      "kind": "today",
+      "no": 25,
+      "daysAgo": 0,
+      "image": "covers/25.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 2,
+      "kind": "today",
+      "no": 25,
+      "daysAgo": 0,
+      "image": "covers/25.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 3,
+      "kind": "today",
+      "no": 25,
+      "daysAgo": 0,
+      "image": "covers/25.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 4,
+      "kind": "review",
+      "no": 24,
+      "daysAgo": 1,
+      "image": "covers/24.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 5,
+      "kind": "today",
+      "no": 25,
+      "daysAgo": 0,
+      "image": "covers/25.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 6,
+      "kind": "review",
+      "no": 22,
+      "daysAgo": 3,
+      "image": "covers/22.jpg"
+    },
+    {
+      "date": "2027-03-01",
+      "day": 424,
+      "slot": 7,
+      "kind": "review",
+      "no": 18,
+      "daysAgo": 7,
+      "image": "covers/18.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 0,
+      "kind": "today",
+      "no": 40,
+      "daysAgo": 0,
+      "image": "covers/40.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 1,
+      "kind": "today",
+      "no": 40,
+      "daysAgo": 0,
+      "image": "covers/40.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 2,
+      "kind": "today",
+      "no": 40,
+      "daysAgo": 0,
+      "image": "covers/40.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 3,
+      "kind": "today",
+      "no": 40,
+      "daysAgo": 0,
+      "image": "covers/40.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 4,
+      "kind": "review",
+      "no": 39,
+      "daysAgo": 1,
+      "image": "covers/39.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 5,
+      "kind": "today",
+      "no": 40,
+      "daysAgo": 0,
+      "image": "covers/40.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 6,
+      "kind": "review",
+      "no": 37,
+      "daysAgo": 3,
+      "image": "covers/37.jpg"
+    },
+    {
+      "date": "2028-02-29",
+      "day": 789,
+      "slot": 7,
+      "kind": "review",
+      "no": 33,
+      "daysAgo": 7,
+      "image": "covers/33.jpg"
+    }
+  ]
+}

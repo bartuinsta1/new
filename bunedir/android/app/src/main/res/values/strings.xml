@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bu Nedir?</string>
+    <string name="widget_name">Günün Kelimesi</string>
+    <string name="widget_description">Her gün bir kelime, hikâyesiyle. Arka plan gün boyu değişir; arada eski kelimeleri hatırlatır.</string>
+</resources>
