@@ -1,0 +1,89 @@
+# Bu Nedir? canlı ekran görüntüleri: uygulamayı iPhone simülatöründe UI testiyle gezer, Bu Nedir? klavyesini
+# etkinleştirip kullanır, görüntüleri docs/bunedir-ekranlar/ altına commit'ler (ve artifact olarak yükler).
+# UI testleri ya da bu dosya değişince çalışır; elle de başlatılabilir.
+name: Bu Nedir ekran görüntüleri
+
+on:
+  push:
+    paths:
+      - "bunedir/ios/BuNedirUITests/**"
+      - ".github/workflows/bunedir-screens.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: bunedir-screens-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  screens:
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: latest-stable }
+      - name: XcodeGen
+        working-directory: bunedir/ios
+        run: brew install xcodegen && xcodegen generate
+      - name: Simülatör (yazılım klavyesi açık, saat 9:41)
+        run: |
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys;d=json.load(sys.stdin)['devices'];print(next(x['udid'] for k,v in d.items() if 'iOS' in k for x in v if x['name'].startswith('iPhone 16 Pro') or x['name'].startswith('iPhone 1')))")
+          echo "UDID=$UDID" >> $GITHUB_ENV
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+      - name: Derle ve kur
+        working-directory: bunedir/ios
+        run: |
+          xcodebuild build-for-testing -project BuNedir.xcodeproj -scheme BuNedirScreens -destination "id=$UDID" \
+            -derivedDataPath build/DD CODE_SIGNING_ALLOWED=NO -quiet
+          xcrun simctl install "$UDID" build/DD/Build/Products/Debug-iphonesimulator/BuNedir.app
+      - name: Bu Nedir? klavyesini etkinleştir
+        run: |
+          xcrun simctl spawn "$UDID" defaults write -g AppleKeyboards -array "app.bunedir.ios.keyboard" "tr_TR@sw=Turkish-Q;hw=Automatic" "emoji@sw=Emoji"
+          xcrun simctl spawn "$UDID" defaults write -g AppleKeyboardsExpanded -int 1
+          xcrun simctl spawn "$UDID" defaults write com.apple.Preferences KeyboardsCurrentAndNext -array "app.bunedir.ios.keyboard" "tr_TR@sw=Turkish-Q;hw=Automatic"
+          xcrun simctl shutdown "$UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
+      - name: Ekranları gez ve çek
+        working-directory: bunedir/ios
+        run: |
+          set +e
+          xcodebuild test-without-building -project BuNedir.xcodeproj -scheme BuNedirScreens -destination "id=$UDID" \
+            -derivedDataPath build/DD CODE_SIGNING_ALLOWED=NO -resultBundlePath build/screens.xcresult > build/screens.log 2>&1
+          echo "xcodebuild çıkış: $?"
+          grep -E "Test Case|error:|failed" build/screens.log | head -60
+          exit 0
+      - name: Görüntüleri çıkar
+        run: |
+          mkdir -p shots docs/bunedir-ekranlar
+          xcrun xcresulttool export attachments --path bunedir/ios/build/screens.xcresult --output-path shots
+          python3 - <<'PY'
+          import json, re, shutil, pathlib
+          out = pathlib.Path("docs/bunedir-ekranlar")
+          for f in out.glob("*.png"): f.unlink()
+          for test in json.load(open("shots/manifest.json")):
+              for a in test.get("attachments", []):
+                  name = a.get("suggestedHumanReadableName", "")
+                  m = re.match(r"(\d\d-[a-z0-9-]+)", name)
+                  if m:
+                      shutil.copy(pathlib.Path("shots") / a["exportedFileName"], out / f"{m.group(1)}.png")
+          print(sorted(p.name for p in out.glob("*.png")))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bunedir-ekranlar
+          path: docs/bunedir-ekranlar
+      - name: Dala commit'le
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/bunedir-ekranlar
+          git diff --cached --quiet && { echo "değişiklik yok"; exit 0; }
+          git commit -m "Bu Nedir? canlı ekran görüntüleri (CI simülatör)"
+          git push origin HEAD:${{ github.ref_name }}

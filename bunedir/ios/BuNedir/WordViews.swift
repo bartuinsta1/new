@@ -148,6 +148,7 @@ struct QuizView: View {
                     .buttonStyle(.bordered)
                     .tint(color(for: e))
                     .disabled(picked != nil)
+                    .accessibilityIdentifier("quiz.option")
                 }
 
                 if let picked {

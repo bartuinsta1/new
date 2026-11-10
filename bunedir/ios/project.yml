@@ -104,7 +104,24 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/BuNedir.app/BuNedir
         BUNDLE_LOADER: $(TEST_HOST)
+  BuNedirUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [BuNedirUITests]
+    dependencies:
+      - target: BuNedir
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: BuNedir
 schemes:
+  # Yalnızca ekran görüntüsü iş akışı kullanır (normal CI'ı yavaşlatmasın).
+  BuNedirScreens:
+    build:
+      targets:
+        BuNedir: all
+    test:
+      targets: [BuNedirUITests]
   BuNedir:
     build:
       targets:

@@ -29,7 +29,8 @@ struct WordsTab: View {
 }
 
 struct LexiconList: View {
-    @State private var query = ""
+    // Ekran görüntüsü testleri (-searchQuery …) başlangıç aramasını verebilir.
+    @State private var query = UserDefaults.standard.string(forKey: "searchQuery") ?? ""
     @State private var family: Lexicon.Family = .all
 
     var body: some View {
@@ -180,10 +181,12 @@ struct KeyboardGuideView: View {
 
 /// Klavye açık değilse bile motoru uygulama içinde denemek için.
 struct KeyboardTryField: View {
-    @State private var text = ""
+    // Ekran görüntüsü testleri (-tryText …) deneme metnini verebilir.
+    @State private var text = UserDefaults.standard.string(forKey: "tryText") ?? ""
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             TextField("ör. Seni çok özledim ", text: $text, axis: .vertical)
+                .accessibilityIdentifier("keyboard.try")
             if let s = Muse.suggest(text) {
                 MuseChip(suggestion: s)
             } else {
