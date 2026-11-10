@@ -1,0 +1,14 @@
+project_id = "bunedir"
+
+[auth]
+# Uygulama e-posta ile 6 haneli kod (OTP) gönderir; parola yok.
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+otp_length = 6
+otp_expiry = 900
+
+[functions.bunedir-trial]
+# JWT'yi fonksiyon kendisi doğrular (ortak uygulamanın /redeem çağrısı JWT taşımaz, gizli anahtar taşır).
+verify_jwt = false

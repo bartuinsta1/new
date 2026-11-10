@@ -1,0 +1,4 @@
+# Bu dosyayı local.properties olarak kopyalayın (git'e girmez).
+sdk.dir=/Users/SIZ/Library/Android/sdk
+bunedir.supabaseUrl=
+bunedir.supabaseAnonKey=

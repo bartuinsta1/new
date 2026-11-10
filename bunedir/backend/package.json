@@ -1,0 +1,8 @@
+{
+  "name": "bunedir-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --no-warnings --test tests/*.test.ts"
+  }
+}

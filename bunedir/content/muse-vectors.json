@@ -1,0 +1,197 @@
+{
+  "note": "scripts/check-content.mjs üretir; elle düzenlemeyin",
+  "vectors": [
+    {
+      "text": "Seni çok özledim ",
+      "result": {
+        "kind": "feeling",
+        "id": "b-saudade",
+        "token": "özledim"
+      }
+    },
+    {
+      "text": "annemi özlüyorum.",
+      "result": {
+        "kind": "feeling",
+        "id": "b-saudade",
+        "token": "özlüyorum"
+      }
+    },
+    {
+      "text": "lagom bir hayat istiyorum ",
+      "result": {
+        "kind": "word",
+        "id": "b-lagom",
+        "token": "lagom"
+      }
+    },
+    {
+      "text": "iki kahve ",
+      "result": null
+    },
+    {
+      "text": "hayat güzel ",
+      "result": {
+        "kind": "feeling",
+        "id": "joie-de-vivre",
+        "token": "güzel"
+      }
+    },
+    {
+      "text": "canım sıkılıyor ",
+      "result": {
+        "kind": "feeling",
+        "id": "ennui",
+        "token": "sikiliyor"
+      }
+    },
+    {
+      "text": "Tevekkül ",
+      "result": {
+        "kind": "word",
+        "id": "tevekkul",
+        "token": "tevekkül"
+      }
+    },
+    {
+      "text": "ayrıldık onunla ",
+      "result": {
+        "kind": "feeling",
+        "id": "shitsuren",
+        "token": "ayrildik"
+      }
+    },
+    {
+      "text": "kendi kendime konuştum ",
+      "result": {
+        "kind": "feeling",
+        "id": "hitorigoto",
+        "token": "kendime"
+      }
+    },
+    {
+      "text": "bugün çok yoruldum, ",
+      "result": {
+        "kind": "feeling",
+        "id": "otsukaresama",
+        "token": "yoruldum"
+      }
+    },
+    {
+      "text": "kahve içelim mi?",
+      "result": {
+        "kind": "feeling",
+        "id": "fika",
+        "token": "içelim"
+      }
+    },
+    {
+      "text": "hiçbir şey yapmadım bugün ",
+      "result": {
+        "kind": "feeling",
+        "id": "niksen",
+        "token": "yapmadim"
+      }
+    },
+    {
+      "text": "yazı yazıyo",
+      "result": null
+    },
+    {
+      "text": "",
+      "result": null
+    },
+    {
+      "text": "  ",
+      "result": null
+    },
+    {
+      "text": "Wabi-sabi.",
+      "result": {
+        "kind": "word",
+        "id": "wabi-sabi",
+        "token": "wabi sabi"
+      }
+    },
+    {
+      "text": "MONO NO AWARE ",
+      "result": {
+        "kind": "word",
+        "id": "mono-no-aware",
+        "token": "mono no aware"
+      }
+    },
+    {
+      "text": "İlk kar yağdı! ",
+      "result": {
+        "kind": "feeling",
+        "id": "hatsuyuki",
+        "token": "yağdi"
+      }
+    },
+    {
+      "text": "sınavım var yarın, başarılar dile ",
+      "result": {
+        "kind": "feeling",
+        "id": "gambatte",
+        "token": "başarilar"
+      }
+    },
+    {
+      "text": "şarkı aklımdan çıkmıyor\n",
+      "result": {
+        "kind": "feeling",
+        "id": "ohrwurm",
+        "token": "çikmiyor"
+      }
+    },
+    {
+      "text": "ikigai nedir? ",
+      "result": {
+        "kind": "word",
+        "id": "ikigai",
+        "token": "ikigai"
+      }
+    },
+    {
+      "text": "Çok mutluyum! ",
+      "result": {
+        "kind": "feeling",
+        "id": "kefi",
+        "token": "mutluyum"
+      }
+    },
+    {
+      "text": "ne az ne çok olsun ",
+      "result": {
+        "kind": "feeling",
+        "id": "b-lagom",
+        "token": "çok"
+      }
+    },
+    {
+      "text": "Ayşe'ye kintsugi anlattım ",
+      "result": {
+        "kind": "word",
+        "id": "kintsugi",
+        "token": "kintsugi"
+      }
+    },
+    {
+      "text": "evden çıkmıyorum ",
+      "result": {
+        "kind": "feeling",
+        "id": "hikikomori",
+        "token": "çikmiyorum"
+      }
+    },
+    {
+      "text": "kitap aldım yine ",
+      "result": {
+        "kind": "feeling",
+        "id": "b-tsundoku",
+        "token": "aldim"
+      }
+    }
+  ]
+}

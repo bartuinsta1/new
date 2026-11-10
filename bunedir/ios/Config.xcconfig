@@ -1,0 +1,6 @@
+// Supabase projesi (yalnızca hediye kaydı için). Boş bırakılırsa hediye ekranı "yakında" gösterir.
+// Gerçek değerleri git'e girmeyen Config.local.xcconfig dosyasına yazın.
+BUNEDIR_SUPABASE_URL =
+BUNEDIR_SUPABASE_ANON_KEY =
+DEVELOPMENT_TEAM =
+#include? "Config.local.xcconfig"
